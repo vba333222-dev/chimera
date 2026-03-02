@@ -22,12 +22,10 @@ class AppTheme {
         primary: accentGreen,
         secondary: accentGreenBright,
         surface: terminalCard,
-        background: terminalBg,
         error: warningRed,
         onPrimary: Colors.black,
         onSecondary: Colors.black,
         onSurface: Colors.white,
-        onBackground: Colors.white,
         onError: Colors.white,
       ),
       textTheme: TextTheme(

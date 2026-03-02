@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/app_theme.dart';
+import '../providers/providers.dart';
 
-class BiometricLoginScreen extends StatefulWidget {
+class BiometricLoginScreen extends ConsumerStatefulWidget {
   const BiometricLoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<BiometricLoginScreen> createState() => _BiometricLoginScreenState();
+  ConsumerState<BiometricLoginScreen> createState() => _BiometricLoginScreenState();
 }
 
-class _BiometricLoginScreenState extends State<BiometricLoginScreen> with SingleTickerProviderStateMixin {
+class _BiometricLoginScreenState extends ConsumerState<BiometricLoginScreen> with SingleTickerProviderStateMixin {
   late AnimationController _scanController;
   late Animation<double> _scanAnimation;
+  bool _usePinFallback = false;
+  String _pin = '';
+  final String _correctPin = '1337'; // Dummy PIN for demonstration
 
   @override
   void initState() {
@@ -24,6 +29,62 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> with Single
     _scanAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _scanController, curve: Curves.easeInOut),
     );
+
+    // Auto-trigger biometric after a short delay for visual effect
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted && !_usePinFallback) {
+        _authenticateBiometric();
+      }
+    });
+  }
+
+  Future<void> _authenticateBiometric() async {
+    await ref.read(authProvider.notifier).checkBiometric();
+    final status = ref.read(authProvider).status;
+    
+    if (status == AuthStatus.authenticated && mounted) {
+      context.go('/device-verify');
+    } else if (status == AuthStatus.error && mounted) {
+      setState(() {
+        _usePinFallback = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Biometric locked/unavailable. Falling back to PIN.'),
+          backgroundColor: AppTheme.warningRed,
+        ),
+      );
+    }
+  }
+
+  void _onPinKeyPress(String key) {
+    if (key == 'DEL') {
+      if (_pin.isNotEmpty) {
+        setState(() {
+          _pin = _pin.substring(0, _pin.length - 1);
+        });
+      }
+    } else if (key == 'ENT') {
+      if (_pin == _correctPin) {
+        context.go('/device-verify');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('ACCESS DENIED. INVALID PIN.'),
+            backgroundColor: AppTheme.warningRed,
+          ),
+        );
+        setState(() {
+          _pin = '';
+        });
+      }
+    } else {
+      if (_pin.length < 4) {
+        setState(() {
+          _pin += key;
+        });
+      }
+    }
   }
 
   @override
@@ -34,6 +95,13 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> with Single
 
   @override
   Widget build(BuildContext context) {
+    // Listen to changes just in case
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next.status == AuthStatus.authenticated) {
+        context.go('/device-verify');
+      }
+    });
+
     return Scaffold(
       backgroundColor: Colors.transparent, // Background handled by AppWrapper
       body: SafeArea(
@@ -90,7 +158,7 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> with Single
                         Container(
                           width: 6,
                           height: 6,
-                          color: AppTheme.accentGreen, // Would normally pulse but leaving simple
+                          color: AppTheme.accentGreen, // Would normally pulse
                         ),
                         const SizedBox(width: 8),
                         const Text(
@@ -110,111 +178,8 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> with Single
             ),
             const Spacer(),
             
-            // Scanner Core
-            GestureDetector(
-              onTap: () {
-                // Mock scanning and auth
-                 context.go('/chats');
-              },
-              child: Center(
-                child: SizedBox(
-                  width: 256,
-                  height: 256,
-                  child: Stack(
-                    children: [
-                      // Inner background
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.02),
-                            border: Border.all(color: AppTheme.terminalBorder),
-                          ),
-                        ),
-                      ),
-                      // Scanner Corners
-                      Positioned(top: 0, left: 0, child: _ScannerCorner(isTop: true, isLeft: true)),
-                      Positioned(top: 0, right: 0, child: _ScannerCorner(isTop: true, isLeft: false)),
-                      Positioned(bottom: 0, left: 0, child: _ScannerCorner(isTop: false, isLeft: true)),
-                      Positioned(bottom: 0, right: 0, child: _ScannerCorner(isTop: false, isLeft: false)),
-                      
-                      // Fingerprint Icon
-                      const Center(
-                        child: Icon(
-                          Icons.fingerprint,
-                          color: Colors.white,
-                          size: 110,
-                        ),
-                      ),
-
-                      // Animated Scanline
-                      Positioned.fill(
-                        child: ClipRect(
-                          child: AnimatedBuilder(
-                            animation: _scanAnimation,
-                            builder: (context, child) {
-                              return FractionalTranslation(
-                                translation: Offset(0, _scanAnimation.value - 0.5),
-                                child: Container(
-                                  height: 2,
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.accentGreen,
-                                    boxShadow: AppTheme.glowGreen,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 40),
-
-            // Text prompts
-            SizedBox(
-              width: 256,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(left: 4),
-                    margin: const EdgeInsets.only(bottom: 8),
-                    decoration: BoxDecoration(
-                      border: Border(left: BorderSide(color: Colors.grey[700]!)),
-                    ),
-                    child: Text(
-                      '// System Check: Locked',
-                      style: TextStyle(color: Colors.grey[500], fontSize: 10, letterSpacing: 2),
-                    ),
-                  ),
-                  const Text(
-                    'IDENTITY VERIFICATION',
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: -0.5),
-                  ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
-                      border: Border.all(color: AppTheme.terminalBorder.withOpacity(0.5)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Text('\$', style: TextStyle(color: AppTheme.accentGreen)),
-                        const SizedBox(width: 8),
-                        Text('SCAN_BIOMETRIC', style: TextStyle(color: Colors.grey[300], fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 1)),
-                        const SizedBox(width: 4),
-                        Container(width: 8, height: 16, color: AppTheme.accentGreen), // Simulated cursor
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
+            // Core UI (Scanner or PIN)
+            if (_usePinFallback) _buildPinEntry() else _buildBiometricScanner(),
             
             const Spacer(),
             
@@ -223,26 +188,54 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> with Single
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
               child: Column(
                 children: [
-                  Container(
-                    width: 280,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppTheme.terminalBorder),
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        context.push('/device-verify');
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.dialpad, color: AppTheme.accentGreen, size: 18),
-                          SizedBox(width: 12),
-                          Text('USE PIN ENTRY', style: TextStyle(color: AppTheme.accentGreen, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 2)),
-                        ],
+                  if (!_usePinFallback)
+                    Container(
+                      width: 280,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppTheme.terminalBorder),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _usePinFallback = true;
+                          });
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.dialpad, color: AppTheme.accentGreen, size: 18),
+                            SizedBox(width: 12),
+                            Text('USE PIN ENTRY', style: TextStyle(color: AppTheme.accentGreen, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 2)),
+                          ],
+                        ),
+                      ),
+                    )
+                  else
+                    Container(
+                      width: 280,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppTheme.terminalBorder),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _usePinFallback = false;
+                            _pin = '';
+                            _authenticateBiometric();
+                          });
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.fingerprint, color: AppTheme.accentGreen, size: 18),
+                            SizedBox(width: 12),
+                            Text('RETRY BIOMETRIC', style: TextStyle(color: AppTheme.accentGreen, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 2)),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                   const SizedBox(height: 24),
                   Opacity(
                     opacity: 0.5,
@@ -265,6 +258,182 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> with Single
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBiometricScanner() {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: _authenticateBiometric,
+          child: Center(
+            child: SizedBox(
+              width: 256,
+              height: 256,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.02),
+                        border: Border.all(color: AppTheme.terminalBorder),
+                      ),
+                    ),
+                  ),
+                  const Positioned(top: 0, left: 0, child: _ScannerCorner(isTop: true, isLeft: true)),
+                  const Positioned(top: 0, right: 0, child: _ScannerCorner(isTop: true, isLeft: false)),
+                  const Positioned(bottom: 0, left: 0, child: _ScannerCorner(isTop: false, isLeft: true)),
+                  const Positioned(bottom: 0, right: 0, child: _ScannerCorner(isTop: false, isLeft: false)),
+                  const Center(
+                    child: Icon(Icons.fingerprint, color: Colors.white, size: 110),
+                  ),
+                  Positioned.fill(
+                    child: ClipRect(
+                      child: AnimatedBuilder(
+                        animation: _scanAnimation,
+                        builder: (context, child) {
+                          return FractionalTranslation(
+                            translation: Offset(0, _scanAnimation.value - 0.5),
+                            child: Container(
+                              height: 2,
+                              decoration: BoxDecoration(
+                                color: AppTheme.accentGreen,
+                                boxShadow: AppTheme.glowGreen,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 40),
+        SizedBox(
+          width: 256,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.only(left: 4),
+                margin: const EdgeInsets.only(bottom: 8),
+                decoration: BoxDecoration(border: Border(left: BorderSide(color: Colors.grey[700]!))),
+                child: Text('// System Check: Locked', style: TextStyle(color: Colors.grey[500], fontSize: 10, letterSpacing: 2)),
+              ),
+              const Text('IDENTITY VERIFICATION', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: -0.5)),
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  border: Border.all(color: AppTheme.terminalBorder.withOpacity(0.5)),
+                ),
+                child: Row(
+                  children: [
+                    const Text('\$', style: TextStyle(color: AppTheme.accentGreen)),
+                    const SizedBox(width: 8),
+                    Text('SCAN_BIOMETRIC', style: TextStyle(color: Colors.grey[300], fontSize: 14, fontWeight: FontWeight.w500, letterSpacing: 1)),
+                    const SizedBox(width: 4),
+                    Container(width: 8, height: 16, color: AppTheme.accentGreen), 
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPinEntry() {
+    return Column(
+      children: [
+        const Text('OVR_RIDE_PIN_REQ', style: TextStyle(color: AppTheme.accentGreen, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 4)),
+        const SizedBox(height: 16),
+        // Passcode indicators
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(4, (index) {
+            bool isFilled = index < _pin.length;
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: isFilled ? AppTheme.accentGreen : Colors.transparent,
+                border: Border.all(color: AppTheme.accentGreen, width: 2),
+                boxShadow: isFilled ? AppTheme.glowGreen : null,
+              ),
+            );
+          }),
+        ),
+        const SizedBox(height: 32),
+        // Keypad
+        SizedBox(
+          width: 260,
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 1.2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+            ),
+            itemCount: 12,
+            itemBuilder: (context, index) {
+              String key;
+              if (index < 9) {
+                key = (index + 1).toString();
+              } else if (index == 9) {
+                key = 'DEL';
+              } else if (index == 10) {
+                key = '0';
+              } else {
+                key = 'ENT';
+              }
+              return _KeypadButton(
+                label: key,
+                onTap: () => _onPinKeyPress(key),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _KeypadButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _KeypadButton({Key? key, required this.label, required this.onTap}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    bool isAction = label == 'DEL' || label == 'ENT';
+    return InkWell(
+      onTap: onTap,
+      splashColor: AppTheme.accentGreen.withOpacity(0.3),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.terminalCard,
+          border: Border.all(color: isAction ? AppTheme.terminalBorder : AppTheme.accentGreen.withOpacity(0.5)),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isAction ? Colors.white : AppTheme.accentGreen,
+            fontSize: isAction ? 14 : 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
