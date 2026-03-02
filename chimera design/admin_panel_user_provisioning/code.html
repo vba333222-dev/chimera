@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Panel - User Provisioning</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "terminal-bg": "#0B0F0C",       // Charcoal Black
+                        "terminal-panel": "#141A17",    // Dark Slate
+                        "terminal-accent": "#3AFF72",   // Retro Green
+                        "terminal-dim": "#232D28",      // Slightly lighter slate for borders
+                        "terminal-text": "#E1E6E3",     // Off-white for text
+                        "terminal-muted": "#6B7A72",    // Muted green-gray
+                        "terminal-warning": "#EAB308",
+                        "terminal-danger": "#EF4444",
+                    },
+                    fontFamily: {
+                        "mono": ["IBM Plex Mono", "JetBrains Mono", "monospace"],
+                    },
+                    borderRadius: {
+                        "none": "0px",
+                        "sm": "2px",
+                        "md": "4px",
+                    },
+                    spacing: {
+                        '18': '4.5rem',
+                    }
+                },
+            },
+        }
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }.no-scrollbar {
+            -ms-overflow-style: none;scrollbar-width: none;}
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: #0B0F0C;
+        }.scanline {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 50;
+            opacity: 0.15;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-terminal-bg text-terminal-text font-mono antialiased overflow-hidden selection:bg-terminal-accent selection:text-terminal-bg">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-y-auto overflow-x-hidden max-w-md mx-auto bg-terminal-bg border-x border-terminal-dim shadow-2xl">
+<div class="scanline fixed inset-0 z-50 pointer-events-none h-screen w-full"></div>
+<header class="sticky top-0 z-40 bg-terminal-bg/95 backdrop-blur-sm border-b border-terminal-accent/20">
+<div class="flex items-center p-4 justify-between h-16">
+<button class="text-terminal-text hover:text-terminal-accent transition-colors flex items-center justify-center size-10 border border-transparent hover:border-terminal-accent/30 rounded-none group">
+<span class="material-symbols-outlined text-[24px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<h2 class="text-terminal-text text-sm font-bold uppercase tracking-[0.1em]">Admin Panel</h2>
+<span class="text-[10px] text-terminal-accent tracking-widest opacity-80">SYS.PROV.V2</span>
+</div>
+<button class="text-terminal-text hover:text-terminal-accent transition-colors flex items-center justify-center size-10 border border-transparent hover:border-terminal-accent/30 rounded-none">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+</button>
+</div>
+</header>
+<div class="px-4 py-4">
+<label class="flex flex-col w-full group">
+<div class="flex w-full items-center rounded-none h-12 bg-terminal-panel border border-terminal-dim group-focus-within:border-terminal-accent transition-colors shadow-none">
+<div class="text-terminal-muted group-focus-within:text-terminal-accent flex items-center justify-center pl-4 transition-colors">
+<span class="material-symbols-outlined text-[20px]">terminal</span>
+</div>
+<input class="w-full bg-transparent border-none text-terminal-text placeholder:text-terminal-muted px-3 py-2 focus:ring-0 text-sm font-medium font-mono uppercase tracking-tight" placeholder="&gt; QUERY USER OR ID_"/>
+<button class="mr-2 p-1.5 rounded-none text-terminal-muted hover:text-terminal-accent border border-transparent hover:border-terminal-accent/50">
+<span class="material-symbols-outlined text-[20px]">filter_alt</span>
+</button>
+</div>
+</label>
+</div>
+<div class="flex gap-3 px-4 pb-2 overflow-x-auto no-scrollbar">
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-none bg-terminal-accent text-terminal-bg px-4 border border-terminal-accent hover:bg-terminal-accent/90">
+<span class="text-xs font-bold uppercase tracking-wider">[ ALL ]</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-none bg-transparent border border-terminal-dim hover:border-terminal-accent text-terminal-muted hover:text-terminal-accent transition-all px-4">
+<span class="text-xs font-medium uppercase tracking-wider">PENDING</span>
+<span class="block h-1.5 w-1.5 bg-terminal-warning shadow-[0_0_5px_rgba(234,179,8,0.5)]"></span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-none bg-transparent border border-terminal-dim hover:border-terminal-accent text-terminal-muted hover:text-terminal-accent transition-all px-4">
+<span class="text-xs font-medium uppercase tracking-wider">ADMIN</span>
+</button>
+<button class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded-none bg-transparent border border-terminal-dim hover:border-terminal-accent text-terminal-muted hover:text-terminal-accent transition-all px-4">
+<span class="text-xs font-medium uppercase tracking-wider">AUDIT</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-3 p-4">
+<div class="col-span-2 flex items-center justify-between bg-terminal-panel border border-terminal-dim p-4 rounded-none relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-1 opacity-10">
+<span class="material-symbols-outlined text-[64px]">group</span>
+</div>
+<div class="flex flex-col z-10">
+<span class="text-[10px] text-terminal-muted uppercase tracking-widest mb-1">Total Users</span>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold text-terminal-text">342</span>
+<span class="text-[10px] text-terminal-accent">Online</span>
+</div>
+</div>
+<div class="h-2 w-2 bg-terminal-accent animate-pulse shadow-[0_0_8px_#3AFF72]"></div>
+</div>
+<div class="flex flex-col bg-terminal-panel border border-terminal-dim p-4 rounded-none hover:border-terminal-warning transition-colors group">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-terminal-warning text-[20px]">hourglass_empty</span>
+<span class="text-[10px] text-terminal-bg bg-terminal-warning px-1 font-bold">+2</span>
+</div>
+<span class="text-[10px] text-terminal-muted uppercase tracking-widest">Pending</span>
+<span class="text-xl font-bold text-terminal-text mt-1">12</span>
+</div>
+<div class="flex flex-col bg-terminal-panel border border-terminal-dim p-4 rounded-none hover:border-terminal-danger transition-colors group">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-terminal-danger text-[20px]">block</span>
+</div>
+<span class="text-[10px] text-terminal-muted uppercase tracking-widest">Revoked</span>
+<span class="text-xl font-bold text-terminal-text mt-1">5</span>
+</div>
+</div>
+<div class="flex-1 pb-24 border-t border-terminal-dim">
+<div class="flex items-center justify-between px-4 py-3 bg-terminal-bg/50 backdrop-blur sticky top-[64px] z-30 border-b border-terminal-dim">
+<h3 class="text-terminal-text text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                    // Directory_List
+                </h3>
+<span class="text-[10px] font-mono text-terminal-accent border border-terminal-accent/30 px-2 py-0.5">COUNT: 359</span>
+</div>
+<div class="flex flex-col px-4 mt-4 gap-4">
+<div class="group relative flex flex-col bg-terminal-panel border border-terminal-dim hover:border-terminal-accent transition-colors p-0 rounded-none">
+<div class="flex items-center justify-between p-3 border-b border-terminal-dim bg-terminal-panel z-10">
+<div class="flex items-center gap-3">
+<div class="relative size-10 shrink-0 bg-terminal-bg border border-terminal-muted overflow-hidden">
+<img alt="User portrait" class="w-full h-full object-cover grayscale opacity-80 group-hover:opacity-100 group-hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmmMyeBZY9d7MU7EkuS2t0bNAXq9yjhqyP572ALA4TLUHEjD5xSH41IQsUO2gur1aTMsPOQ4Rtsyt9lFk3zCM3fhWXfCLMagekuDDcynNERJgWsn3E5r4mZOBBAZj68iIE4D0MWzRpIw22YTIprUVXzokVFfp9s5QGkoqkBceCfjHd0ihxQlcuJTYRVUBHYqmCkq7mx-_oTLsrGEk4SUoEtaqdBlTiH0W2_Y5FY-oXPLnEDiLBBxfbXmFDHPWvH1hs6acXxjsT0QlD"/>
+<div class="absolute top-0 right-0 w-2 h-2 bg-terminal-accent shadow-[0_0_5px_#3AFF72]"></div>
+</div>
+<div>
+<h4 class="text-terminal-text font-bold text-sm tracking-wide group-hover:text-terminal-accent transition-colors">ELENA_FISHER</h4>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="text-[9px] bg-terminal-accent/10 text-terminal-accent border border-terminal-accent/30 px-1 font-bold uppercase">Admin</span>
+<span class="text-terminal-muted text-[10px] tracking-tight">ID:0x4A..9F2</span>
+</div>
+</div>
+</div>
+<button class="text-terminal-muted hover:text-terminal-text hover:bg-terminal-dim p-1.5 transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+<div class="p-3 bg-terminal-bg/30">
+<div class="grid grid-cols-1 gap-2">
+<div class="flex items-center justify-between text-xs font-mono">
+<div class="flex items-center gap-2 text-terminal-text/80">
+<span class="material-symbols-outlined text-[14px] text-terminal-accent">smartphone</span>
+<span>iPhone 13 Pro</span>
+</div>
+<span class="text-[9px] text-terminal-accent uppercase">[SECURED]</span>
+</div>
+<div class="flex items-center justify-between text-xs font-mono">
+<div class="flex items-center gap-2 text-terminal-muted">
+<span class="material-symbols-outlined text-[14px]">laptop_mac</span>
+<span>MacBook</span>
+</div>
+<span class="text-[9px] text-terminal-warning uppercase">[PENDING_KEYS]</span>
+</div>
+</div>
+</div>
+<div class="border-t border-terminal-dim p-2 flex justify-end bg-terminal-panel">
+<button class="text-[10px] text-terminal-accent hover:bg-terminal-accent hover:text-terminal-bg px-2 py-1 transition-colors uppercase font-bold flex items-center gap-1">
+                            PROVISION KEYS <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="group relative flex flex-col bg-terminal-panel border border-terminal-dim hover:border-terminal-accent transition-colors p-0 rounded-none opacity-90 hover:opacity-100">
+<div class="flex items-center justify-between p-3 border-b border-terminal-dim bg-terminal-panel">
+<div class="flex items-center gap-3">
+<div class="relative size-10 shrink-0 bg-terminal-dim border border-terminal-muted flex items-center justify-center text-terminal-text">
+<span class="font-bold text-xs">JD</span>
+<div class="absolute top-0 right-0 w-2 h-2 bg-terminal-accent shadow-[0_0_5px_#3AFF72]"></div>
+</div>
+<div>
+<h4 class="text-terminal-text font-bold text-sm tracking-wide">JOHN_DOE</h4>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="text-[9px] bg-purple-900/30 text-purple-400 border border-purple-500/30 px-1 font-bold uppercase">Auditor</span>
+<span class="text-terminal-muted text-[10px] tracking-tight">ID:0xB2..1C4</span>
+</div>
+</div>
+</div>
+<button class="text-terminal-muted hover:text-terminal-text hover:bg-terminal-dim p-1.5 transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+<div class="p-3 bg-terminal-bg/30 flex items-center justify-between text-xs font-mono">
+<div class="flex items-center gap-2 text-terminal-text/80">
+<span class="material-symbols-outlined text-[14px] text-terminal-accent">laptop_windows</span>
+<span>ThinkPad X1</span>
+</div>
+<span class="text-[9px] text-terminal-accent uppercase">[SECURED]</span>
+</div>
+</div>
+<div class="group relative flex flex-col bg-terminal-panel border border-terminal-dim hover:border-terminal-warning transition-colors p-0 rounded-none">
+<div class="flex items-center justify-between p-3 border-b border-terminal-dim border-dashed bg-terminal-panel">
+<div class="flex items-center gap-3">
+<div class="relative size-10 shrink-0 bg-transparent border border-terminal-muted border-dashed flex items-center justify-center">
+<span class="material-symbols-outlined text-terminal-muted text-[20px]">person_add</span>
+</div>
+<div>
+<h4 class="text-terminal-text font-bold text-sm tracking-wide">SARAH_CONNOR</h4>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="text-[9px] bg-terminal-dim text-terminal-muted border border-terminal-muted/30 px-1 font-bold uppercase">User</span>
+<span class="text-terminal-warning text-[10px] tracking-tight font-bold blink-text animate-pulse">AWAITING_INVITE</span>
+</div>
+</div>
+</div>
+<button class="text-terminal-muted hover:text-terminal-text hover:bg-terminal-dim p-1.5 transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div>
+<div class="p-2 flex gap-2 bg-terminal-bg/30">
+<button class="flex-1 border border-terminal-accent/50 text-terminal-accent hover:bg-terminal-accent hover:text-terminal-bg text-[10px] font-bold py-2 uppercase transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[14px]">send</span>
+                            Resend
+                        </button>
+<button class="border border-terminal-danger/50 text-terminal-danger hover:bg-terminal-danger hover:text-terminal-bg text-[10px] font-bold px-3 uppercase transition-all">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<div class="mt-8 px-4">
+<div class="border border-terminal-dim bg-terminal-bg p-0">
+<div class="flex items-center justify-between p-2 bg-terminal-dim/50 border-b border-terminal-dim">
+<h4 class="text-[10px] font-bold uppercase tracking-widest text-terminal-muted flex items-center gap-2">
+<span class="material-symbols-outlined text-[12px]">history</span>
+                            System_Log
+                        </h4>
+<span class="text-[10px] text-terminal-accent cursor-pointer hover:underline font-mono">VIEW_ALL &gt;&gt;</span>
+</div>
+<div class="p-3 space-y-4 font-mono">
+<div class="flex gap-3 items-start relative pl-2 before:absolute before:left-0 before:top-2 before:w-1 before:h-1 before:bg-terminal-accent before:content-['']">
+<div class="flex-1">
+<p class="text-[11px] text-terminal-text leading-snug">
+<span class="text-terminal-accent font-bold">ADMIN_SYS</span> provisioned user <span class="text-terminal-muted">0x4A...</span>
+</p>
+<p class="text-[9px] text-terminal-muted mt-1 uppercase">T-minus 02m • IP:192.168.1.1</p>
+</div>
+</div>
+<div class="flex gap-3 items-start relative pl-2 before:absolute before:left-0 before:top-2 before:w-1 before:h-1 before:bg-terminal-danger before:content-['']">
+<div class="flex-1">
+<p class="text-[11px] text-terminal-text leading-snug">
+<span class="text-terminal-danger font-bold">SYSTEM</span> revoked device <span class="text-terminal-muted">ID-291</span>
+</p>
+<p class="text-[9px] text-terminal-muted mt-1 uppercase">T-minus 15m • VIOLATION_DETECTED</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed bottom-6 right-6 z-40">
+<button class="bg-terminal-accent text-terminal-bg border border-terminal-accent shadow-[0_0_15px_rgba(58,255,114,0.3)] hover:bg-terminal-bg hover:text-terminal-accent active:scale-95 size-14 flex items-center justify-center transition-all duration-200 group rounded-none">
+<span class="material-symbols-outlined text-[32px] group-hover:rotate-90 transition-transform">add</span>
+</button>
+</div>
+<div class="fixed bottom-0 left-0 w-full h-16 bg-gradient-to-t from-terminal-bg via-terminal-bg/80 to-transparent pointer-events-none z-20"></div>
+</div>
+
+</body></html>

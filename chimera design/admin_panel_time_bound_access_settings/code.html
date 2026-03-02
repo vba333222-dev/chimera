@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Panel - Time-bound Access Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "term-bg": "#0B0F0C",
+                        "term-panel": "#141A17",
+                        "term-green": "#3AFF72",
+                        "term-amber": "#FFC107",
+                        "term-red": "#E53935",
+                        "term-border": "#2A3530",
+                        "term-text": "#C0C5C3",
+                    },
+                    fontFamily: {
+                        "mono": ["IBM Plex Mono", "monospace"],
+                        "display": ["IBM Plex Mono", "monospace"]
+                    },
+                    boxShadow: {
+                        "glow-green": "0 0 10px rgba(58, 255, 114, 0.2)",
+                        "glow-red": "0 0 10px rgba(229, 57, 53, 0.2)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: #0B0F0C;
+            color: #C0C5C3;
+        }::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F0C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2A3530;
+        }.cursor-blink::after {
+            content: '█';
+            animation: blink 1s step-end infinite;
+            color: #3AFF72;
+            margin-left: 2px;
+            vertical-align: middle;
+            font-size: 0.8em;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            background: #3AFF72;
+            cursor: pointer;
+            margin-top: -8px;
+            border: 2px solid #0B0F0C;
+            box-shadow: 0 0 0 2px #3AFF72; 
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        .slider-track {
+            background: #2A3530;
+            height: 4px;
+        }.toggle-checkbox:checked {
+            right: 0;
+            border-color: #3AFF72;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #3AFF72;
+        }.crt::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-term-bg text-term-text antialiased min-h-screen">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto border-x border-term-border">
+<div class="sticky top-0 z-50 flex items-center bg-term-bg/95 backdrop-blur-sm p-4 pb-2 justify-between border-b border-term-border">
+<div class="text-term-green flex size-12 shrink-0 items-center cursor-pointer hover:bg-term-panel transition-colors border border-transparent hover:border-term-green/30 justify-center">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+</div>
+<div class="flex flex-col items-center">
+<h2 class="text-white text-sm font-bold tracking-widest uppercase">sys_admin</h2>
+<p class="text-term-border text-[10px] tracking-tighter">V.4.0.2 // SECURE_SHELL</p>
+</div>
+<div class="flex size-12 items-center justify-center border border-term-border bg-term-panel">
+<span class="material-symbols-outlined text-term-green text-xl">terminal</span>
+</div>
+</div>
+<div class="pt-4 px-4">
+<div class="bg-term-panel border border-term-green/50 p-3 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-2 h-2 bg-term-green"></div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-term-green text-lg animate-pulse">lock_open_right</span>
+<div class="w-full">
+<p class="text-term-green text-xs font-bold tracking-wider uppercase mb-1 flex justify-between">
+<span>Status: ZERO-KNOWLEDGE</span>
+<span class="animate-pulse">●</span>
+</p>
+<p class="text-term-text/70 text-[10px] font-mono leading-relaxed border-t border-term-border pt-1 mt-1">
+                        &gt; ENCRYPTION_LAYER: ACTIVE<br/>
+                        &gt; ADMIN_ACCESS: CONTENT_DENIED<br/>
+                        &gt; KEY_MANAGEMENT: GRANTED
+                    </p>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-6 px-4 pb-2">
+<h3 class="text-white text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+<span class="text-term-green">#</span> Global TTL Configuration
+        </h3>
+<p class="text-term-text/60 text-xs mt-1 font-mono">// Base lifespan for unclassified packets.</p>
+</div>
+<div class="px-4 pb-2">
+<div class="bg-term-panel border border-term-border p-4 relative">
+<div class="h-24 w-full relative overflow-hidden border border-term-border mb-4">
+<div class="absolute inset-0 bg-term-green/10 z-10 mix-blend-overlay"></div>
+<div class="absolute inset-0 z-20" style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, #0B0F0C 3px);"></div>
+<div class="h-full w-full bg-cover bg-center grayscale contrast-125 brightness-75" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCugT-uJ3qxf_xHRrXp0cjjMPBs2n16q1hlkM9l-9CmmkDwRVCV7JJ6RlOnnEUGAGo6kOyTyeyT-gUh9-LSBmfM-B6wMEt_pD7NB-uVb4k4vHYKto8p3bnLdizhnhr11KNpRSSglbv62sNtTG_jtyK2TeiWQUkwPew9TDX6hz3CAnnzmeAhYgaW88ideM9CR7fm0awVzkFRR4M9HVfmlSH75CuvtoecNJC9rgWj0rlvn8Qrn0ubzwnGNK6YdGurCribetzZx7rrLiOB");'>
+</div>
+<div class="absolute bottom-2 right-2 z-30 flex items-center gap-1 bg-term-bg/80 px-2 py-0.5 border border-term-border">
+<span class="material-symbols-outlined text-term-green text-xs">timer</span>
+<span class="text-term-green text-[10px] font-bold">TIMER_DAEMON</span>
+</div>
+</div>
+<div class="mb-4 font-mono text-sm">
+<div class="flex justify-between text-term-text/60 text-[10px] mb-1">
+<span>INPUT_PARAM: DURATION</span>
+<span>[EDITABLE]</span>
+</div>
+<div class="bg-term-bg border border-term-border p-3 flex items-center gap-2">
+<span class="text-term-green">&gt;</span>
+<span class="text-white">SET_EXPIRY</span>
+<span class="text-term-border">=</span>
+<span class="text-term-green font-bold text-lg cursor-blink">30 DAYS</span>
+</div>
+</div>
+<div class="flex w-full flex-col gap-4">
+<div class="relative w-full h-6 flex items-center">
+<input class="absolute z-20 w-full h-full opacity-0 cursor-pointer group" max="90" min="1" type="range" value="30"/>
+<div class="w-full h-1 bg-term-border relative z-10">
+<div class="h-full bg-term-green w-[33%]"></div>
+<div class="absolute top-1/2 -translate-y-1/2 left-[33%] size-4 bg-term-bg border border-term-green shadow-[0_0_8px_rgba(58,255,114,0.4)]"></div>
+</div>
+</div>
+<div class="flex justify-between items-center text-[10px] font-medium text-term-text/50 font-mono">
+<span>| 1d</span>
+<span>| 45d</span>
+<span>| 90d</span>
+</div>
+<div class="flex items-start gap-2 bg-term-amber/10 border border-term-amber/30 p-2">
+<span class="material-symbols-outlined text-term-amber text-sm mt-0.5">warning_amber</span>
+<p class="text-[10px] text-term-amber font-mono leading-tight">
+                        WARNING: Value reduction triggers immediate key shredding for out-of-bounds data.
+                    </p>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-6 px-4 pb-2 flex justify-between items-end">
+<div>
+<h3 class="text-white text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+<span class="text-term-green">#</span> Overrides
+            </h3>
+</div>
+<button class="text-term-green text-xs font-bold flex items-center gap-1 hover:bg-term-green hover:text-term-bg px-2 py-1 border border-term-green transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+            NEW_RULE
+        </button>
+</div>
+<div class="px-4 pb-2 flex flex-col gap-2">
+<div class="grid grid-cols-[auto_1fr_auto] items-center gap-3 p-3 bg-term-panel border border-term-border hover:border-term-text/30 transition-colors">
+<div class="size-8 bg-term-bg border border-term-border flex items-center justify-center text-term-text">
+<span class="material-symbols-outlined text-sm">folder_zip</span>
+</div>
+<div>
+<p class="text-white font-bold text-xs">FIN_REPORTS.DAT</p>
+<p class="text-term-text/50 text-[10px] font-mono">CLASS: TOP_SECRET</p>
+</div>
+<div class="text-right">
+<span class="block text-term-green font-mono font-bold text-xs">07d</span>
+<span class="text-[9px] text-term-text/40">OVERRIDE</span>
+</div>
+</div>
+<div class="grid grid-cols-[auto_1fr_auto] items-center gap-3 p-3 bg-term-panel border border-term-border hover:border-term-text/30 transition-colors">
+<div class="size-8 bg-term-bg border border-term-border flex items-center justify-center text-term-text">
+<span class="material-symbols-outlined text-sm">badge</span>
+</div>
+<div>
+<p class="text-white font-bold text-xs">HR_RECORDS.DB</p>
+<p class="text-term-text/50 text-[10px] font-mono">DEPT: HUMAN_RES</p>
+</div>
+<div class="text-right">
+<span class="block text-term-green font-mono font-bold text-xs">365d</span>
+<span class="text-[9px] text-term-text/40">OVERRIDE</span>
+</div>
+</div>
+</div>
+<div class="pt-6 px-4 pb-2">
+<h3 class="text-white text-sm font-bold uppercase tracking-wider flex items-center gap-2">
+<span class="text-term-green">#</span> Auto-Revocation Triggers
+        </h3>
+</div>
+<div class="px-4 pb-4 flex flex-col gap-2">
+<div class="flex items-center justify-between p-3 border border-term-border bg-term-bg">
+<div class="pr-4">
+<p class="text-white font-bold text-xs">EVENT: USER_SUSPEND</p>
+<p class="text-term-text/50 text-[10px] mt-0.5 font-mono">Action: Immediate Shred</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer group">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-10 h-5 border border-term-border bg-term-panel peer-checked:bg-term-green/20 peer-checked:border-term-green transition-all"></div>
+<div class="absolute left-1 top-1 w-3 h-3 bg-term-text peer-checked:bg-term-green peer-checked:translate-x-5 transition-transform"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-3 border border-term-border bg-term-bg">
+<div class="pr-4">
+<p class="text-white font-bold text-xs">EVENT: DEVICE_IDLE &gt; 7d</p>
+<p class="text-term-text/50 text-[10px] mt-0.5 font-mono">Action: Revoke Session</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer group">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-10 h-5 border border-term-border bg-term-panel peer-checked:bg-term-green/20 peer-checked:border-term-green transition-all"></div>
+<div class="absolute left-1 top-1 w-3 h-3 bg-term-text peer-checked:bg-term-green peer-checked:translate-x-5 transition-transform"></div>
+</label>
+</div>
+</div>
+<div class="px-4 py-6">
+<div class="border border-term-red/50 bg-term-red/5 p-4 relative">
+<div class="absolute top-0 left-0 bg-term-red text-term-bg text-[9px] font-bold px-1 uppercase tracking-widest">Critical Zone</div>
+<div class="flex items-start gap-3 mt-2 mb-4">
+<span class="material-symbols-outlined text-term-red animate-pulse">dangerous</span>
+<div>
+<h4 class="text-term-red font-bold text-xs uppercase tracking-wide">Emergency Key Rotation</h4>
+<p class="text-term-red/70 text-[10px] mt-1 font-mono">
+                        &gt; FORCE_TERMINATE_ALL_SESSIONS<br/>
+                        &gt; ROTATE_ORG_KEYS<br/>
+                        &gt; REQUIRE_REAUTH
+                    </p>
+</div>
+</div>
+<button class="w-full py-3 px-4 bg-transparent border border-term-red text-term-red font-bold text-xs hover:bg-term-red hover:text-white transition-all flex items-center justify-center gap-2 uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm">bomb</span>
+                Execute_Revoke_All
+            </button>
+</div>
+</div>
+<div class="sticky bottom-0 bg-term-bg/95 backdrop-blur-md p-4 border-t border-term-border z-40">
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-center gap-2 text-term-text/40 text-[10px] font-mono">
+<span class="material-symbols-outlined text-[10px]">history</span>
+                LAST_MOD: ADMIN_04 [2H AGO]
+            </div>
+<button class="w-full bg-term-green text-term-bg font-bold py-3.5 px-4 shadow-glow-green hover:shadow-none hover:bg-white transition-all active:scale-[0.98] flex items-center justify-center gap-2 uppercase tracking-widest border border-term-green">
+<span class="material-symbols-outlined text-lg">save_as</span>
+                Commit_Config
+            </button>
+</div>
+</div>
+<div class="h-6 bg-term-bg"></div>
+</div>
+
+</body></html>

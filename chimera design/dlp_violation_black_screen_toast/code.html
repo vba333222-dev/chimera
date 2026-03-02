@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DLP Violation - Screenshot Blocked</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "term-bg": "#0B0F0C",
+                        "term-red": "#E53935",
+                        "term-dark-red": "#3f0d0d",
+                    },
+                    fontFamily: {
+                        "mono": ["'IBM Plex Mono'", "monospace"],
+                    },
+                    animation: {
+                        'flash': 'flash 0.2s ease-in-out',
+                    },
+                    keyframes: {
+                        flash: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(255, 0, 0, 0.02), rgba(255, 0, 0, 0.06));
+            background-size: 100% 4px, 6px 100%;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-term-bg text-term-red font-mono antialiased overflow-hidden h-screen w-full flex flex-col items-center justify-center relative selection:bg-term-red selection:text-term-bg">
+<div class="absolute inset-0 pointer-events-none z-20 flex flex-col justify-between p-4">
+<div class="flex justify-between w-full">
+<div class="w-8 h-8 border-l-2 border-t-2 border-term-red"></div>
+<div class="w-8 h-8 border-r-2 border-t-2 border-term-red"></div>
+</div>
+<div class="flex justify-between w-full">
+<div class="w-8 h-8 border-l-2 border-b-2 border-term-red"></div>
+<div class="w-8 h-8 border-r-2 border-b-2 border-term-red"></div>
+</div>
+</div>
+<div class="absolute inset-0 z-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-term-dark-red via-term-bg to-term-bg"></div>
+<div class="relative z-10 w-full max-w-sm px-6 flex flex-col items-center animate-flash">
+<div class="w-full border-b border-term-red/30 mb-8 pb-1 flex justify-between text-[10px] tracking-widest uppercase">
+<span>Security_Protocol_v4.2</span>
+<span class="animate-pulse bg-term-red text-term-bg px-1 font-bold">VIOLATION</span>
+</div>
+<div class="mb-8 relative">
+<div class="w-32 h-32 border-4 border-term-red flex items-center justify-center bg-black">
+<span class="material-symbols-outlined text-[80px]">
+                    shield_lock
+                </span>
+</div>
+<div class="absolute top-1/2 -left-6 w-6 h-[2px] bg-term-red"></div>
+<div class="absolute top-1/2 -right-6 w-6 h-[2px] bg-term-red"></div>
+</div>
+<div class="text-center space-y-4 w-full">
+<h1 class="text-xl font-bold uppercase tracking-widest leading-snug">
+                Screenshot/Recording<br/>Blocked
+            </h1>
+<div class="border border-term-red bg-term-red/10 p-4 w-full text-left mt-6">
+<p class="text-sm font-bold flex items-center gap-3 uppercase">
+<span class="material-symbols-outlined text-lg">gpp_bad</span>
+                    Action Logged.
+                </p>
+</div>
+</div>
+<div class="w-full mt-8 text-xs space-y-2 opacity-80 font-mono border-t border-dashed border-term-red/30 pt-4">
+<div class="flex justify-between">
+<span>&gt; DETECTED_EVENT:</span>
+<span>SCR_CAP_ATTEMPT</span>
+</div>
+<div class="flex justify-between">
+<span>&gt; USER_ID:</span>
+<span>8X9-SECURE</span>
+</div>
+<div class="flex justify-between">
+<span>&gt; TIMESTAMP:</span>
+<span>NOW()</span>
+</div>
+<div class="mt-4 text-term-red font-bold animate-pulse">
+                &gt; NO BYPASS AVAILABLE_
+            </div>
+</div>
+</div>
+<div class="absolute bottom-8 w-full text-center z-10">
+<p class="text-[9px] uppercase tracking-[0.3em] opacity-50">
+            Secure Retro Terminal // Zero-Trust
+        </p>
+</div>
+
+</body></html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Panel - Device Control</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "term-bg": "#0B0F0C",
+                        "term-card": "#141A17",
+                        "term-green": "#3AFF72",
+                        "term-red": "#E53935",
+                        "term-cyan": "#5CC8FF",
+                        "term-amber": "#FFC857",
+                        "term-border": "#333333",
+                        "term-text": "#E0E0E0",
+                        "term-muted": "#888888",
+                    },
+                    fontFamily: {
+                        "mono": ["IBM Plex Mono", "monospace"],
+                        "sans": ["IBM Plex Mono", "monospace"],
+                    },
+                    borderRadius: {
+                        "none": "0",
+                        "sm": "1px",
+                        "md": "2px",
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            -webkit-font-smoothing: none; 
+        }::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F0C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333333;
+            border-radius: 0px;
+        }
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scroll {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .blink-anim {
+            animation: blink 2s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-term-bg text-term-text h-screen flex justify-center overflow-hidden font-mono">
+<div class="relative w-full max-w-md h-full bg-term-bg flex flex-col overflow-hidden shadow-none border-x border-term-border">
+<div class="shrink-0 flex items-center justify-between p-5 bg-term-bg z-20 border-b border-term-border">
+<button class="flex items-center justify-center size-10 text-term-text hover:bg-term-border/50 transition-colors border border-transparent hover:border-term-text rounded-none">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="text-center">
+<h1 class="text-term-text text-sm font-bold uppercase tracking-widest leading-none">Admin Panel</h1>
+<p class="text-term-muted text-[10px] uppercase tracking-widest mt-1">Device Control</p>
+</div>
+<button class="flex items-center justify-center size-10 text-term-text hover:bg-term-border/50 transition-colors border border-transparent hover:border-term-text rounded-none">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto pb-24 px-1">
+<div class="grid grid-cols-3 gap-2 p-4">
+<div class="flex flex-col gap-1 p-3 bg-term-card border border-term-green/50 hover:border-term-green transition-colors">
+<div class="flex items-center gap-1.5 text-term-green">
+<span class="material-symbols-outlined text-[14px] filled">check_circle</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Active</p>
+</div>
+<p class="text-white text-xl font-bold mt-1">14</p>
+</div>
+<div class="flex flex-col gap-1 p-3 bg-term-card border border-term-red/50 hover:border-term-red transition-colors">
+<div class="flex items-center gap-1.5 text-term-red">
+<span class="material-symbols-outlined text-[14px]">block</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Revoked</p>
+</div>
+<p class="text-white text-xl font-bold mt-1">02</p>
+</div>
+<div class="flex flex-col gap-1 p-3 bg-term-card border border-term-amber/50 hover:border-term-amber transition-colors">
+<div class="flex items-center gap-1.5 text-term-amber">
+<span class="material-symbols-outlined text-[14px]">gavel</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Held</p>
+</div>
+<p class="text-white text-xl font-bold mt-1">01</p>
+</div>
+</div>
+<div class="px-4 pb-4">
+<div class="flex w-full items-center bg-term-card border border-term-border h-12 px-3 focus-within:border-term-green transition-colors">
+<span class="material-symbols-outlined text-term-muted">search</span>
+<input class="w-full bg-transparent border-none text-term-text placeholder-term-muted focus:ring-0 text-sm ml-2 font-mono uppercase" placeholder="SEARCH_DEVICE_ID..."/>
+<button class="text-term-muted hover:text-white">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+<div class="flex gap-3 px-4 pb-4 overflow-x-auto hide-scroll">
+<button class="flex h-8 shrink-0 items-center justify-center px-4 text-[10px] font-bold uppercase border border-term-green bg-term-green/10 text-term-green rounded-none">
+                    [ All ]
+                </button>
+<button class="flex h-8 shrink-0 items-center justify-center px-4 text-[10px] font-bold uppercase border border-term-border text-term-muted hover:text-white hover:border-white transition-colors rounded-none">
+                    Active
+                </button>
+<button class="flex h-8 shrink-0 items-center justify-center px-4 text-[10px] font-bold uppercase border border-term-border text-term-muted hover:text-white hover:border-white transition-colors rounded-none">
+                    Offline
+                </button>
+<button class="flex h-8 shrink-0 items-center justify-center px-4 text-[10px] font-bold uppercase border border-term-border text-term-muted hover:text-white hover:border-white transition-colors rounded-none">
+                    Legal_Hold
+                </button>
+</div>
+<div class="px-4 pb-2 border-b border-term-border/30 mx-4 mb-4">
+<p class="text-term-muted text-[10px] font-bold uppercase tracking-widest">&gt;&gt; PROVISIONED_DEVICES_LIST</p>
+</div>
+<div class="flex flex-col gap-4 px-4">
+<div class="group relative flex flex-col gap-3 bg-term-card p-4 border border-term-border hover:border-term-green transition-all cursor-pointer">
+<div class="absolute top-0 left-0 w-1 h-1 bg-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute top-0 right-0 w-1 h-1 bg-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute bottom-0 left-0 w-1 h-1 bg-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute bottom-0 right-0 w-1 h-1 bg-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="size-10 flex items-center justify-center text-term-text border border-term-border group-hover:border-term-green group-hover:text-term-green transition-colors">
+<span class="material-symbols-outlined text-[20px]">smartphone</span>
+</div>
+<div>
+<h3 class="text-term-text font-bold text-sm tracking-tight">ALICE_IPHONE_14P</h3>
+<p class="text-term-muted text-[10px] mt-0.5">ID: 8X92-A2 // TOKYO_JP</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[10px] font-bold text-term-green border border-term-green px-1.5 py-0.5 uppercase bg-term-green/5">Active</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-1 pl-14">
+<span class="w-1.5 h-1.5 bg-term-green animate-pulse"></span>
+<p class="text-term-green text-[10px]">E2EE_VERIFIED // LAST_SEEN: 2M</p>
+</div>
+</div>
+<div class="relative flex flex-col bg-term-card border border-term-amber shadow-none">
+<div class="p-4 border-b border-term-border bg-term-amber/5">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-4">
+<div class="size-10 flex items-center justify-center text-term-amber border border-term-amber">
+<span class="material-symbols-outlined text-[20px]">laptop_mac</span>
+</div>
+<div>
+<h3 class="text-white font-bold text-sm tracking-tight">ENG-MACBOOK-PRO-M2</h3>
+<p class="text-term-amber text-[10px] mt-0.5">OWNER: MARK_Z // ID: M2-991</p>
+</div>
+</div>
+<span class="text-[10px] font-bold text-term-amber border border-term-amber px-1.5 py-0.5 uppercase blink-anim bg-term-amber/10">SUSPICIOUS</span>
+</div>
+<div class="grid grid-cols-2 gap-4 text-[10px] text-term-muted font-bold pl-14">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">wifi_off</span>
+<span>OFFLINE_4H</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">location_on</span>
+<span>LOC_UNKNOWN</span>
+</div>
+</div>
+</div>
+<div class="p-3 bg-term-bg border-t border-term-border grid grid-cols-2 gap-3">
+<button class="col-span-2 flex items-center justify-center gap-2 h-10 border border-term-border text-term-text text-xs font-bold uppercase hover:bg-white hover:text-black transition-colors rounded-none">
+<span class="material-symbols-outlined text-[16px]">history</span>
+                            ACCESS_LOGS
+                        </button>
+<div class="col-span-2 border-t border-dashed border-term-border my-2 flex items-center justify-center">
+<span class="bg-term-bg px-2 text-[10px] text-term-red font-bold uppercase tracking-widest border border-term-red/20">Danger_Zone</span>
+</div>
+<button class="flex items-center justify-center gap-2 h-10 border border-term-red text-term-red hover:bg-term-red hover:text-black text-[10px] font-bold uppercase transition-colors rounded-none">
+<span class="material-symbols-outlined text-[16px]">gavel</span>
+                            LEGAL_HOLD
+                        </button>
+<button class="flex items-center justify-center gap-2 h-10 border border-term-red text-term-red hover:bg-term-red hover:text-black text-[10px] font-bold uppercase transition-colors rounded-none">
+<span class="material-symbols-outlined text-[16px]">block</span>
+                            REVOKE_KEY
+                        </button>
+<button class="col-span-2 flex items-center justify-center gap-2 h-12 bg-term-red text-black border border-term-red text-xs font-bold uppercase hover:bg-red-600 hover:text-white transition-all mt-1 shadow-[0_0_10px_rgba(229,57,53,0.3)] rounded-none">
+<span class="material-symbols-outlined text-[18px]">phonelink_erase</span>
+                            REMOTE_WIPE_DEVICE
+                        </button>
+</div>
+</div>
+<div class="group relative flex flex-col gap-3 bg-term-card p-4 border border-term-border opacity-60 hover:opacity-100 hover:border-term-red transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="size-10 flex items-center justify-center text-term-muted border border-term-border">
+<span class="material-symbols-outlined text-[20px]">tablet_mac</span>
+</div>
+<div>
+<h3 class="text-term-muted font-bold text-sm tracking-tight line-through decoration-term-red">FINANCE-IPAD-04</h3>
+<p class="text-term-muted text-[10px] mt-0.5">ID: IPD-772 // LONDON_UK</p>
+</div>
+</div>
+<span class="text-[10px] font-bold text-term-red border border-term-red px-1.5 py-0.5 uppercase bg-term-red/10">REVOKED</span>
+</div>
+<div class="flex items-center gap-2 mt-1 pl-14">
+<span class="material-symbols-outlined text-[14px] text-term-red">delete_forever</span>
+<p class="text-term-red text-[10px]">WIPE_EXEC: 12/01/23</p>
+</div>
+</div>
+<div class="group relative flex flex-col gap-3 bg-term-card p-4 border border-term-border hover:border-term-cyan transition-all cursor-pointer">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-4">
+<div class="size-10 flex items-center justify-center text-term-text border border-term-border group-hover:border-term-cyan group-hover:text-term-cyan transition-colors">
+<span class="material-symbols-outlined text-[20px]">smartphone</span>
+</div>
+<div>
+<h3 class="text-term-text font-bold text-sm tracking-tight">BOB_PIXEL_7</h3>
+<p class="text-term-muted text-[10px] mt-0.5">ID: AND-901 // NY_USA</p>
+</div>
+</div>
+<span class="text-[10px] font-bold text-term-cyan border border-term-cyan px-1.5 py-0.5 uppercase bg-term-cyan/5">Offline</span>
+</div>
+<div class="flex items-center gap-2 mt-1 pl-14">
+<span class="material-symbols-outlined text-[14px] text-term-cyan">cloud_off</span>
+<p class="text-term-cyan text-[10px]">LAST_SEEN: 15M AGO</p>
+</div>
+</div>
+</div>
+<div class="h-10"></div>
+</div>
+<div class="absolute bottom-6 left-4 right-4 z-40 transform transition-all duration-300 translate-y-0 opacity-0 pointer-events-none">
+<div class="bg-term-bg border border-term-green text-term-green px-4 py-3 shadow-[0_0_15px_rgba(58,255,114,0.1)] flex items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">terminal</span>
+<span class="text-xs font-bold uppercase tracking-wider">&gt; COMMAND_EXECUTED</span>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

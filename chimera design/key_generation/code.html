@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Key Generation</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&amp;family=Share+Tech+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        term: {
+                            bg: "#0B0F0C",surface: "#141A17",accent: "#3AFF72",dim: "rgba(58, 255, 114, 0.1)",
+                            text: "#C0C5C1",
+                            muted: "#5A665E"
+                        }
+                    },
+                    fontFamily: {
+                        mono: ["'IBM Plex Mono'", "monospace"],
+                        tech: ["'Share Tech Mono'", "monospace"]
+                    },
+                    boxShadow: {
+                        'glow': '0 0 10px rgba(58, 255, 114, 0.3)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>body {
+            background-color: #0B0F0C;
+            background-image: 
+                linear-gradient(rgba(20, 26, 23, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(20, 26, 23, 0.5) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }.scanline {
+            background: linear-gradient(
+                to bottom, 
+                rgba(255,255,255,0), 
+                rgba(255,255,255,0) 50%, 
+                rgba(0,0,0,0.1) 50%, 
+                rgba(0,0,0,0.1)
+            );
+            background-size: 100% 4px;
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0;
+            pointer-events: none;
+            z-index: 50;
+        }.cursor-blink {
+            animation: blinker 0.8s step-end infinite;
+        }
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-term-bg text-term-text font-mono min-h-screen flex flex-col antialiased overflow-x-hidden selection:bg-term-accent selection:text-term-bg">
+<div class="scanline"></div>
+<header class="flex items-center justify-between px-6 py-5 bg-term-bg/90 backdrop-blur-sm sticky top-0 z-40 border-b border-term-surface">
+<button class="group flex items-center justify-center w-10 h-10 border border-term-surface hover:border-term-accent hover:bg-term-accent/10 transition-colors rounded-sm">
+<span class="material-symbols-outlined text-term-accent group-hover:text-term-accent transition-colors">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<h1 class="font-tech text-xl text-term-accent tracking-widest uppercase">KEY_GEN</h1>
+<span class="text-[9px] text-term-muted uppercase tracking-[0.2em]">Secure Terminal</span>
+</div>
+<div class="w-10"></div> 
+</header>
+<main class="flex-1 flex flex-col px-6 pt-8 pb-8 max-w-md mx-auto w-full relative z-10">
+<div class="flex flex-col items-center justify-center py-6 mb-2">
+<div class="relative w-32 h-32 flex items-center justify-center border border-term-surface bg-term-surface/30 rounded-sm">
+<div class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-term-accent"></div>
+<div class="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-term-accent"></div>
+<div class="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-term-accent"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-term-accent"></div>
+<span class="material-symbols-outlined text-5xl text-term-accent animate-pulse">lock</span>
+<div class="absolute -bottom-3 bg-term-bg border border-term-accent px-2 py-0.5 shadow-glow">
+<span class="text-[10px] font-tech text-term-accent tracking-widest">RSA-4096</span>
+</div>
+</div>
+</div>
+<div class="text-center mb-8 space-y-3">
+<h2 class="text-lg font-bold text-white tracking-tight uppercase">
+<span class="text-term-accent mr-2">&gt;</span>INITIATING_HANDSHAKE
+            </h2>
+<p class="text-xs text-term-muted leading-relaxed max-w-[90%] mx-auto">
+                // Generating cryptographic primitives locally.<br/>
+                // Keys bound to Secure Enclave hardware.
+            </p>
+</div>
+<div class="flex justify-center mb-10">
+<div class="inline-flex items-center gap-2 px-3 py-1.5 bg-term-surface/50 border border-term-surface rounded-sm">
+<span class="material-symbols-outlined text-sm text-term-accent">memory</span>
+<span class="text-[10px] font-tech font-bold tracking-widest text-term-accent uppercase">Hardware Backed TEE</span>
+</div>
+</div>
+<div class="flex flex-col gap-2 mb-8">
+<div class="flex justify-between items-end">
+<p class="text-xs font-tech uppercase tracking-wider text-term-accent">Sequence: Phase 2/3</p>
+<p class="text-xs font-tech font-bold text-term-accent">75%</p>
+</div>
+<div class="h-4 w-full bg-term-surface border border-term-muted/30 p-[2px] rounded-sm">
+<div class="h-full bg-term-accent w-[75%] shadow-glow relative overflow-hidden">
+<div class="absolute inset-0 bg-white/20 w-full h-full animate-pulse"></div>
+<div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iMiIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIwLjMiLz4KPC9zdmc+')] opacity-50"></div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-0 border border-term-surface bg-term-surface/10 rounded-sm font-mono text-xs mb-8">
+<div class="flex items-start gap-3 p-3 border-b border-term-surface/50 opacity-60">
+<span class="text-term-accent font-bold">[OK]</span>
+<div class="flex flex-col">
+<span class="line-through decoration-term-accent/50">VERIFY_DEVICE_INTEGRITY</span>
+<span class="text-[10px] text-term-muted font-tech">Checksum: 0x4F...A2 verified</span>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 border-b border-term-surface/50 bg-term-accent/5">
+<span class="text-term-accent font-bold cursor-blink">&gt;</span>
+<div class="flex flex-col">
+<span class="text-white font-bold">ACCESSING_SECURE_ENCLAVE</span>
+<span class="text-[10px] text-term-accent mt-0.5">Binding keys to hardware ID...</span>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 opacity-40">
+<span class="text-term-muted font-bold">[..]</span>
+<div class="flex flex-col">
+<span>GEN_RSA_4096_PAIR</span>
+<span class="text-[10px] text-term-muted font-tech">Allocating secure memory block</span>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-4">
+<div class="border border-term-surface bg-term-bg p-3 flex items-start gap-3 rounded-sm shadow-sm">
+<span class="material-symbols-outlined text-term-accent text-lg">shield</span>
+<div class="flex flex-col gap-1">
+<p class="text-[10px] font-bold uppercase tracking-wide text-term-accent">Zero-Trust Architecture Active</p>
+<p class="text-[10px] text-term-muted leading-tight">
+                        Do not close application. Session interruption may result in key fragmentation.
+                    </p>
+</div>
+</div>
+</div>
+</main>
+
+</body></html>

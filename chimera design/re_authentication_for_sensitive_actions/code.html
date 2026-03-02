@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Re-authentication for Sensitive Actions</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "charcoal": "#0B0F0C",
+              "cyan-retro": "#5CC8FF",
+              "surface-dark": "#111613",
+              "border-retro": "#2A332E"
+            },
+            fontFamily: {
+              "mono": ["IBM Plex Mono", "monospace"],
+            },
+            animation: {
+                'blink': 'blink 1.5s step-end infinite',
+            },
+            keyframes: {
+                blink: {
+                    '0%, 100%': { opacity: '1' },
+                    '50%': { opacity: '0' },
+                }
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+            background-color: #0B0F0C;
+        }.scanline {
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.05));
+            background-size: 100% 4px;
+            position: absolute;
+            pointer-events: none;
+            inset: 0;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-charcoal text-white font-mono antialiased h-screen w-full overflow-hidden flex flex-col items-center justify-center selection:bg-cyan-retro selection:text-charcoal">
+<div class="relative flex h-full w-full max-w-md flex-col bg-charcoal overflow-y-auto border-x border-white/5 shadow-2xl relative z-10 group/design-root">
+<div class="scanline sticky top-0"></div>
+<div class="flex items-center justify-between p-5 border-b border-white/10 sticky top-0 z-20 bg-charcoal/95 backdrop-blur-md">
+<button aria-label="Cancel" class="group flex items-center justify-center size-10 border border-transparent hover:border-white/20 hover:bg-white/5 transition-all duration-100">
+<span class="material-symbols-outlined text-white/50 group-hover:text-white transition-colors" style="font-size: 20px;">close</span>
+</button>
+<div class="flex items-center gap-3 opacity-90">
+<span class="material-symbols-outlined text-cyan-retro text-[18px]">terminal</span>
+<span class="text-xs font-bold tracking-[0.2em] uppercase text-white/90">SECURE_SHELL</span>
+</div>
+<div class="size-10"></div>
+</div>
+<main class="flex-1 flex flex-col items-center px-6 py-10 relative z-10">
+<div class="relative mb-12 group">
+<div class="absolute -top-2 -left-2 w-4 h-4 border-t border-l border-cyan-retro transition-all duration-300 group-hover:top-[-10px] group-hover:left-[-10px]"></div>
+<div class="absolute -top-2 -right-2 w-4 h-4 border-t border-r border-cyan-retro transition-all duration-300 group-hover:top-[-10px] group-hover:right-[-10px]"></div>
+<div class="absolute -bottom-2 -left-2 w-4 h-4 border-b border-l border-cyan-retro transition-all duration-300 group-hover:bottom-[-10px] group-hover:left-[-10px]"></div>
+<div class="absolute -bottom-2 -right-2 w-4 h-4 border-b border-r border-cyan-retro transition-all duration-300 group-hover:bottom-[-10px] group-hover:right-[-10px]"></div>
+<div class="relative flex items-center justify-center size-24 border border-white/20 bg-surface-dark shadow-lg">
+<span class="material-symbols-outlined text-white/90" style="font-size: 48px; font-variation-settings: 'FILL' 0, 'wght' 300;">lock</span>
+</div>
+</div>
+<h1 class="text-white text-lg font-bold uppercase tracking-widest mb-2 text-center">
+            &gt; AUTH_REQUIRED
+        </h1>
+<p class="text-white/40 text-xs text-center mb-10 uppercase tracking-wider">
+            // SENSITIVE_OPERATION_DETECTED
+        </p>
+<div class="w-full bg-surface-dark border border-white/10 p-5 mb-8 relative">
+<div class="absolute -top-3 left-4 bg-charcoal px-2 text-[10px] text-cyan-retro uppercase tracking-widest border border-white/10">
+                Current_Context
+            </div>
+<div class="space-y-4 font-mono text-sm">
+<div class="flex flex-col gap-1">
+<span class="text-white/40 text-[10px] uppercase tracking-wider">&gt;&gt; COMMAND_EXECUTION:</span>
+<span class="text-cyan-retro font-bold text-base bg-cyan-retro/10 inline-block px-3 py-2 border-l-2 border-cyan-retro">
+                        EXPORT_AUDIT_LOG
+                    </span>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4 border-t border-dashed border-white/10 mt-2">
+<div>
+<span class="text-white/40 text-[10px] uppercase block mb-1">USER_ID:</span>
+<span class="text-white/80 text-xs">ADMIN_01</span>
+</div>
+<div>
+<span class="text-white/40 text-[10px] uppercase block mb-1">IP_ADDR:</span>
+<span class="text-white/80 text-xs">192.168.10.4</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex-grow"></div>
+<div class="w-full mb-8">
+<button class="w-full group relative bg-transparent border border-white/20 hover:border-cyan-retro/80 hover:bg-cyan-retro/5 transition-all duration-75 outline-none focus:ring-1 focus:ring-cyan-retro focus:ring-offset-2 focus:ring-offset-charcoal p-5 flex items-center gap-4">
+<div class="size-14 flex-shrink-0 flex items-center justify-center border border-white/10 bg-white/5 group-hover:border-cyan-retro group-hover:bg-cyan-retro/10 transition-colors duration-75">
+<span class="material-symbols-outlined text-white/80 group-hover:text-cyan-retro" style="font-size: 32px;">face</span>
+</div>
+<div class="flex flex-col items-start text-left">
+<span class="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">Primary_Method</span>
+<span class="text-base font-bold text-white group-hover:text-cyan-retro tracking-wide">VERIFY_IDENTITY_SCAN</span>
+</div>
+<div class="ml-auto flex items-center gap-2 text-white/30 group-hover:text-cyan-retro transition-colors">
+<span class="text-[10px] uppercase tracking-widest hidden sm:block">Engage</span>
+<span class="material-symbols-outlined text-[16px] animate-blink">arrow_forward_ios</span>
+</div>
+</button>
+</div>
+<div class="mb-4">
+<button class="text-xs uppercase tracking-[0.15em] text-cyan-retro hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20 px-4 py-2 transition-all duration-100">
+                [ USE_PIN_CODE ]
+            </button>
+</div>
+</main>
+</div>
+
+</body></html>

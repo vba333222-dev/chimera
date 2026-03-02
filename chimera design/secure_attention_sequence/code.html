@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secure Attention Sequence</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "charcoal": "#0B0F0C",
+                        "terminal-green": "#3AFF72",
+                        "terminal-red": "#E53935",
+                        "terminal-dim": "#1a2e22",
+                    },
+                    fontFamily: {
+                        "mono": ["IBM Plex Mono", "JetBrains Mono", "monospace"],
+                    },
+                    animation: {
+                        'blink-fast': 'blink 0.5s step-end infinite',
+                        'scan-line': 'scanLine 2s linear infinite',
+                        'flicker': 'flicker 0.15s infinite',
+                    },
+                    keyframes: {
+                        blink: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0' },
+                        },
+                        scanLine: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(200%)' },
+                        },
+                        flicker: {
+                            '0%': { opacity: '0.97' },
+                            '50%': { opacity: '1' },
+                            '100%': { opacity: '0.98' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0B0F0C;
+        }
+        .scanline-overlay {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-charcoal text-terminal-green font-mono antialiased h-screen w-full overflow-hidden flex flex-col relative selection:bg-terminal-green selection:text-charcoal">
+<div class="absolute inset-0 pointer-events-none opacity-[0.07]" style="background-image: linear-gradient(#3AFF72 1px, transparent 1px), linear-gradient(90deg, #3AFF72 1px, transparent 1px); background-size: 32px 32px;">
+</div>
+<div class="absolute inset-0 pointer-events-none z-50 scanline-overlay opacity-30"></div>
+<div class="absolute inset-0 pointer-events-none z-50 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(11,15,12,0.8)_100%)]"></div>
+<div class="relative z-10 w-full border-b border-terminal-green/30 bg-charcoal/90 backdrop-blur-md flex justify-between items-center p-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-sm animate-blink-fast">lock</span>
+<span class="text-[10px] tracking-[0.2em] font-bold uppercase">SAS_PROTOCOL_V.4</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="px-2 py-0.5 border border-terminal-green/30 bg-terminal-dim">
+<span class="text-[10px] font-bold">SECURE_ENCLAVE</span>
+</div>
+</div>
+</div>
+<div class="relative z-10 flex-1 flex flex-col items-center justify-between p-6 w-full max-w-md mx-auto animate-flicker">
+<div class="w-full pt-4 space-y-4">
+<div class="flex justify-between items-end border-b-2 border-terminal-green pb-2">
+<h1 class="text-xl font-bold uppercase tracking-tight leading-none">
+                    Restricted<br/>Access
+                </h1>
+<span class="text-[10px] opacity-70 mb-0.5">ID: #99-AX-Z</span>
+</div>
+<p class="text-xs text-terminal-green/80 uppercase tracking-widest text-justify">
+                Execute Secure Attention Sequence to decrypt communication channels. Zero-Trust Policy Active.
+            </p>
+</div>
+<div class="w-full relative group">
+<div class="absolute inset-0 border-2 border-terminal-green shadow-[0_0_15px_rgba(58,255,114,0.2)] bg-charcoal z-0"></div>
+<div class="absolute -top-1 -left-1 w-2 h-2 bg-terminal-green z-10"></div>
+<div class="absolute -top-1 -right-1 w-2 h-2 bg-terminal-green z-10"></div>
+<div class="absolute -bottom-1 -left-1 w-2 h-2 bg-terminal-green z-10"></div>
+<div class="absolute -bottom-1 -right-1 w-2 h-2 bg-terminal-green z-10"></div>
+<div class="relative z-10 p-8 flex flex-col items-center gap-6">
+<div class="relative w-full h-32 border border-terminal-green/20 bg-black/40 flex items-center justify-center overflow-hidden">
+<div class="absolute inset-x-0 h-[2px] bg-terminal-green/50 shadow-[0_0_10px_#3AFF72] animate-scan-line z-0"></div>
+<div class="flex items-center gap-3 z-10">
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 border border-terminal-green flex items-center justify-center bg-charcoal">
+<span class="material-symbols-outlined text-lg">swipe_up</span>
+</div>
+<span class="text-[8px] uppercase tracking-widest opacity-60">01</span>
+</div>
+<div class="w-4 h-[1px] bg-terminal-green/40"></div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 border border-terminal-green flex items-center justify-center bg-charcoal">
+<span class="material-symbols-outlined text-lg">touch_app</span>
+</div>
+<span class="text-[8px] uppercase tracking-widest opacity-60">02</span>
+</div>
+<div class="w-4 h-[1px] bg-terminal-green/40"></div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 border-2 border-terminal-green flex items-center justify-center bg-terminal-green text-charcoal shadow-[0_0_10px_#3AFF72]">
+<span class="material-symbols-outlined text-lg">fingerprint</span>
+</div>
+<span class="text-[8px] uppercase tracking-widest font-bold">03</span>
+</div>
+</div>
+</div>
+<div class="text-center">
+<h2 class="text-sm font-bold tracking-[0.2em] uppercase text-white mb-1">
+                        Required Sequence
+                    </h2>
+<p class="text-xs text-terminal-green font-mono">
+                        [ SWIPE ] — [ TAP ] — [ BIOMETRIC ]
+                    </p>
+</div>
+</div>
+</div>
+<div class="w-full space-y-3 pb-4">
+<div class="relative w-full h-16 border border-terminal-green/40 bg-charcoal hover:bg-terminal-dim hover:border-terminal-green transition-all cursor-pointer flex flex-col items-center justify-center gap-1 group/btn overflow-hidden">
+<div class="absolute inset-0 bg-terminal-green/10 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300"></div>
+<span class="material-symbols-outlined text-terminal-green animate-bounce relative z-10">keyboard_double_arrow_up</span>
+<span class="text-xs font-bold tracking-[0.25em] uppercase text-white relative z-10">Initiate</span>
+</div>
+<button class="w-full py-3 text-center opacity-60 hover:opacity-100 hover:text-terminal-red transition-colors flex items-center justify-center gap-2">
+<span class="text-[10px] uppercase tracking-widest">[ ESC ] EMERGENCY ABORT</span>
+</button>
+</div>
+</div>
+<div class="w-full bg-black border-t border-terminal-green/20 p-3 h-24 overflow-hidden font-mono text-[9px] leading-relaxed text-terminal-green/60">
+<p>&gt; SYSTEM_CHECK_COMPLETE</p>
+<p>&gt; ENCRYPTION_KEY_ROTATION: <span class="text-terminal-green">SCHEDULED</span></p>
+<p>&gt; WAITING_FOR_INPUT...</p>
+<div class="flex items-center gap-1">
+<span>&gt; _</span>
+<span class="w-1.5 h-3 bg-terminal-green animate-blink-fast block"></span>
+</div>
+</div>
+
+</body></html>

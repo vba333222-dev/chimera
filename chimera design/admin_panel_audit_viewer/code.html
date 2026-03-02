@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Panel - Audit Viewer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Source+Code+Pro:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "terminal-bg": "#0B0F0C",       // Charcoal Black
+              "terminal-card": "#141A17",     // Dark Slate
+              "terminal-border": "#2C3632",   // Subtle Border
+              "terminal-cyan": "#5CC8FF",     // Cyan Redup
+              "terminal-cyan-dim": "rgba(92, 200, 255, 0.1)",
+              "terminal-text": "#C0C5C3",     // Light Grey Text
+              "terminal-muted": "#64746D",    // Muted Text
+              "alert-red": "#FF4444",
+              "alert-amber": "#FFAA00",
+            },
+            fontFamily: {
+              "mono": ["IBM Plex Mono", "monospace"],
+              "code": ["JetBrains Mono", "monospace"],
+              "timestamp": ["Source Code Pro", "monospace"],
+            },
+            boxShadow: {
+                "glow": "0 0 10px rgba(92, 200, 255, 0.15)",
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+            background-color: #0B0F0C;
+        }::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F0C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2C3632;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .text-glow {
+            text-shadow: 0 0 5px rgba(92, 200, 255, 0.4);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-terminal-bg text-terminal-text font-mono antialiased selection:bg-terminal-cyan selection:text-black">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden">
+<header class="sticky top-0 z-50 flex items-center bg-terminal-bg/95 backdrop-blur-md border-b border-terminal-border p-4 h-16 justify-between">
+<button class="text-terminal-text flex size-10 shrink-0 items-center justify-center hover:bg-terminal-card cursor-pointer transition-colors active:scale-95 border border-transparent hover:border-terminal-border rounded-sm">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<h2 class="text-white text-sm font-bold tracking-[0.15em] uppercase">Audit Viewer</h2>
+<span class="text-[10px] text-terminal-muted tracking-widest font-code">SECURE CONNECTION ESTABLISHED</span>
+</div>
+<button class="text-terminal-text flex size-10 shrink-0 items-center justify-center hover:bg-terminal-card cursor-pointer transition-colors active:scale-95 border border-transparent hover:border-terminal-border rounded-sm">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+</header>
+<main class="flex-1 flex flex-col gap-6 pb-24 pt-6">
+<div class="px-4">
+<div class="flex items-center justify-between border-l-2 border-terminal-cyan bg-terminal-cyan-dim pl-4 py-3 pr-4">
+<div class="flex flex-col gap-1">
+<span class="text-terminal-cyan text-xs font-bold uppercase tracking-widest font-code flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-terminal-cyan opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-terminal-cyan"></span>
+</span>
+                            Zero-Trust Ledger
+                        </span>
+<p class="text-terminal-text text-[11px] font-mono opacity-80">Cryptographic verification active. Append-only mode.</p>
+</div>
+<span class="material-symbols-outlined text-terminal-cyan opacity-80">verified_user</span>
+</div>
+</div>
+<div class="px-4">
+<div class="group flex w-full items-center bg-terminal-card border border-terminal-border focus-within:border-terminal-cyan transition-colors h-12 px-3">
+<span class="text-terminal-cyan font-bold mr-3 font-code">&gt;</span>
+<input class="flex w-full min-w-0 bg-transparent text-white focus:outline-0 border-none h-full placeholder:text-terminal-muted text-sm font-mono tracking-wide" placeholder="query_logs --filter user_id | hash"/>
+<span class="animate-pulse w-2 h-4 bg-terminal-cyan/50 block ml-1"></span>
+</div>
+</div>
+<div class="px-4">
+<div class="flex flex-wrap gap-2 text-[11px] font-medium tracking-wide">
+<button class="flex items-center gap-2 px-3 py-1.5 bg-terminal-cyan text-black border border-terminal-cyan transition-transform active:scale-95">
+<span>TIME: 24H</span>
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-transparent text-terminal-muted border border-terminal-border hover:border-terminal-text hover:text-terminal-text transition-colors">
+<span>EVENT_TYPE</span>
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-transparent text-terminal-muted border border-terminal-border hover:border-terminal-text hover:text-terminal-text transition-colors">
+<span>SEVERITY</span>
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+</button>
+</div>
+</div>
+<div class="px-4">
+<button class="relative w-full overflow-hidden bg-terminal-card border border-terminal-cyan group hover:bg-terminal-cyan/10 transition-all duration-200 h-12 flex items-center justify-between px-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-terminal-cyan">download</span>
+<span class="text-terminal-cyan text-sm font-bold uppercase tracking-wider font-code text-glow">Export Audit Metadata</span>
+</div>
+<span class="text-[10px] text-terminal-muted font-code group-hover:text-terminal-cyan transition-colors">FORMAT: CSV</span>
+</button>
+</div>
+<div class="flex items-center justify-between px-4 mt-2 border-b border-terminal-border pb-1 mx-4">
+<h3 class="text-terminal-muted text-[10px] font-bold uppercase tracking-widest">System Events</h3>
+<span class="text-terminal-muted text-[10px] font-code">SYNC: AUTO</span>
+</div>
+<div class="flex flex-col px-4 gap-4">
+<div class="flex flex-col bg-terminal-card border border-terminal-border hover:border-alert-red transition-colors duration-300 relative group">
+<div class="flex justify-between items-center p-3 border-b border-terminal-border/50 bg-black/20">
+<div class="flex items-center gap-3">
+<span class="text-alert-red material-symbols-outlined text-[18px]">warning</span>
+<span class="text-alert-red text-xs font-bold uppercase tracking-wider font-code">CRITICAL_ALERT</span>
+</div>
+<span class="text-terminal-muted text-xs font-timestamp">10:42:05 UTC</span>
+</div>
+<div class="p-3">
+<p class="text-sm leading-relaxed text-gray-300">
+                            Login failure detected.
+                            <br/>
+<span class="text-terminal-muted text-xs block mt-1">USER: <span class="text-white font-bold">AD-992</span></span>
+<span class="text-terminal-muted text-xs block">DEVICE: iOS 17.2 (Unrecognized)</span>
+<span class="text-terminal-muted text-xs block">IP: 192.168.45.12</span>
+</p>
+</div>
+<div class="px-3 py-2 bg-black/40 flex items-center justify-between text-[10px] font-code text-terminal-muted">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[12px]">fingerprint</span>
+<span class="text-gray-500">HASH: 0x4a...e3b0c44</span>
+</div>
+<span class="uppercase tracking-widest text-terminal-cyan/70">SIGNED</span>
+</div>
+</div>
+<div class="flex flex-col bg-terminal-card border border-terminal-border hover:border-terminal-cyan transition-colors duration-300 relative group">
+<div class="flex justify-between items-center p-3 border-b border-terminal-border/50 bg-black/20">
+<div class="flex items-center gap-3">
+<span class="text-terminal-cyan material-symbols-outlined text-[18px]">lock_open</span>
+<span class="text-terminal-cyan text-xs font-bold uppercase tracking-wider font-code">ACCESS_GRANT</span>
+</div>
+<span class="text-terminal-muted text-xs font-timestamp">10:40:11 UTC</span>
+</div>
+<div class="p-3">
+<p class="text-sm leading-relaxed text-gray-300">
+                            Metadata retrieval operation.
+                            <br/>
+<span class="text-terminal-muted text-xs block mt-1">ACTOR: <span class="text-white font-bold">AD-441</span></span>
+<span class="text-terminal-muted text-xs block">TARGET: Restricted Doc #552</span>
+</p>
+</div>
+<div class="px-3 py-2 bg-black/40 flex items-center justify-between text-[10px] font-code text-terminal-muted">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[12px]">fingerprint</span>
+<span class="text-gray-500">HASH: 0x8f...a12d991</span>
+</div>
+<span class="uppercase tracking-widest text-terminal-cyan/70">SIGNED</span>
+</div>
+</div>
+<div class="flex flex-col bg-terminal-card border border-terminal-border hover:border-alert-amber transition-colors duration-300 relative group">
+<div class="flex justify-between items-center p-3 border-b border-terminal-border/50 bg-black/20">
+<div class="flex items-center gap-3">
+<span class="text-alert-amber material-symbols-outlined text-[18px]">terminal</span>
+<span class="text-alert-amber text-xs font-bold uppercase tracking-wider font-code">SYS_CMD</span>
+</div>
+<span class="text-terminal-muted text-xs font-timestamp">10:38:00 UTC</span>
+</div>
+<div class="p-3">
+<p class="text-sm leading-relaxed text-gray-300">
+                            Encryption Key Rotation detected.
+                            <br/>
+<span class="text-terminal-muted text-xs block mt-1">EXECUTOR: <span class="text-white font-bold">SysAdmin_01</span></span>
+<span class="text-terminal-muted text-xs block">STATUS: Success</span>
+</p>
+</div>
+<div class="px-3 py-2 bg-black/40 flex items-center justify-between text-[10px] font-code text-terminal-muted">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[12px]">fingerprint</span>
+<span class="text-gray-500">HASH: 0x11...99aa33b</span>
+</div>
+<span class="uppercase tracking-widest text-terminal-cyan/70">SIGNED</span>
+</div>
+</div>
+<div class="flex flex-col bg-terminal-card border border-terminal-border hover:border-gray-500 transition-colors duration-300 relative group opacity-60 hover:opacity-100">
+<div class="flex justify-between items-center p-3 border-b border-terminal-border/50 bg-black/20">
+<div class="flex items-center gap-3">
+<span class="text-gray-400 material-symbols-outlined text-[18px]">policy</span>
+<span class="text-gray-400 text-xs font-bold uppercase tracking-wider font-code">POLICY_UPD</span>
+</div>
+<span class="text-terminal-muted text-xs font-timestamp">09:15:22 UTC</span>
+</div>
+<div class="p-3">
+<p class="text-sm leading-relaxed text-gray-400">
+                            Retention policy modified.
+                            <br/>
+<span class="text-terminal-muted text-xs block mt-1">CHANNEL: <span class="text-gray-300">#general-announcements</span></span>
+</p>
+</div>
+<div class="px-3 py-2 bg-black/40 flex items-center justify-between text-[10px] font-code text-terminal-muted">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[12px]">fingerprint</span>
+<span class="text-gray-600">HASH: 0xcc...dd44112</span>
+</div>
+<span class="uppercase tracking-widest text-gray-600">SIGNED</span>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

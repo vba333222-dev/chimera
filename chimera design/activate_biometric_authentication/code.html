@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Activate Biometric Authentication</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "bg-charcoal": "#0B0F0C",
+                        "slate-element": "#141A17",
+                        "accent-green": "#3AFF72",
+                        "warning-amber": "#FFC857",
+                    },
+                    fontFamily: {
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    boxShadow: {
+                        "terminal": "0 0 0 1px #141A17, 0 4px 6px -1px rgba(0, 0, 0, 0.5)",
+                        "glow": "0 0 10px rgba(58, 255, 114, 0.15)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0B0F0C;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(58, 255, 114, 0.04) 50%, rgba(0,0,0,0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            bottom: 100%;
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes scanline {
+            0% { bottom: 100%; }
+            100% { bottom: -100px; }
+        }
+        .corner-bracket {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #3AFF72;
+            border-style: solid;
+            opacity: 0.7;
+        }
+        .cb-tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+        .cb-tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+        .cb-bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+        .cb-br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+        @keyframes inner-scan {
+            0%, 100% { top: 0%; opacity: 0;}
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0;}
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-bg-charcoal text-white font-mono antialiased min-h-screen flex flex-col selection:bg-accent-green selection:text-black overflow-x-hidden">
+<div class="fixed inset-0 pointer-events-none z-50 mix-blend-overlay opacity-20" style="background: radial-gradient(circle at center, transparent 50%, #000 100%);"></div>
+<div class="scanline"></div>
+<div class="flex items-center justify-between px-6 py-5 border-b border-white/10 bg-bg-charcoal/90 backdrop-blur-md sticky top-0 z-40">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 bg-accent-green rounded-full animate-pulse shadow-[0_0_8px_#3AFF72]"></div>
+<span class="text-xs tracking-widest text-accent-green/80 uppercase">SYS.SECURE_MODE</span>
+</div>
+<div class="flex items-center gap-1 opacity-50">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span class="text-[10px] tracking-wide">ENCRYPTED</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col items-center p-6 w-full max-w-lg mx-auto relative z-10">
+<div class="mt-8 mb-10 relative">
+<div class="relative w-40 h-40 bg-slate-element border border-white/10 flex items-center justify-center shadow-2xl group">
+<div class="corner-bracket cb-tl transition-all duration-300 group-hover:border-accent-green"></div>
+<div class="corner-bracket cb-tr transition-all duration-300 group-hover:border-accent-green"></div>
+<div class="corner-bracket cb-bl transition-all duration-300 group-hover:border-accent-green"></div>
+<div class="corner-bracket cb-br transition-all duration-300 group-hover:border-accent-green"></div>
+<div class="relative z-10">
+<span class="material-symbols-outlined text-accent-green text-[72px]" style="font-variation-settings: 'wght' 200;">fingerprint</span>
+</div>
+<div class="absolute inset-0 overflow-hidden opacity-30">
+<div class="w-full h-[2px] bg-accent-green absolute top-0 animate-[inner-scan_2s_ease-in-out_infinite] shadow-[0_0_10px_#3AFF72]"></div>
+</div>
+</div>
+<div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-bg-charcoal border border-warning-amber px-3 py-1 z-20">
+<p class="text-[10px] font-bold text-warning-amber tracking-widest whitespace-nowrap uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">warning</span> Auth_Pending
+             </p>
+</div>
+</div>
+<div class="space-y-4 text-center mb-8">
+<h1 class="text-xl md:text-2xl font-bold tracking-tight text-white uppercase leading-tight">
+            Activate Biometric<br/>Authentication
+        </h1>
+<p class="text-xs md:text-sm text-gray-400 leading-relaxed max-w-xs mx-auto">
+<span class="text-accent-green mr-1">&gt;&gt;</span>Verify identity to decrypt workspace. Biometric keys are required for Zero-Trust compliance.
+        </p>
+</div>
+<div class="w-full bg-slate-element border-l-2 border-warning-amber p-4 mb-8">
+<div class="flex gap-3">
+<div class="text-left">
+<h3 class="text-[11px] font-bold text-warning-amber uppercase mb-1 tracking-wider">! Security Alert</h3>
+<p class="text-[11px] text-gray-400 leading-relaxed font-light">
+                    Local biometrics are not configured. Conversations are encrypted but accessible if device is unlocked. Setup required immediately.
+                </p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3 w-full mb-auto">
+<div class="flex items-center gap-2 p-2 border border-white/10 bg-white/5 hover:border-accent-green/50 transition-colors cursor-help">
+<span class="material-symbols-outlined text-accent-green text-[14px]">shield</span>
+<span class="text-[10px] font-bold tracking-wider text-gray-300">ZERO_TRUST</span>
+</div>
+<div class="flex items-center gap-2 p-2 border border-white/10 bg-white/5 hover:border-accent-green/50 transition-colors cursor-help">
+<span class="material-symbols-outlined text-accent-green text-[14px]">key</span>
+<span class="text-[10px] font-bold tracking-wider text-gray-300">E2EE_ACTIVE</span>
+</div>
+</div>
+<div class="w-full flex flex-col gap-4 mt-8">
+<button class="group relative w-full flex items-center justify-center gap-3 bg-accent-green hover:bg-[#2FDD60] text-bg-charcoal py-4 px-6 transition-all active:translate-y-[1px]">
+<div class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-black opacity-20"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-black opacity-20"></div>
+<span class="material-symbols-outlined text-[20px]">face</span>
+<span class="text-sm font-bold tracking-wider uppercase">ACTIVATE SYSTEM</span>
+</button>
+<button class="w-full flex items-center justify-center py-3 text-[10px] text-gray-500 hover:text-accent-green transition-colors gap-2 font-medium tracking-wide uppercase group">
+<span>Read Security Policy</span>
+<span class="material-symbols-outlined text-[12px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<div class="mt-6 flex items-center justify-center gap-2 opacity-30 pb-4">
+<span class="material-symbols-outlined text-[12px]">lock_clock</span>
+<p class="text-[9px] uppercase tracking-widest">Data remains local to device</p>
+</div>
+</div>
+
+</body></html>

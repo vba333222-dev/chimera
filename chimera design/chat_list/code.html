@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secure Retro Terminal Chat</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "term-bg": "#0B0F0C", // Charcoal Black
+                        "term-card": "#141A17", // Dark Slate
+                        "term-green": "#3AFF72", // Terminal Green
+                        "term-red": "#E53935", // Alert Red
+                        "term-gray": "#3f4e4a",
+                        "term-dim": "#23302a",
+                    },
+                    fontFamily: {
+                        "mono": ["IBM Plex Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "2px", // Rigid corners
+                        "sm": "1px",
+                        "md": "3px",
+                        "lg": "4px",
+                        "xl": "6px",
+                    },
+                    boxShadow: {
+                        "glow-green": "0 0 5px rgba(58, 255, 114, 0.2)",
+                        "glow-red": "0 0 5px rgba(229, 57, 53, 0.2)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F0C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f4e4a;
+        }.pixel-grid {
+            background-image: 
+                linear-gradient(rgba(58, 255, 114, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(58, 255, 114, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }.scanline {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2));
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+    </style>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-term-bg font-mono antialiased text-gray-300 overflow-hidden pixel-grid selection:bg-term-green selection:text-term-bg">
+<div class="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto border-x border-term-dim">
+<div class="absolute inset-0 z-50 pointer-events-none opacity-10 scanline"></div>
+<header class="flex items-center justify-between px-5 pt-6 pb-4 bg-term-bg/95 border-b border-term-dim z-10 sticky top-0 backdrop-blur-sm">
+<div class="flex items-center gap-4">
+<div class="relative group cursor-pointer">
+<div class="bg-center bg-no-repeat bg-cover rounded-sm size-10 ring-1 ring-term-green/50 grayscale group-hover:grayscale-0 transition-all duration-300" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDBRwVSor3oJs9mzbyK6RUpvQliakEDEBp8zapfukz-jfoaOiPvJ0l1053Dw1IR9jgoEoD69gaLL0HJsxUJaDW3LVJshh0IDqE1UerUAv3OSv4bXYdKm6SRCI9RD4lexdE3LW-p6w2m0zY4ZvYApA6YL1XFIuJ4sSRQsMA5Fb27QTnBRdQJs1jzbSNJer2lhyXGzjD3aaiRH422Xs_iW6jv-fuIEGNukkvlHndaqKyYA7yQn1M2gYFhZkpfTSXz7TyfGpwH7oStUHdm");'>
+</div>
+<div class="absolute -bottom-1 -right-1 size-2.5 bg-term-green rounded-none border border-term-bg animate-pulse"></div>
+</div>
+<div class="flex flex-col">
+<h1 class="text-sm font-bold tracking-widest text-term-green uppercase">&gt; SECURE_CHATS</h1>
+<div class="flex items-center gap-1 text-[9px] text-gray-500 font-medium uppercase tracking-wider">
+<span class="w-1.5 h-1.5 bg-term-green/50 inline-block mr-0.5"></span>
+                        Encrypted_Connection::Active
+                    </div>
+</div>
+</div>
+<button class="flex items-center justify-center size-9 rounded-sm border border-term-dim hover:border-term-green hover:bg-term-green/10 text-term-green transition-all">
+<span class="material-symbols-outlined text-[18px]">edit_square</span>
+</button>
+</header>
+<div class="px-5 py-4 bg-term-bg">
+<div class="relative flex items-center w-full h-10 bg-term-bg border border-term-dim focus-within:border-term-green focus-within:shadow-glow-green transition-all">
+<div class="flex items-center justify-center pl-3 pr-2 text-term-green">
+<span class="text-xs font-bold">&gt;</span>
+</div>
+<input class="w-full h-full bg-transparent border-none text-xs text-term-green placeholder-gray-600 focus:ring-0 focus:outline-none uppercase tracking-wide" placeholder="EXECUTE_SEARCH..." type="text"/>
+<div class="pr-3 text-term-green/40">
+<span class="material-symbols-outlined text-[16px] animate-pulse">rectangle</span>
+</div>
+</div>
+</div>
+<div class="px-5 pb-4 bg-term-bg">
+<div class="flex border border-term-dim p-0.5">
+<label class="flex-1 text-center cursor-pointer">
+<input checked="" class="peer sr-only" name="chat-filter" type="radio" value="all"/>
+<div class="py-1.5 px-2 text-[10px] font-bold text-gray-500 hover:text-gray-300 peer-checked:bg-term-green peer-checked:text-term-bg uppercase tracking-widest transition-all">
+                        [ALL]
+                    </div>
+</label>
+<div class="w-px bg-term-dim my-1"></div>
+<label class="flex-1 text-center cursor-pointer">
+<input class="peer sr-only" name="chat-filter" type="radio" value="direct"/>
+<div class="py-1.5 px-2 text-[10px] font-bold text-gray-500 hover:text-gray-300 peer-checked:bg-term-green peer-checked:text-term-bg uppercase tracking-widest transition-all">
+                        [DIRECT]
+                    </div>
+</label>
+<div class="w-px bg-term-dim my-1"></div>
+<label class="flex-1 text-center cursor-pointer">
+<input class="peer sr-only" name="chat-filter" type="radio" value="groups"/>
+<div class="py-1.5 px-2 text-[10px] font-bold text-gray-500 hover:text-gray-300 peer-checked:bg-term-green peer-checked:text-term-bg uppercase tracking-widest transition-all">
+                        [GROUPS]
+                    </div>
+</label>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-4 pb-24 space-y-3">
+<div class="group relative flex items-center gap-4 p-3 bg-term-card border border-term-green hover:shadow-glow-green hover:bg-term-green/5 transition-all cursor-pointer">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-term-green"></div>
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover size-10 grayscale opacity-80 group-hover:opacity-100 group-hover:grayscale-0 transition-all border border-term-dim" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDyLuIo7hLkH0zX_fm3mVIQ-GrkLb1Czf-EHWvJeDdzMfJAldqHMojpb_3vnLX2xTY1-qhwLt4d25DkvHJG4E0CcNtKgReqT1LoDqcBhFGpxEEB2bdreu-XVkFrCTeYs00Mj1AXDZiEV6jTCjsSO7X-_Pupl3Br98vaW68yjxDCtnT_913e2UZLts6nK83y2HTuZAgx9aP8f3gdpzzhGKmzjAE_YfFRJlxlTXrzO-hkVNMhASEXgcIX05y0wGebfU-fAcCmV1AZapk6");'></div>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-center gap-1">
+<div class="flex justify-between items-baseline border-b border-term-dim pb-1 mb-1 border-dashed">
+<p class="text-term-green text-sm font-bold tracking-tight truncate pr-2 uppercase">Alpha_Team_Net</p>
+<p class="text-gray-600 text-[10px] font-mono shrink-0">1042_hrs</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1 text-[9px] text-gray-400 uppercase">
+<span class="material-symbols-outlined text-[10px] text-term-green">verified_user</span>
+                            ID:Verified
+                        </span>
+<span class="text-[9px] text-term-red uppercase tracking-wider blink">
+                            [CONFIDENTIAL]
+                        </span>
+</div>
+</div>
+<div class="shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-term-green text-[16px] group-hover:animate-pulse">terminal</span>
+</div>
+</div>
+<div class="group relative flex items-center gap-4 p-3 bg-term-card border border-term-red hover:shadow-glow-red hover:bg-term-red/5 transition-all cursor-pointer">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-term-red"></div>
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover size-10 grayscale opacity-80 border border-term-dim" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCxtKnLAYGlZRLfIuRP23X81cx7DILcOLpSd0Ui1oIYn-wId8Xrtbze8zDxda7BRhSaUZK03TtGffMrXJID8OKi7b4RXhUH9r86ljp56S3o4mybOlp_Zro9O0D-7x0aKT4JnwDLWukuvbExW4NsW1OavOznTj5Z5hUO8FZEoRTUtVHNdubX7JMd6OQ8EfnwKNFBweQF-jZsgyeYggttB_VTzHqGmiyz4e3NnrnL1RcAlnWNPRKJgcmBU0RA4jaI_z846NVanOFCM0X-");'></div>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-center gap-1">
+<div class="flex justify-between items-baseline border-b border-term-dim pb-1 mb-1 border-dashed">
+<p class="text-term-red text-sm font-bold tracking-tight truncate pr-2 uppercase">HR_Unit :: S.Jenkins</p>
+<p class="text-gray-600 text-[10px] font-mono shrink-0">0915_hrs</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-[9px] text-gray-400 uppercase">
+                            TYPE:Internal
+                        </span>
+<span class="flex items-center gap-1 text-[9px] text-term-red uppercase tracking-wider font-bold">
+<span class="material-symbols-outlined text-[10px]">lock</span>
+                            Restricted
+                        </span>
+</div>
+</div>
+<div class="shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-term-red text-[16px]">do_not_disturb_on</span>
+</div>
+</div>
+<div class="group relative flex items-center gap-4 p-3 bg-term-card border border-term-red hover:shadow-glow-red hover:bg-term-red/5 transition-all cursor-pointer">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-term-red"></div>
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover size-10 grayscale opacity-80 border border-term-dim" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCpoOYRg30pX7SZ1ftgeRgeTWVD4VPrsG2lE5nHwcQVpZ6hPWtFi6ELX2s2jAMJI0lVEHuhthYaAG3i0hQbT9BIqaTteI99FG7CYZ45MIP7GCGcC897OxYKchS39wQYcUNB06WX_xfNeZP5l-4yb9QeAveRCTiprE1Boy0s-wtZKNNz_172DH5UTd9SoOEG8dJKNSwHGOHxcCdqSWvquFx6Natb3aXmyMHo1yXHaTaf1EiNOr45wKIg8z0cZ5Uf4_ibolL8PqFVBOet");'></div>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-center gap-1">
+<div class="flex justify-between items-baseline border-b border-term-dim pb-1 mb-1 border-dashed">
+<p class="text-gray-200 text-sm font-bold tracking-tight truncate pr-2 uppercase">Board_Strategy_Rm</p>
+<p class="text-gray-600 text-[10px] font-mono shrink-0">T-minus_24h</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-[9px] text-purple-400 uppercase border border-purple-900 px-1 bg-purple-900/20">
+                            LVL:Top_Secret
+                        </span>
+<span class="text-[9px] text-gray-500 uppercase">
+                            Enc:E2EE
+                        </span>
+</div>
+</div>
+<div class="shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-400 text-[16px]">vpn_key</span>
+</div>
+</div>
+<div class="group relative flex items-center gap-4 p-3 bg-term-card border border-term-green hover:shadow-glow-green hover:bg-term-green/5 transition-all cursor-pointer">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-term-green"></div>
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover size-10 grayscale opacity-80 border border-term-dim" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBo6l5KsMiM59f2kgUiFj_qw1b-sppucd_VwFO80AoHkqSuoB-qbza-ig0xbmasNZ7K0xBvWS0-lwOEGwYVW-E2pM54JnBlzDQS5D5tfrLo9QoKmxFgtPGRjOwL7SLK3keKhxuW8C9dGixYShHWA_em2y3UJHjDhrt6gLB5BaUv4Cq-78YmwqLocomXXG-vasjwb6Hj7xYX8bZgS3CJ97omr1jSvPLcnTAHjoUsSkebC22RvniK72rhfpd5h1mImSg9GRc9HY4dt4CI");'></div>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-center gap-1">
+<div class="flex justify-between items-baseline border-b border-term-dim pb-1 mb-1 border-dashed">
+<p class="text-term-green text-sm font-bold tracking-tight truncate pr-2 uppercase">Legal_Dept_Main</p>
+<p class="text-gray-600 text-[10px] font-mono shrink-0">Mon</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1 text-[9px] text-gray-400 uppercase">
+<span class="material-symbols-outlined text-[10px] text-term-green">verified</span>
+                            Status:Verified
+                        </span>
+</div>
+</div>
+<div class="shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-term-green text-[16px] group-hover:animate-pulse">chevron_right</span>
+</div>
+</div>
+<div class="group relative flex items-center gap-4 p-3 bg-term-card border border-gray-700 opacity-60 hover:opacity-100 transition-all cursor-not-allowed">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-gray-700"></div>
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover size-10 grayscale border border-term-dim" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC0iNbjptedZ5kjoUSMiD9ZTii5z7jH0OVh4c3aUroAWIB62JHTJoevzepOiWNtedhp9b5q1t-gKMHweBDIjmO5bxr0tXQl3BoHOrpYlj29rgEgIxLFC3jpe5xtVNNBBt6XDkNSFLs-zaPGKaw6T__pQK17eYMdp1Ps7auEWPT7Fe4wob4bLWV2Cz6TUe_48DpjbmILIKVdjfO5O8nZf-sfoCfW4KjxWA94tyo6hHlrm3840Xegn-ye-d86q7j15HDVyssmfNUXD2_6");'></div>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-center gap-1">
+<div class="flex justify-between items-baseline border-b border-term-dim pb-1 mb-1 border-dashed">
+<p class="text-gray-500 text-sm font-bold tracking-tight truncate pr-2 uppercase line-through">M.Chen (Inactive)</p>
+<p class="text-gray-700 text-[10px] font-mono shrink-0">Last_wk</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[9px] text-gray-600 uppercase">
+                            [ARCHIVED_LOGS]
+                        </span>
+</div>
+</div>
+<div class="shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-600 text-[16px]">inventory_2</span>
+</div>
+</div>
+</div>
+<nav class="absolute bottom-0 w-full bg-term-bg border-t border-term-dim pb-6 pt-3 px-6 z-20">
+<div class="flex justify-between items-end text-xs">
+<button class="flex flex-col items-center gap-1 text-term-green group">
+<div class="size-8 flex items-center justify-center border border-term-green bg-term-green/10 shadow-glow-green">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+</div>
+<span class="text-[9px] font-bold tracking-widest mt-1 opacity-100 group-hover:underline">CHATS</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-600 hover:text-gray-400 group transition-colors">
+<div class="size-8 flex items-center justify-center border border-transparent group-hover:border-gray-600 transition-all">
+<span class="material-symbols-outlined text-[20px]">contacts</span>
+</div>
+<span class="text-[9px] font-bold tracking-widest mt-1">DIR</span>
+</button>
+<button class="flex items-center justify-center size-12 -mt-8 bg-term-bg border border-term-green text-term-green shadow-lg hover:bg-term-green hover:text-black transition-all group">
+<span class="material-symbols-outlined text-[24px] group-hover:scale-110 transition-transform">qr_code_scanner</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-600 hover:text-gray-400 group transition-colors">
+<div class="size-8 flex items-center justify-center border border-transparent group-hover:border-gray-600 transition-all">
+<span class="material-symbols-outlined text-[20px]">folder_shared</span>
+</div>
+<span class="text-[9px] font-bold tracking-widest mt-1">VAULT</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-gray-600 hover:text-gray-400 group transition-colors">
+<div class="size-8 flex items-center justify-center border border-transparent group-hover:border-gray-600 transition-all">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</div>
+<span class="text-[9px] font-bold tracking-widest mt-1">CFG</span>
+</button>
+</div>
+</nav>
+</div>
+
+</body></html>

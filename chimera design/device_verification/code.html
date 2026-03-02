@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Device Verification</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "terminal-bg": "#0B0F0C",
+                        "terminal-surface": "#141A17",
+                        "terminal-accent": "#3AFF72",
+                        "terminal-dim": "rgba(58, 255, 114, 0.15)",
+                    },
+                    fontFamily: {
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "sm": "0.125rem", 
+                        "md": "0.375rem",
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0B0F0C;
+        }.pixel-grid {
+            background-size: 40px 40px;
+            background-image:
+                linear-gradient(to right, rgba(58, 255, 114, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(58, 255, 114, 0.03) 1px, transparent 1px);
+        }.scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 10;
+        }.cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-terminal-bg text-terminal-accent font-mono antialiased min-h-screen flex flex-col overflow-x-hidden selection:bg-terminal-accent selection:text-terminal-bg relative">
+<div class="fixed inset-0 pixel-grid pointer-events-none"></div>
+<div class="fixed inset-0 scanlines pointer-events-none opacity-20"></div>
+<div class="relative z-20 flex h-full min-h-screen w-full flex-col max-w-md mx-auto border-x border-terminal-accent/10">
+<div class="flex items-center p-5 justify-between shrink-0 border-b border-terminal-accent/20 bg-terminal-bg/80 backdrop-blur-sm">
+<button class="w-10 h-10 flex items-center justify-center border border-terminal-accent/30 hover:bg-terminal-accent/10 transition-colors rounded-sm group">
+<span class="material-symbols-outlined text-terminal-accent group-hover:scale-110 transition-transform">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<h2 class="text-terminal-accent text-sm font-bold tracking-widest uppercase">sys_verify_v2.0</h2>
+</div>
+<button class="w-10 h-10 flex items-center justify-center border border-terminal-accent/30 hover:bg-terminal-accent/10 transition-colors rounded-sm group">
+<span class="material-symbols-outlined text-terminal-accent group-hover:scale-110 transition-transform">terminal</span>
+</button>
+</div>
+<div class="flex-1 flex flex-col items-center pt-8 px-6 pb-4 w-full">
+<div class="mb-8 w-full flex items-center gap-3 px-4 py-2 bg-terminal-surface border-l-4 border-terminal-accent rounded-r-sm">
+<div class="w-2 h-2 bg-terminal-accent rounded-none animate-pulse"></div>
+<span class="text-xs font-bold uppercase tracking-wider text-terminal-accent/80">
+                    &gt;&gt; STATUS: SCANNING_HARDWARE<span class="cursor-blink">_</span>
+</span>
+</div>
+<div class="relative w-full mb-8 flex flex-col items-center justify-center">
+<div class="relative p-1 border border-terminal-accent/40 bg-terminal-surface shadow-[0_0_15px_rgba(58,255,114,0.1)] rounded-sm">
+<div class="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-terminal-accent"></div>
+<div class="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-terminal-accent"></div>
+<div class="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-terminal-accent"></div>
+<div class="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-terminal-accent"></div>
+<div class="w-48 h-48 overflow-hidden relative grayscale hover:grayscale-0 transition-all duration-500">
+<div class="w-full h-full bg-cover bg-center opacity-80 mix-blend-luminosity" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBFSUWksRGK9j4rwUAq4jvm0LMNgCRxF2sfgbycGNrFFIhAEvLy4yO0wgnOg1ZbWbLc3bVvKnsW4buuglskia8uCtQHLemswwvLhaPY6vd5riPtrq21cHCqhkKaejGEB2J5TWDwj-cRt-PpvdMKUn9OVLnHvxrBtY80B99GfjFuL1X25QL8_kJ6HgXIanlxAZ5a3D0ujzIV5jlBUEdiW15JvD_pYa9GSUlKNUEjLZ8WMJPyv7zmB3m1CsxQbHAOi9iVDCpQCI46y230");'>
+</div>
+<div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9IjAuMiIvPgo8L3N2Zz4=')] opacity-50"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl text-terminal-accent drop-shadow-[0_0_8px_rgba(58,255,114,0.8)]">lock_reset</span>
+</div>
+</div>
+</div>
+<div class="w-48 mt-6 flex gap-1.5">
+<div class="h-2 flex-1 bg-terminal-accent shadow-[0_0_5px_#3AFF72]"></div>
+<div class="h-2 flex-1 bg-terminal-accent shadow-[0_0_5px_#3AFF72]"></div>
+<div class="h-2 flex-1 bg-terminal-accent shadow-[0_0_5px_#3AFF72]"></div>
+<div class="h-2 flex-1 bg-terminal-accent shadow-[0_0_5px_#3AFF72]"></div>
+<div class="h-2 flex-1 bg-terminal-accent/20"></div>
+<div class="h-2 flex-1 bg-terminal-accent/20"></div>
+<div class="h-2 flex-1 bg-terminal-accent/20"></div>
+<div class="h-2 flex-1 bg-terminal-accent/20"></div>
+</div>
+<div class="w-48 flex justify-between mt-1 text-[10px] text-terminal-accent/60 font-bold uppercase">
+<span>Init</span>
+<span>50%</span>
+<span>Bind</span>
+</div>
+</div>
+<div class="w-full flex flex-col items-center text-center space-y-3 px-2">
+<h2 class="text-terminal-accent/80 text-xs font-bold tracking-[0.2em] uppercase border border-terminal-accent/30 px-3 py-1 rounded-sm">
+                    Zero-Trust Protocol
+                </h2>
+<h1 class="text-white text-3xl font-bold tracking-tight uppercase drop-shadow-md">
+                    Device Binding
+                </h1>
+<p class="text-terminal-accent/70 text-sm leading-relaxed max-w-xs font-normal">
+                    // Establishing end-to-end encrypted channel. 
+                    <br/>
+                    // Binding account to hardware ID.
+                </p>
+</div>
+<div class="mt-8 w-full bg-terminal-surface border border-terminal-accent/30 p-4 rounded-sm flex flex-col gap-2 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-1">
+<div class="w-2 h-2 bg-terminal-accent/50 rounded-full"></div>
+</div>
+<div class="flex justify-between items-center border-b border-terminal-accent/10 pb-2 mb-1">
+<span class="text-[10px] uppercase font-bold text-terminal-accent/60">Target_Fingerprint_ID</span>
+<span class="material-symbols-outlined text-[14px] text-terminal-accent">verified_user</span>
+</div>
+<code class="font-mono text-xs text-white break-all tracking-wide opacity-90">
+                    8f:2a:9c:11:e4:5d:0b:33:f9:a1:7c:22
+                </code>
+<div class="flex gap-2 mt-1">
+<span class="text-[10px] text-terminal-accent/40 uppercase">Checksum: OK</span>
+</div>
+</div>
+</div>
+<div class="p-6 pb-8 w-full bg-terminal-bg border-t border-terminal-accent/20">
+<button class="group w-full bg-terminal-accent hover:bg-[#2FDD60] active:scale-[0.99] transition-all text-terminal-bg font-bold text-lg h-14 rounded-sm flex items-center justify-center gap-3 shadow-[0_0_15px_rgba(58,255,114,0.3)] hover:shadow-[0_0_25px_rgba(58,255,114,0.5)]">
+<span class="material-symbols-outlined">fingerprint</span>
+                [ EXECUTE VERIFICATION ]
+            </button>
+<p class="text-center mt-5 text-[10px] uppercase tracking-widest text-terminal-accent/40">
+                Secure connection required. <br/>See <a class="underline decoration-1 underline-offset-2 hover:text-terminal-accent" href="#">Security_Policy.txt</a>
+</p>
+</div>
+</div>
+
+</body></html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Secure Document List</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&amp;family=Share+Tech+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "term-bg": "#0B0F0C",
+                        "term-card": "#141A17",
+                        "term-green": "#3AFF72",
+                        "term-amber": "#FFC857",
+                        "term-red": "#E53935",
+                        "term-text": "#E2E8F0",
+                        "term-muted": "#94A3B8"
+                    },
+                    fontFamily: {
+                        "mono": ["'IBM Plex Mono'", "monospace"],
+                        "tech": ["'Share Tech Mono'", "monospace"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px)"
+                    }
+                },
+            },
+        }
+    </script>
+<style>::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F0C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #141A17;
+            border: 1px solid #333;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-term-bg font-mono text-term-text antialiased min-h-screen selection:bg-term-green selection:text-term-bg">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden max-w-md mx-auto border-x border-white/5 bg-grid-pattern bg-[length:24px_24px]">
+<header class="sticky top-0 z-50 flex flex-col bg-term-bg/95 backdrop-blur-md border-b border-white/10 p-5 pb-4">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center border border-term-green bg-term-green/5">
+<span class="material-symbols-outlined text-term-green">terminal</span>
+</div>
+<div>
+<h1 class="text-lg tracking-wider uppercase font-bold text-white leading-none">Secure_Vault</h1>
+<span class="text-[10px] text-term-muted uppercase tracking-widest">Retro Terminal // v3.1</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-[10px] uppercase text-term-green font-bold tracking-widest mb-1">Encrypted</span>
+<div class="flex gap-1">
+<div class="w-1.5 h-1.5 bg-term-green"></div>
+<div class="w-1.5 h-1.5 bg-term-green"></div>
+<div class="w-1.5 h-1.5 bg-term-green"></div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col pt-6 px-5 gap-8 pb-32">
+<div class="relative group">
+<div class="relative flex items-center bg-term-card border border-white/20 h-14 px-4 focus-within:border-term-green transition-colors">
+<span class="material-symbols-outlined text-term-muted mr-3">search</span>
+<input class="bg-transparent border-none text-base w-full text-term-text placeholder-term-muted/50 focus:ring-0 font-mono uppercase tracking-wide h-full" placeholder="SEARCH_INDEX..." type="text"/>
+<span class="text-sm text-term-green font-bold">_</span>
+</div>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-2 px-2">
+<button class="shrink-0 px-5 py-2 border border-term-green bg-term-green/10 text-term-green text-xs font-bold uppercase hover:bg-term-green/20 transition-colors">
+                    [ All_Files ]
+                </button>
+<button class="shrink-0 px-5 py-2 border border-white/10 bg-term-card text-term-muted text-xs font-bold uppercase hover:border-white/30 hover:text-white transition-colors">
+                    [ View_Only ]
+                </button>
+<button class="shrink-0 px-5 py-2 border border-white/10 bg-term-card text-term-muted text-xs font-bold uppercase hover:border-white/30 hover:text-white transition-colors">
+                    [ Revoked ]
+                </button>
+</div>
+<div class="flex flex-col gap-8">
+<div class="relative bg-term-card border border-term-green/30 p-6 hover:border-term-green transition-colors group">
+<div class="absolute -top-3 left-4 bg-term-bg px-2 border border-term-green/50 text-[10px] uppercase tracking-widest text-term-green font-bold z-10">
+                        Status: View-Only
+                    </div>
+<div class="flex justify-between items-start mb-6">
+<div class="flex gap-4 items-start">
+<span class="material-symbols-outlined text-term-green text-4xl font-thin">description</span>
+<div class="flex flex-col gap-1">
+<h3 class="text-white text-base font-bold uppercase tracking-wide">Financial_Q3.pdf</h3>
+<p class="text-xs text-term-muted font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">key</span>
+                                    ID: 884-29A
+                                </p>
+</div>
+</div>
+</div>
+<div class="bg-black/30 border border-white/5 p-3 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[9px] uppercase text-term-muted tracking-widest mb-1">Session Expiry</span>
+<span class="font-tech text-2xl text-term-green tracking-wider leading-none">04:59:32</span>
+</div>
+<div class="flex gap-0.5 h-6 items-end">
+<div class="w-1 bg-term-green h-[40%]"></div>
+<div class="w-1 bg-term-green h-[60%]"></div>
+<div class="w-1 bg-term-green h-[80%]"></div>
+<div class="w-1 bg-term-green h-[100%]"></div>
+<div class="w-1 bg-term-green/30 h-[100%]"></div>
+</div>
+</div>
+</div>
+<div class="relative bg-term-card border border-white/10 p-6 hover:border-term-green/50 transition-colors group">
+<div class="absolute -top-3 left-4 bg-term-bg px-2 border border-white/20 text-[10px] uppercase tracking-widest text-term-muted font-bold z-10">
+                        Status: Protected
+                    </div>
+<div class="flex justify-between items-start mb-6">
+<div class="flex gap-4 items-start">
+<span class="material-symbols-outlined text-term-text text-4xl font-thin">image</span>
+<div class="flex flex-col gap-1">
+<h3 class="text-white text-base font-bold uppercase tracking-wide">Site_Arch_v2.png</h3>
+<p class="text-xs text-term-muted font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">person</span>
+                                    Sarah_J
+                                </p>
+</div>
+</div>
+<span class="material-symbols-outlined text-term-green text-xl">lock</span>
+</div>
+<div class="flex items-center justify-between border-t border-white/5 pt-4">
+<div class="flex flex-col">
+<span class="text-[9px] uppercase text-term-muted tracking-widest">Valid Until</span>
+<span class="font-tech text-base text-white tracking-widest">24 OCT 2024</span>
+</div>
+<div class="border border-white/20 px-2 py-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-[12px] text-term-muted">visibility_off</span>
+<span class="text-[10px] uppercase text-term-muted">Watermark</span>
+</div>
+</div>
+</div>
+<div class="relative bg-term-card border border-term-red/40 p-6 opacity-75 grayscale-[0.2]">
+<div class="absolute -top-3 left-4 bg-term-bg px-2 border border-term-red/50 text-[10px] uppercase tracking-widest text-term-red font-bold z-10">
+                        Status: Revoked
+                    </div>
+<div class="flex justify-between items-start mb-6">
+<div class="flex gap-4 items-start">
+<span class="material-symbols-outlined text-term-red text-4xl font-thin">folder_off</span>
+<div class="flex flex-col gap-1">
+<h3 class="text-term-text/50 text-base font-bold uppercase tracking-wide line-through decoration-term-red/50">Project_X.cad</h3>
+<p class="text-xs text-term-red font-mono">ACCESS_REVOKED_BY_ADMIN</p>
+</div>
+</div>
+</div>
+<div class="bg-term-red/5 border border-term-red/20 p-2 flex gap-2 items-start">
+<span class="material-symbols-outlined text-term-red text-sm mt-0.5">warning</span>
+<p class="text-[10px] text-term-red/80 font-mono uppercase leading-tight">
+                            Critical Alert: Access rights explicitly removed at 14:00.
+                        </p>
+</div>
+</div>
+<div class="relative bg-term-card border border-term-amber/30 p-6">
+<div class="absolute -top-3 left-4 bg-term-bg px-2 border border-term-amber/50 text-[10px] uppercase tracking-widest text-term-amber font-bold z-10">
+                        Status: Expired
+                    </div>
+<div class="flex justify-between items-start mb-6">
+<div class="flex gap-4 items-start">
+<span class="material-symbols-outlined text-term-amber text-4xl font-thin">history_toggle_off</span>
+<div class="flex flex-col gap-1">
+<h3 class="text-term-text text-base font-bold uppercase tracking-wide">Audit_Log_Q2.csv</h3>
+<p class="text-xs text-term-amber font-mono">TTL_EXCEEDED</p>
+</div>
+</div>
+</div>
+<div class="w-full">
+<button class="w-full py-3 border border-term-amber/30 text-term-amber text-xs font-bold uppercase hover:bg-term-amber/10 transition-colors flex items-center justify-center gap-2 group">
+<span class="material-symbols-outlined text-[16px] group-hover:rotate-180 transition-transform duration-500">sync</span>
+                            Request Extension
+                        </button>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-6 left-0 right-0 pointer-events-none z-50 flex justify-center px-4">
+<div class="bg-term-bg/90 backdrop-blur border border-term-green/30 px-5 py-2 flex items-center gap-3 shadow-[0_0_15px_rgba(58,255,114,0.1)]">
+<span class="material-symbols-outlined text-term-green text-[16px]">lock</span>
+<span class="text-[10px] text-term-green font-bold uppercase tracking-[0.2em]">Zero-Trust Environment Active</span>
+</div>
+</div>
+</div>
+
+</body></html>

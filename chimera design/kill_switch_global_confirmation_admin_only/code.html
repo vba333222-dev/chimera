@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Global Kill Switch Confirmation</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#E53935", // Deep Red
+                        "background-dark": "#0B0F0C", // Charcoal Black
+                        "surface-dark": "#121613",
+                        "terminal-text": "#E0E0E0",
+                    },
+                    fontFamily: {
+                        "mono": ["IBM Plex Mono", "monospace"], // Primary font for everything
+                        "display": ["IBM Plex Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "2px", // Rigid feel
+                        "sm": "1px",
+                        "md": "3px",
+                        "lg": "4px",
+                        "xl": "6px", // Reduced rounding for retro feel
+                    },
+                    animation: {
+                        'flash': 'flash 1.5s infinite',
+                    },
+                    keyframes: {
+                        flash: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.4' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+        }::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F0C; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E53935; 
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-terminal-text font-mono antialiased selection:bg-primary selection:text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto border-x border-primary/20 shadow-[0_0_50px_rgba(229,57,53,0.1)]">
+<div class="flex items-center bg-background-dark p-4 border-b-2 border-primary justify-between sticky top-0 z-50 shadow-md shadow-black">
+<div class="text-primary flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px] animate-pulse">terminal</span>
+<span class="text-xs font-bold tracking-widest">SYS.ADMIN</span>
+</div>
+<div class="flex items-center justify-end">
+<button class="text-white/60 hover:text-white hover:bg-primary/20 transition-all duration-75 px-3 py-1 text-xs font-bold tracking-wider uppercase border border-transparent hover:border-primary/50 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">close</span>
+                    Abort Sequence
+                </button>
+</div>
+</div>
+<div class="flex-1 flex flex-col px-4 pt-8 pb-12 gap-8 relative">
+<div class="flex flex-col items-center gap-6 text-center z-10">
+<div class="relative">
+<div class="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
+<span class="material-symbols-outlined text-primary text-[64px] relative drop-shadow-[0_0_10px_rgba(229,57,53,0.8)]">skull</span>
+</div>
+<h1 class="text-primary tracking-tighter text-3xl font-bold uppercase leading-tight drop-shadow-[0_0_8px_rgba(229,57,53,0.6)]">
+                    Global Kill Switch<br/>Initiated
+                </h1>
+<div class="inline-flex items-center gap-3 px-4 py-2 bg-primary/10 border border-primary text-primary">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+<span class="text-xs font-bold uppercase tracking-widest">Protocol: Irreversible</span>
+</div>
+</div>
+<div class="w-full relative group">
+<div class="absolute -inset-0.5 bg-primary opacity-50 blur-[2px]"></div>
+<div class="relative bg-background-dark border-2 border-primary p-1">
+<div class="relative overflow-hidden bg-surface-dark border border-primary/30 p-5 flex flex-col gap-4">
+<div class="absolute inset-0 bg-cover bg-center opacity-20 mix-blend-overlay grayscale contrast-150" data-alt="Abstract red digital warning grid pattern" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAUqZV5Sqvf-bLA76_4uVKLWyoTp1o9bECCzy4nVo70XW-yFcGD2eC46Frf7ygX_z9ltJgYMJ4qDl4XN7NBciLKc4kKNDJk4K-Imo5WZ4vXyEq_5NXNhaz_cSS_8dDMSXDKzsBziW6rP0ImLstbO4L-okks--OZe6e8czwrzsyID-JE8B_CP2mQ-ILPqLb1Pr-ODr1V6_slup43KbFzDR_pf8O9mzTAtRL59Bap7D5aqfXeXtR9opviIGxzl4SU0IBac4AMlfAXup1Y");'>
+</div>
+<div class="relative z-10">
+<h3 class="text-white text-lg font-bold uppercase border-b border-primary/50 pb-2 mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">emergency_home</span>
+                                System-Wide Purge
+                            </h3>
+<p class="text-white/70 text-xs leading-relaxed font-mono">
+<span class="text-primary">WARNING:</span> You are about to execute a Level 5 data destruction sequence. All encryption keys will be shredded. Local caches will be wiped.
+                                <br/><br/>
+<span class="bg-primary text-black font-bold px-1">THERE IS NO UNDO.</span>
+</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/70 border-l-2 border-primary/50 pl-2">
+                    Pre-Flight Verification
+                </p>
+<div class="space-y-2">
+<label class="group flex gap-x-4 p-3 border border-white/10 bg-white/5 hover:bg-primary/5 hover:border-primary/50 transition-all duration-100 cursor-pointer items-start">
+<div class="relative flex items-center">
+<input class="peer h-5 w-5 appearance-none border-2 border-white/30 bg-transparent checked:border-primary checked:bg-primary transition-colors cursor-pointer rounded-none" type="checkbox"/>
+<span class="material-symbols-outlined absolute text-black opacity-0 peer-checked:opacity-100 text-sm pointer-events-none left-[2px]">check</span>
+</div>
+<div class="flex flex-col">
+<span class="text-white text-xs font-bold uppercase tracking-wide group-hover:text-primary transition-colors">Revoke 1,240 tokens</span>
+<span class="text-white/40 text-[10px] uppercase font-mono">&gt; Disconnect all sessions</span>
+</div>
+</label>
+<label class="group flex gap-x-4 p-3 border border-white/10 bg-white/5 hover:bg-primary/5 hover:border-primary/50 transition-all duration-100 cursor-pointer items-start">
+<div class="relative flex items-center">
+<input class="peer h-5 w-5 appearance-none border-2 border-white/30 bg-transparent checked:border-primary checked:bg-primary transition-colors cursor-pointer rounded-none" type="checkbox"/>
+<span class="material-symbols-outlined absolute text-black opacity-0 peer-checked:opacity-100 text-sm pointer-events-none left-[2px]">check</span>
+</div>
+<div class="flex flex-col">
+<span class="text-white text-xs font-bold uppercase tracking-wide group-hover:text-primary transition-colors">Destroy Master Keys</span>
+<span class="text-white/40 text-[10px] uppercase font-mono">&gt; Cryptographic wipe</span>
+</div>
+</label>
+<label class="group flex gap-x-4 p-3 border border-white/10 bg-white/5 hover:bg-primary/5 hover:border-primary/50 transition-all duration-100 cursor-pointer items-start">
+<div class="relative flex items-center">
+<input class="peer h-5 w-5 appearance-none border-2 border-white/30 bg-transparent checked:border-primary checked:bg-primary transition-colors cursor-pointer rounded-none" type="checkbox"/>
+<span class="material-symbols-outlined absolute text-black opacity-0 peer-checked:opacity-100 text-sm pointer-events-none left-[2px]">check</span>
+</div>
+<div class="flex flex-col">
+<span class="text-white text-xs font-bold uppercase tracking-wide group-hover:text-primary transition-colors">Wipe Local Devices</span>
+<span class="text-white/40 text-[10px] uppercase font-mono">&gt; Broadcast kill command</span>
+</div>
+</label>
+</div>
+</div>
+<div class="h-px bg-primary/20 w-full"></div>
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary mb-1" for="confirm-phrase">
+                        Manual Override Authorization
+                    </label>
+<div class="relative group">
+<div class="absolute -inset-0.5 bg-gradient-to-r from-primary/0 via-primary/30 to-primary/0 opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
+<input class="relative w-full bg-black border border-primary/50 p-4 text-primary placeholder-primary/20 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-mono text-sm uppercase tracking-widest rounded-none shadow-inner" id="confirm-phrase" placeholder="TYPE 'CONFIRM KILL SWITCH'" type="text"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 text-primary/40">
+<span class="material-symbols-outlined text-sm">lock_open</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-center gap-2 text-primary/60 border border-primary/20 py-2 bg-primary/5">
+<span class="material-symbols-outlined text-[18px]">fingerprint</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Biometric Auth Required</span>
+</div>
+<button class="group relative w-full overflow-hidden bg-primary p-5 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-red-600 border border-red-400">
+<div class="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.1)_10px,rgba(0,0,0,0.1)_20px)] opacity-30"></div>
+<div class="relative flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-white animate-pulse">dangerous</span>
+<span class="text-base font-bold tracking-widest text-black uppercase">Execute Kill Switch</span>
+</div>
+</button>
+<div class="text-center mt-2">
+<p class="text-[10px] text-white/30 font-mono">
+                            SESSION ID: <span class="text-primary">ADMIN-KS-9920</span><br/>
+                            IP LOGGED • GEO-TAGGED
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

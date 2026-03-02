@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profile &amp; Security</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Share+Tech+Mono&amp;family=VT323&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 300,
+      'GRAD' 0,
+      'opsz' 24;
+      font-size: 20px;
+    }.scanline {
+        width: 100%;
+        height: 100px;
+        z-index: 10;
+        background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(58, 255, 114, 0.02) 50%, rgba(0,0,0,0) 100%);
+        opacity: 0.1;
+        position: fixed;
+        bottom: 100%;
+        animation: scanline 10s linear infinite;
+        pointer-events: none;
+    }
+    @keyframes scanline {
+        0% { bottom: 100%; }
+        100% { bottom: -100px; }
+    }
+    .retro-grid {
+        background-image: 
+            linear-gradient(rgba(58, 255, 114, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(58, 255, 114, 0.03) 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+</style>
+<script id="tailwind-config">
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    "charcoal": "#0B0F0C",
+                    "slate-panel": "#141A17",
+                    "term-green": "#3AFF72",
+                    "term-amber": "#FFC857",
+                    "term-red": "#E53935",
+                    "term-gray": "#889990",
+                },
+                fontFamily: {
+                    "mono": ["IBM Plex Mono", "monospace"],
+                    "tech": ["Share Tech Mono", "monospace"],
+                    "display": ["VT323", "monospace"],
+                },
+                boxShadow: {
+                    'glow': '0 0 10px rgba(58, 255, 114, 0.1)',
+                }
+            },
+        },
+    }
+</script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-charcoal text-gray-200 font-mono antialiased retro-grid min-h-screen selection:bg-term-green selection:text-charcoal">
+<div class="scanline"></div>
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="sticky top-0 z-50 flex items-center bg-charcoal/95 backdrop-blur-sm p-4 border-b border-term-gray/20">
+<div class="flex size-10 shrink-0 items-center justify-start cursor-pointer hover:text-term-green transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-term-green font-tech text-xl uppercase tracking-widest flex-1 text-center pr-10">
+            // PROFILE_SEC_CONFIG
+        </h2>
+</div>
+<div class="flex flex-col gap-6 px-4 py-8 max-w-lg mx-auto w-full">
+<div class="flex items-center gap-5 border border-term-gray/20 bg-slate-panel p-4">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover h-20 w-20 border border-term-green grayscale contrast-125" data-alt="Profile picture of Alex Chen" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCWFG3g7TB4s3E9tn5sC_iI7iw2axUhUsunQyhMSx9o21d6dPWttzjEPWR2mtP5Ym0Y2c3utEooCsm54IOPYL8lSMG4RVPM0SiT9qhiGfTeDWOpyIRpOcz-XY_i3oDeasQ4piVxZHvZ0U8rDYV_zgGBn5L3QWktLti4pP-IzPeOnubUcLfDNrdiIeT_VtPJImYnycHa_M_emA-QLez_BHzX5ViZduzFsh55Q8uQbQSVfru6j99hznoCMHydCbobpt4gDQSuzP9QNTEZ");'>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-charcoal text-term-green p-0.5 border border-term-green flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+</div>
+</div>
+<div class="flex flex-col justify-center w-full">
+<h1 class="text-white font-tech text-2xl uppercase tracking-wider">Alex.Chen</h1>
+<div class="h-px w-full bg-term-gray/20 my-2"></div>
+<div class="flex items-center justify-between">
+<p class="text-term-gray text-xs font-mono uppercase">Role: Snr_Analyst</p>
+<p class="text-term-green text-xs font-mono uppercase bg-term-green/10 px-1">[VERIFIED]</p>
+</div>
+</div>
+</div>
+<div class="flex items-stretch justify-between gap-4 bg-slate-panel p-5 border border-term-green/30 shadow-glow relative overflow-hidden">
+<div class="absolute top-0 right-0 p-1">
+<div class="h-2 w-2 bg-term-green animate-pulse"></div>
+</div>
+<div class="flex flex-col justify-center gap-1 flex-[2_2_0px]">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-term-green">health_and_safety</span>
+<p class="text-term-green font-tech text-sm uppercase tracking-widest">System_Integrity</p>
+</div>
+<p class="text-white text-lg font-mono font-bold leading-tight">STATUS: SECURE</p>
+<p class="text-term-gray text-xs font-mono leading-normal mt-1">&gt; Zero-Trust Protocol: ACTIVE</p>
+</div>
+<div class="flex items-center justify-center pl-4 border-l border-term-gray/20">
+<span class="material-symbols-outlined text-4xl text-term-green">shield_lock</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-term-gray font-tech text-sm uppercase tracking-widest px-1">// DEVICE_DIAGNOSTICS</h3>
+<div class="bg-slate-panel border border-term-gray/20">
+<div class="flex justify-between items-center p-3 border-b border-term-gray/10 last:border-0">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-term-gray">phonelink_lock</span>
+<p class="text-gray-300 text-sm font-mono uppercase">Root_Access</p>
+</div>
+<p class="text-term-green text-sm font-mono flex items-center gap-2">
+                        [NEGATIVE]
+                    </p>
+</div>
+<div class="flex justify-between items-center p-3 border-b border-term-gray/10 last:border-0">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-term-gray">system_update</span>
+<p class="text-gray-300 text-sm font-mono uppercase">OS_Build</p>
+</div>
+<p class="text-white text-sm font-mono">iOS 17.2</p>
+</div>
+<div class="flex justify-between items-center p-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-term-gray">fingerprint</span>
+<p class="text-gray-300 text-sm font-mono uppercase">Biometrics</p>
+</div>
+<p class="text-term-green text-sm font-mono flex items-center gap-2">
+                        [ACTIVE]
+                    </p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-term-gray font-tech text-sm uppercase tracking-widest px-1">// ENCRYPTION_KEYS</h3>
+<div class="bg-slate-panel border border-term-gray/20 p-4 flex flex-col gap-3">
+<div class="flex flex-col gap-2">
+<p class="text-term-gray text-[10px] uppercase font-bold tracking-widest">Public Key Fingerprint (SHA-256)</p>
+<p class="text-term-green text-xs font-mono break-all bg-black p-3 border border-term-gray/30">04:F2:99:C1:AA:4B:22:90:1F:EE:7A:45:CC:09:11:BB</p>
+</div>
+<div class="flex justify-between items-center mt-1 border-t border-term-gray/10 pt-2">
+<p class="text-term-gray text-xs uppercase">Rotation: T-minus 4 days</p>
+<span class="inline-flex items-center bg-term-green/5 border border-term-green/30 px-2 py-0.5 text-[10px] font-bold uppercase text-term-green tracking-wider">
+                        Sig_Valid
+                    </span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-term-gray font-tech text-sm uppercase tracking-widest px-1">// ACTIVE_SESSIONS</h3>
+<div class="bg-slate-panel border border-term-gray/20">
+<div class="flex items-start p-3 border-b border-term-gray/10 gap-3 group">
+<div class="text-term-gray pt-1">
+<span class="material-symbols-outlined">smartphone</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<p class="text-white text-sm font-bold font-mono">iPhone 14 Pro</p>
+<span class="text-[10px] font-bold text-term-green border border-term-green px-1 uppercase">Current_Node</span>
+</div>
+<p class="text-term-gray text-xs mt-1 font-mono truncate">&gt; IP: 10.124.55.21 (JKT)</p>
+</div>
+</div>
+<div class="flex items-start p-3 gap-3">
+<div class="text-term-gray pt-1">
+<span class="material-symbols-outlined">laptop_mac</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<p class="text-white text-sm font-bold font-mono">MacBook Pro M2</p>
+<button class="text-term-red text-[10px] uppercase font-bold hover:bg-term-red/10 px-2 py-1 border border-term-red/50 transition-colors">
+                                [REVOKE]
+                            </button>
+</div>
+<p class="text-term-gray text-xs mt-1 font-mono truncate">&gt; IP: 172.16.0.45 (VPN)</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-term-gray font-tech text-sm uppercase tracking-widest px-1">// ENFORCED_POLICIES</h3>
+<div class="bg-slate-panel border border-term-gray/20 p-4">
+<div class="grid gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-term-gray text-lg">screenshot_monitor</span>
+<span class="text-gray-300 text-xs font-mono uppercase tracking-wide">Screen_Capture</span>
+</div>
+<div class="flex items-center gap-1.5 text-term-red text-xs font-bold uppercase">
+<span class="material-symbols-outlined text-[14px]">lock</span> [BLOCKED]
+                        </div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-term-gray text-lg">content_paste_off</span>
+<span class="text-gray-300 text-xs font-mono uppercase tracking-wide">Clipboard_IO</span>
+</div>
+<div class="flex items-center gap-1.5 text-term-red text-xs font-bold uppercase">
+<span class="material-symbols-outlined text-[14px]">lock</span> [DISABLED]
+                        </div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-term-gray text-lg">timer</span>
+<span class="text-gray-300 text-xs font-mono uppercase tracking-wide">Data_Retention</span>
+</div>
+<div class="flex items-center gap-1.5 text-term-amber text-xs font-bold uppercase">
+<span class="material-symbols-outlined text-[14px]">history</span> 24_HOURS
+                        </div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 mb-6 flex flex-col items-center gap-4">
+<div class="border border-term-amber/30 bg-term-amber/5 p-3 w-full">
+<p class="text-term-amber text-xs font-mono text-center leading-relaxed uppercase">
+<span class="material-symbols-outlined text-sm align-text-bottom mr-1">warning</span>
+                    Warning: Security policies are centrally managed by NetSec Ops. Local modification is restricted.
+                </p>
+</div>
+<button class="w-full bg-transparent border border-gray-600 p-3 text-gray-400 text-sm font-mono uppercase tracking-wide hover:border-white hover:text-white transition-colors">
+                Contact_IT_Security
+            </button>
+</div>
+</div>
+</div>
+
+</body></html>

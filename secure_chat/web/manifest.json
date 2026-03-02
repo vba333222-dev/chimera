@@ -1,6 +1,6 @@
 {
-    "name": "secure_chat",
-    "short_name": "secure_chat",
+    "name": "Chimera",
+    "short_name": "Chimera",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

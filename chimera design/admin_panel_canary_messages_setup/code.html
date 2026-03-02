@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Canary Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "term-bg": "#0B0F0C", // Charcoal Black
+                        "term-panel": "#141A17", // Dark Slate
+                        "term-green": "#3AFF72", // Configuration Actions
+                        "term-amber": "#FFC857", // Warnings
+                        "term-gray": "#4A5568", 
+                    },
+                    fontFamily: {
+                        "mono": ["'IBM Plex Mono'", "monospace"],
+                        "display": ["'IBM Plex Mono'", "monospace"]
+                    },
+                    animation: {
+                        'blink': 'blink 1s step-end infinite',
+                    },
+                    keyframes: {
+                        blink: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .scanlines {
+                background: linear-gradient(
+                    to bottom,
+                    rgba(255,255,255,0),
+                    rgba(255,255,255,0) 50%,
+                    rgba(0,0,0,0.2) 50%,
+                    rgba(0,0,0,0.2)
+                );
+                background-size: 100% 4px;
+            }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-term-bg text-term-green font-mono min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-term-green selection:text-term-bg">
+<div class="sticky top-0 z-50 flex items-center bg-term-bg border-b border-term-green/30 p-4 pb-3 justify-between shadow-[0_10px_20px_-10px_rgba(58,255,114,0.1)]">
+<div class="flex size-12 shrink-0 items-center justify-start cursor-pointer hover:bg-term-green/10 rounded-sm transition-colors">
+<span class="material-symbols-outlined text-term-green">arrow_back</span>
+</div>
+<div class="flex-1 text-center pr-12">
+<h2 class="text-term-green text-sm font-bold tracking-[0.15em] uppercase">
+            // SYS.ADMIN / CANARY
+        </h2>
+</div>
+<div class="absolute right-4 flex items-center">
+<span class="material-symbols-outlined text-term-green animate-pulse">terminal</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-6 pb-28 pt-6 relative">
+<div class="px-4">
+<div class="text-[10px] md:text-xs text-term-green/80 border-l-2 border-term-green/50 pl-3 py-1 font-normal leading-relaxed font-mono">
+<span class="opacity-60 text-term-amber">&gt;&gt; SYSTEM_MSG:</span><br/>
+            Insider threat detection protocols initialized.<br/>
+            Generating synthetic noise and decoys...
+        </div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="px-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-term-green/70">visibility_off</span>
+<h3 class="text-white text-xs font-bold uppercase tracking-widest">
+                [MODULE: CANARY_MESSAGES]
+            </h3>
+</div>
+<div class="px-4">
+<div class="bg-term-panel border border-term-green/30 relative overflow-hidden group">
+<div class="h-44 bg-cover bg-center opacity-60 grayscale mix-blend-luminosity border-b border-term-green/20 relative" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAO2L33XWMbhL8tgzbb3WZFFzUEk0d0H6KKa7E4Toe_Dy70cjGVQTKE8bssa2QWxT9MALFWuYvx61m1gJID8yNjdM4cmqJRFege888ULaiX6bdu1mVJ-2sgNJAadUTTEM1IqwxarAhoD-NuNDzF1TROSrrIvPGgj4p7YQtlCoFKGAyF0A5Rk0ZkWk0BspecNIJMTau9XVQGVTpGo8Hrl_g6Q3HmJ_TZ1_dRId7tzhxJRF2P49pHPFlnmghbWmvWxHZsrkaUBvlgtaPk");'>
+<div class="absolute inset-0 bg-term-bg/40"></div>
+<div class="w-full h-full bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.5)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] pointer-events-none opacity-50"></div>
+</div>
+<div class="absolute top-3 right-3 flex items-center gap-2 z-20">
+<span class="text-[10px] bg-term-green text-black px-1.5 py-0.5 font-bold shadow-[0_0_8px_rgba(58,255,114,0.6)]">STATUS: ACTIVE</span>
+</div>
+<div class="p-4 relative z-10 -mt-10 bg-gradient-to-t from-term-panel via-term-panel to-transparent pt-12">
+<div class="flex justify-between items-start gap-4">
+<div class="flex-1">
+<h4 class="text-white font-bold text-sm mb-1 tracking-wide">&gt; WATERMARKED_INJECTION</h4>
+<p class="text-term-green/70 text-xs leading-relaxed max-w-[280px]">
+                                Injecting untraceable watermarks into document streams. 
+                            </p>
+</div>
+<div class="flex items-center cursor-pointer group/toggle">
+<div class="text-[10px] font-bold mr-2 text-term-green">ON</div>
+<div class="w-10 h-5 border border-term-green bg-term-bg flex items-center p-0.5 shadow-[0_0_5px_rgba(58,255,114,0.2)]">
+<div class="w-4 h-full bg-term-green shadow-[0_0_5px_rgba(58,255,114,0.8)] ml-auto"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="px-4">
+<div class="bg-term-panel border border-term-green/20 p-4 relative">
+<div class="flex w-full items-center justify-between mb-2">
+<label class="text-term-green text-xs font-bold uppercase tracking-wider">&gt;&gt; INJECTION_FREQ</label>
+<div class="text-term-green text-xs font-mono bg-term-bg px-2 py-0.5 border border-term-green/30 flex items-center">
+                        VAL: 15/hr<span class="animate-blink inline-block w-1.5 h-3 bg-term-green ml-1"></span>
+</div>
+</div>
+<div class="relative flex h-8 w-full items-center mt-2">
+<div class="h-1 w-full bg-term-green/10 flex items-center">
+<div class="h-full w-[35%] bg-term-green relative">
+<div class="absolute right-0 -top-1.5 w-1.5 h-4 bg-term-green shadow-[0_0_8px_rgba(58,255,114,1)] border border-term-bg"></div>
+</div>
+</div>
+<div class="absolute w-full flex justify-between px-0.5 text-[9px] text-term-green/50 -bottom-2 font-mono uppercase tracking-widest">
+<span>| Low_Noise</span>
+<span>| High_Sens</span>
+</div>
+</div>
+</div>
+</div>
+<div class="px-4 pt-1">
+<button class="w-full group text-left bg-term-panel border border-term-green/20 p-4 hover:border-term-green hover:bg-term-green/5 transition-all duration-200">
+<div class="text-[10px] text-term-green/50 mb-1 tracking-widest">COMMAND: SET_TARGETS</div>
+<div class="flex items-center justify-between">
+<div class="text-sm font-bold text-white font-mono truncate">
+<span class="text-term-green mr-2 blink-cursor">&gt;</span>["Engineering", "Finance"]
+                    </div>
+<span class="material-symbols-outlined text-term-green text-sm group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+</button>
+</div>
+</div>
+<div class="h-px bg-term-green/10 mx-4 my-2 border-t border-dashed border-term-green/30"></div>
+<div class="flex flex-col gap-3">
+<div class="px-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-term-green/70">forum</span>
+<h3 class="text-white text-xs font-bold uppercase tracking-widest">
+                [MODULE: HONEY_CHAT]
+            </h3>
+</div>
+<div class="px-4">
+<div class="bg-term-panel border border-term-green/30 p-4">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-3">
+<div class="border border-term-green/50 p-1.5 h-fit bg-term-green/5 flex items-center justify-center w-10 h-10">
+<span class="material-symbols-outlined text-term-green text-xl">psychology</span>
+</div>
+<div>
+<h4 class="text-white font-bold text-sm uppercase tracking-wide">&gt; DECOY_CONVERSATIONS</h4>
+<p class="text-term-green/60 text-xs mt-1 leading-relaxed max-w-[200px]">
+                                Simulated chat logs to trap unauthorized scrapers.
+                            </p>
+</div>
+</div>
+<div class="flex items-center cursor-pointer opacity-70 hover:opacity-100 transition-opacity">
+<div class="text-[10px] font-bold mr-2 text-term-gray">OFF</div>
+<div class="w-10 h-5 border border-term-gray bg-transparent flex items-center p-0.5">
+<div class="w-4 h-full bg-term-gray"></div>
+</div>
+</div>
+</div>
+<div class="space-y-2 mt-2 pt-3 border-t border-term-green/10">
+<div class="flex items-center justify-between group cursor-pointer">
+<span class="text-xs text-term-green/70 group-hover:text-term-green transition-colors">PARAMETER: KEYWORDS</span>
+<div class="flex items-center gap-2 px-2 py-0.5 border border-transparent group-hover:border-term-green/30 group-hover:bg-term-green/5 transition-all">
+<span class="text-xs font-bold text-white">CONFIGURE</span>
+<span class="animate-blink w-1.5 h-3 bg-term-green inline-block"></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="px-4 mt-1 pb-4">
+<div class="bg-term-amber/5 border border-term-amber p-4 flex gap-3 items-start shadow-[0_0_15px_-5px_rgba(255,200,87,0.2)]">
+<span class="material-symbols-outlined text-term-amber shrink-0 animate-pulse text-xl">warning</span>
+<div>
+<p class="text-term-amber text-xs font-bold uppercase mb-1 tracking-wider">!! WARNING: ZERO-KNOWLEDGE !!</p>
+<p class="text-term-amber/80 text-[10px] leading-relaxed font-mono">
+                    ADMIN ACCESS RESTRICTED. Configuration keys are encrypted client-side. Logs are inaccessible without multi-party auth key verification.
+                </p>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 w-full bg-term-bg border-t border-term-green p-4 pb-8 z-40 shadow-[0_-5px_20px_rgba(0,0,0,0.8)]">
+<button class="w-full flex items-center justify-between bg-term-green hover:bg-[#2FDD60] text-black font-bold h-14 px-5 shadow-[0_0_15px_rgba(58,255,114,0.3)] hover:shadow-[0_0_25px_rgba(58,255,114,0.5)] transition-all group border-2 border-term-green active:scale-[0.99] rounded-none">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[24px]">fingerprint</span>
+<div class="flex flex-col items-start leading-none">
+<span class="tracking-widest uppercase text-sm font-bold">AUTHENTICATE</span>
+<span class="text-[10px] uppercase font-medium opacity-80">&amp; DEPLOY CONFIG</span>
+</div>
+</div>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+
+</body></html>

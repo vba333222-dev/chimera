@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Admin Panel - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "term-bg": "#0B0F0C", // Charcoal Black
+                        "term-panel": "#141A17", // Dark Slate
+                        "term-border": "#2C3834", // Subtle border
+                        "term-green": "#3AFF72", // Status Green
+                        "term-amber": "#FFC107", // Status Amber
+                        "term-red": "#E53935", // Status Red
+                        "term-text": "#E2E8F0", // Off-white for readability
+                        "term-muted": "#64748B", // Muted text
+                    },
+                    fontFamily: {
+                        "sans": ["IBM Plex Mono", "monospace"], // UI Font
+                        "mono": ["JetBrains Mono", "monospace"], // Data/Timeline Font
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0px",
+                        "none": "0px",
+                        "sm": "0px",
+                        "md": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "2xl": "0px",
+                        "full": "0px", 
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+            background-color: #0B0F0C;}::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F0C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2C3834; 
+        }* {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-term-bg text-term-text font-sans antialiased selection:bg-term-green selection:text-black">
+<div class="relative flex h-full min-h-screen w-full flex-col overflow-x-hidden pb-24">
+<div class="sticky top-0 z-20 flex items-center bg-term-bg/95 backdrop-blur-sm p-4 pb-3 justify-between border-b border-term-border">
+<div class="flex size-10 shrink-0 items-center">
+<div class="bg-center bg-no-repeat aspect-square bg-cover size-10 border border-term-green grayscale hover:grayscale-0 transition-all" data-alt="User avatar showing a professional looking abstract geometric pattern" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCgz_zaiw1OfxkmnVw5Lf8FY2_Aj7vx54DyQDrnHhxVmRg_a35Rf2cGF3uSNkpR2UjvTfBx9B79SyvvX987YoCSOkj37j0-pWDb1WwvmU7Pxivi6SOO5iCET-IwHxI2QjjwZwNdEV9CLRrchfosrvnvOCtIkIMGUNO5qFzZpyFXEUmm40NoN57LB7t_1HzwseuCPl4jmEUKqZO0MybtSlP-PxYLWK-At861w_HYna4A83a5dbOmtPt915h5urG7SAaSE7cVXUCn7UJw");'></div>
+</div>
+<div class="flex flex-col items-center">
+<h2 class="text-sm font-bold uppercase tracking-widest text-term-green">SEC_DASHBOARD</h2>
+<p class="text-[10px] text-term-muted font-mono tracking-tighter">v.4.0.2_ENC</p>
+</div>
+<div class="flex w-10 items-center justify-end">
+<button class="relative flex size-10 items-center justify-center text-term-text hover:text-term-green hover:bg-term-panel transition-colors border border-transparent hover:border-term-border">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2 right-2 size-1.5 bg-term-red animate-pulse"></span>
+</button>
+</div>
+</div>
+<div class="px-4 pt-8 pb-4">
+<div class="flex items-center gap-4 border border-term-border bg-term-panel p-4">
+<div class="flex items-center justify-center size-10 border border-term-green/30 text-term-green">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<div>
+<h2 class="text-lg font-bold leading-tight tracking-wide text-term-green">SYSTEM_OPERATIONAL</h2>
+<p class="text-term-muted text-xs font-mono mt-1">&gt; Zero-Trust Protocols Active</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 p-4">
+<div class="flex flex-col justify-between p-4 bg-term-panel border border-term-border hover:border-term-green/50 transition-colors h-32 group">
+<div class="flex items-start justify-between">
+<span class="material-symbols-outlined text-term-muted group-hover:text-term-green text-[20px] transition-colors">group</span>
+<p class="text-term-green font-mono text-[10px] border border-term-green/30 px-1 py-0.5">UNK_RISK: 0</p>
+</div>
+<div>
+<p class="text-term-muted text-[10px] uppercase tracking-widest mb-1">Total Users</p>
+<p class="text-2xl font-mono text-white font-bold tracking-tight">1,240<span class="text-term-green text-sm ml-1">^</span></p>
+</div>
+</div>
+<div class="flex flex-col justify-between p-4 bg-term-panel border border-term-border hover:border-term-amber/50 transition-colors h-32 group">
+<div class="flex items-start justify-between">
+<span class="material-symbols-outlined text-term-muted group-hover:text-term-amber text-[20px] transition-colors">devices</span>
+<p class="text-term-amber font-mono text-[10px] border border-term-amber/30 px-1 py-0.5">HIGH_LOAD</p>
+</div>
+<div>
+<p class="text-term-muted text-[10px] uppercase tracking-widest mb-1">Active Nodes</p>
+<p class="text-2xl font-mono text-white font-bold tracking-tight">856</p>
+</div>
+</div>
+<div class="flex flex-col justify-between p-4 bg-term-panel border border-term-border hover:border-term-green/50 transition-colors h-32 group">
+<div class="flex items-start justify-between">
+<span class="material-symbols-outlined text-term-muted group-hover:text-term-green text-[20px] transition-colors">lock</span>
+<span class="material-symbols-outlined text-term-muted text-[16px]">info</span>
+</div>
+<div>
+<p class="text-term-muted text-[10px] uppercase tracking-widest mb-1">Encryption</p>
+<p class="text-2xl font-mono text-white font-bold tracking-tight">100%</p>
+</div>
+</div>
+<div class="flex flex-col justify-between p-4 bg-term-panel border border-term-border hover:border-term-red/50 transition-colors h-32 group">
+<div class="flex items-start justify-between">
+<span class="material-symbols-outlined text-term-muted group-hover:text-term-red text-[20px] transition-colors">cloud</span>
+<p class="text-term-red font-mono text-[10px] border border-term-red/30 px-1 py-0.5">ALRT</p>
+</div>
+<div>
+<p class="text-term-muted text-[10px] uppercase tracking-widest mb-1">Storage Use</p>
+<p class="text-2xl font-mono text-white font-bold tracking-tight">2.4 TB</p>
+</div>
+</div>
+</div>
+<div class="px-4 py-4">
+<div class="flex items-center justify-between px-1 pb-3">
+<h2 class="text-sm font-bold uppercase tracking-widest text-white">Threat Indicators</h2>
+<div class="h-[1px] flex-1 bg-term-border mx-3"></div>
+</div>
+<div class="flex flex-col gap-6 p-5 bg-term-panel border border-term-border">
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-end">
+<div class="flex flex-col">
+<p class="text-white text-xs font-bold uppercase tracking-wide">Global Risk Score</p>
+<p class="text-term-muted font-mono text-[10px] mt-0.5">Checks: 142 | Status: OK</p>
+</div>
+<p class="text-term-green text-xl font-mono font-bold">15<span class="text-xs text-term-muted">/100</span></p>
+</div>
+<div class="h-2 w-full bg-term-bg border border-term-border p-[1px]">
+<div class="h-full bg-term-green w-[15%]"></div>
+</div>
+<div class="flex justify-between items-center mt-1">
+<p class="text-term-green text-[10px] font-bold uppercase flex items-center gap-1">
+<span class="inline-block size-1.5 bg-term-green"></span> Low Risk
+                        </p>
+<p class="text-term-muted text-[10px] font-mono">CRITICAL_ERR: 0</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-center">
+<p class="text-white text-xs font-bold uppercase tracking-wide">Device Compliance</p>
+<p class="text-term-green font-mono text-xs">98% PASS</p>
+</div>
+<div class="flex h-2 w-full bg-term-bg border border-term-border p-[1px]">
+<div class="h-full bg-term-green w-[98%]"></div>
+<div class="h-full bg-term-red w-[2%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col px-4 pt-2 pb-8">
+<div class="flex items-center justify-between pb-4 px-1">
+<h2 class="text-sm font-bold uppercase tracking-widest text-white">Live Events</h2>
+<button class="text-term-green text-[10px] font-mono border border-term-green/30 hover:bg-term-green hover:text-black px-2 py-1 transition-colors uppercase">View_Log</button>
+</div>
+<div class="flex flex-col gap-4 border-l border-term-border ml-2 pl-6 relative">
+<div class="flex flex-col gap-1 relative group">
+<div class="absolute -left-[29px] top-1 size-1.5 bg-term-red"></div>
+<div class="flex justify-between items-start">
+<p class="text-xs font-bold text-term-red uppercase tracking-wider">Blocked Login</p>
+<span class="font-mono text-[10px] text-term-muted">09:42:12</span>
+</div>
+<div class="bg-term-panel border border-term-border p-3 mt-1 group-hover:border-term-red/30 transition-colors">
+<p class="text-[10px] text-term-muted font-mono mb-1">ID: #8821 | IP: 192.168.1.42</p>
+<p class="text-[10px] text-term-text uppercase">Reason: Geo-fence violation</p>
+</div>
+</div>
+<div class="flex flex-col gap-1 relative group">
+<div class="absolute -left-[29px] top-1 size-1.5 bg-term-green"></div>
+<div class="flex justify-between items-start">
+<p class="text-xs font-bold text-term-green uppercase tracking-wider">Key Rotation</p>
+<span class="font-mono text-[10px] text-term-muted">09:34:00</span>
+</div>
+<div class="bg-term-panel border border-term-border p-3 mt-1 group-hover:border-term-green/30 transition-colors">
+<p class="text-[10px] text-term-text">Automatic rotation sequence completed.</p>
+</div>
+</div>
+<div class="flex flex-col gap-1 relative group">
+<div class="absolute -left-[29px] top-1 size-1.5 bg-term-muted"></div>
+<div class="flex justify-between items-start">
+<p class="text-xs font-bold text-term-text uppercase tracking-wider">Policy Update</p>
+<span class="font-mono text-[10px] text-term-muted">08:15:22</span>
+</div>
+<div class="bg-term-panel border border-term-border p-3 mt-1 group-hover:border-term-text/30 transition-colors">
+<p class="text-[10px] text-term-muted font-mono">ADMIN: applied 'Mobile-Only' to GRP: Contractors</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 mb-8 flex flex-col items-center gap-3 opacity-50 px-8">
+<span class="material-symbols-outlined text-term-green text-2xl">encrypted</span>
+<p class="text-center text-[10px] font-mono text-term-muted">
+                // END-TO-END ENCRYPTION ENABLED //<br/>
+                PAYLOAD CONTENT INACCESSIBLE TO ADMIN
+            </p>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center h-20 bg-term-bg/95 backdrop-blur-md border-t border-term-border">
+<button class="flex flex-col items-center justify-center w-full h-full gap-1 group border-r border-transparent hover:bg-term-panel transition-colors">
+<div class="p-1">
+<span class="material-symbols-outlined text-term-green group-hover:scale-110 transition-transform">dashboard</span>
+</div>
+<span class="text-[9px] font-bold uppercase tracking-widest text-term-green">Main</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full gap-1 group border-r border-transparent hover:bg-term-panel transition-colors">
+<div class="p-1">
+<span class="material-symbols-outlined text-term-muted group-hover:text-term-text transition-colors">people</span>
+</div>
+<span class="text-[9px] font-bold uppercase tracking-widest text-term-muted group-hover:text-term-text">Users</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full gap-1 group border-r border-transparent hover:bg-term-panel transition-colors">
+<div class="p-1">
+<span class="material-symbols-outlined text-term-muted group-hover:text-term-text transition-colors">fact_check</span>
+</div>
+<span class="text-[9px] font-bold uppercase tracking-widest text-term-muted group-hover:text-term-text">Audit</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full gap-1 group hover:bg-term-panel transition-colors">
+<div class="p-1">
+<span class="material-symbols-outlined text-term-muted group-hover:text-term-text transition-colors">settings</span>
+</div>
+<span class="text-[9px] font-bold uppercase tracking-widest text-term-muted group-hover:text-term-text">Config</span>
+</button>
+</div>
+
+</body></html>

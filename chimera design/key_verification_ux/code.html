@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Key Verification</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "terminal-black": "#0B0F0C",
+                        "terminal-green": "#3AFF72",
+                        "terminal-amber": "#FFC857",
+                        "terminal-gray": "#333333",
+                        "terminal-text": "#E0E0E0",
+                    },
+                    fontFamily: {
+                        "tech": ["Share Tech Mono", "monospace"],
+                        "code": ["JetBrains Mono", "monospace"],
+                        "ui": ["IBM Plex Mono", "monospace"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, rgba(58, 255, 114, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(58, 255, 114, 0.03) 1px, transparent 1px)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+            background-color: #0B0F0C;
+        }.scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(58, 255, 114, 0.02) 50%, rgba(0,0,0,0) 100%);
+            opacity: 0.1;
+            background-size: 100% 2px;
+            animation: scanline 10s linear infinite;
+            pointer-events: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-terminal-black font-ui text-terminal-text antialiased overflow-hidden selection:bg-terminal-green selection:text-black">
+<div class="relative flex h-screen w-full flex-col max-w-md mx-auto bg-terminal-black shadow-2xl overflow-hidden border-x border-terminal-gray">
+<div class="absolute inset-0 bg-grid-pattern bg-[length:40px_40px] pointer-events-none z-0"></div>
+<div class="scanline"></div>
+<div class="relative flex items-center px-6 py-4 justify-between bg-terminal-black shrink-0 z-10 border-b border-terminal-gray">
+<button class="text-terminal-text flex size-10 items-center justify-center hover:bg-white/5 transition-colors border border-transparent hover:border-terminal-gray">
+<span class="material-symbols-outlined">close</span>
+</button>
+<h2 class="text-terminal-text text-[15px] font-bold tracking-wider uppercase font-code">Verify // Keys</h2>
+<div class="w-10"></div>
+</div>
+<div class="relative flex-1 overflow-y-auto no-scrollbar flex flex-col items-center w-full px-6 py-6 gap-8 z-10">
+<div class="flex flex-col items-center justify-center gap-4 w-full">
+<div class="relative group">
+<div class="relative z-10 p-1 border border-terminal-gray bg-terminal-black">
+<div class="bg-center bg-no-repeat bg-cover size-20 grayscale contrast-125 brightness-90" data-alt="Portrait of Alice Stevens" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDm9HamwpIB73bqaeuMFkm3BCjPvyfvqYf-Yz5P3QXoVFbtoMT3fMDpYcs-hMEhhQQYdQUmuPR74T5yITkLie5080zHAO1yIwK6rlo2An-32bP4CUbXKwSIKdCjjTRyGf2iLac64J3tvZwwbV0acwGfRIS_sprXP15nx_DBr-mZ3wPm54NryAeJzSfRrkzB3RCOSsqHekCZWLEfoy6meas7vEj9Gg3ZjUvLLCmiN5SUq3bXXJTLn5Po5wKgTLwKTPs-2qF7GCRU1i47");'></div>
+</div>
+<div class="absolute -top-1 -left-1 w-3 h-3 border-t border-l border-terminal-amber"></div>
+<div class="absolute -bottom-1 -right-1 w-3 h-3 border-b border-r border-terminal-amber"></div>
+<div class="absolute -bottom-3 right-[-10px] bg-terminal-black border border-terminal-gray px-1.5 py-0.5 flex items-center shadow-lg z-20">
+<span class="material-symbols-outlined text-terminal-amber text-[14px]">lock</span>
+</div>
+</div>
+<div class="text-center font-code">
+<h3 class="text-lg font-bold text-white tracking-widest uppercase">Alice Stevens</h3>
+<p class="text-xs text-terminal-amber/80 font-medium uppercase tracking-widest mt-1">ID: PM-8921</p>
+</div>
+</div>
+<div class="w-full">
+<div class="flex items-start gap-4 p-4 border border-terminal-amber bg-terminal-amber/5 relative">
+<div class="absolute top-0 left-0 w-1 h-1 bg-terminal-amber"></div>
+<div class="absolute top-0 right-0 w-1 h-1 bg-terminal-amber"></div>
+<div class="absolute bottom-0 left-0 w-1 h-1 bg-terminal-amber"></div>
+<div class="absolute bottom-0 right-0 w-1 h-1 bg-terminal-amber"></div>
+<div class="flex h-6 w-6 shrink-0 items-center justify-center text-terminal-amber mt-0.5">
+<span class="material-symbols-outlined text-[24px]">gpp_maybe</span>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-terminal-amber text-sm font-bold uppercase tracking-wide font-code">Status: Unverified</p>
+<p class="text-gray-400 text-xs font-ui leading-relaxed">
+                            End-to-end encrypted session established. Identity trust has not been manually verified.
+                        </p>
+</div>
+</div>
+</div>
+<p class="text-gray-500 text-xs text-center leading-relaxed max-w-xs mx-auto font-code uppercase tracking-wider">
+                &lt; Compare numeric sequence &gt;
+            </p>
+<div class="flex flex-col w-full bg-terminal-black border border-terminal-gray p-6 gap-6 items-center relative">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-[1px] bg-terminal-green/50"></div>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-[1px] bg-terminal-green/50"></div>
+<div class="relative p-2 border border-terminal-gray/50 bg-white/5">
+<div class="size-40 bg-center bg-no-repeat bg-contain mix-blend-luminosity opacity-90 contrast-150" data-alt="QR Code pattern" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDNq9Nv-tm2rs3m2baH21eThDRry0WNjm9XdbArgCn_PG_CkddIZTY-eA7qWVp22TGEqQ6OzUrc26KhmySQIEeugzqzODZGaZJRftRNNfD5niTeY85HpxlPxutVesvyxWHU-du4LmUX8R9TiickvQsDBt2m4K4lNouGgV6OQztwxOuuImly_Jot4lwLXl_FQwGMXiZOtnTJc0_QmwQSwvEJqUI_2oebjkuq1jTJ_8doY9U7yr2KnEbhkMJUinpq2BQBmfgC-2uoe_U_");'></div>
+<div class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-terminal-green"></div>
+<div class="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-terminal-green"></div>
+<div class="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-terminal-green"></div>
+<div class="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-terminal-green"></div>
+</div>
+<div class="w-full relative">
+<div class="absolute inset-0 bg-[linear-gradient(rgba(58,255,114,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(58,255,114,0.05)_1px,transparent_1px)] bg-[length:4px_4px] pointer-events-none"></div>
+<div class="grid grid-cols-3 gap-x-2 gap-y-4 text-center relative z-10">
+<div class="font-tech text-xl text-white tracking-[0.15em]">3345</div>
+<div class="font-tech text-xl text-white tracking-[0.15em]">9901</div>
+<div class="font-tech text-xl text-white tracking-[0.15em]">2245</div>
+<div class="font-tech text-xl text-white tracking-[0.15em]">6678</div>
+<div class="font-tech text-xl text-white tracking-[0.15em]">1120</div>
+<div class="font-tech text-xl text-white tracking-[0.15em]">4453</div>
+</div>
+</div>
+</div>
+<div class="h-4"></div>
+</div>
+<div class="p-6 bg-terminal-black border-t border-terminal-gray shrink-0 flex flex-col gap-4 z-20">
+<button class="flex w-full items-center justify-center gap-3 bg-terminal-green h-[50px] text-black font-bold text-sm tracking-widest uppercase hover:bg-white transition-all active:scale-[0.99] font-code border border-terminal-green">
+<span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
+<span>Scan Code</span>
+</button>
+<button class="flex w-full items-center justify-center gap-3 bg-transparent h-[50px] text-terminal-green font-bold text-sm tracking-widest uppercase border border-terminal-green hover:bg-terminal-green/10 transition-all active:scale-[0.99] font-code">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+<span>Mark Verified</span>
+</button>
+</div>
+</div>
+
+</body></html>

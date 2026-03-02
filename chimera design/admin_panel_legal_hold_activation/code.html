@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Legal Hold Activation - Admin Panel</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "terminal-black": "#0B0F0C",
+                        "terminal-slate": "#141A17",
+                        "terminal-amber": "#FFC857",
+                        "terminal-red": "#E53935",
+                        "terminal-red-hover": "#C62828",
+                        "terminal-dim": "#4A5550",
+                        "terminal-text": "#E0E0E0",
+                    },
+                    fontFamily: {
+                        "mono": ["IBM Plex Mono", "monospace"],
+                        "sans": ["IBM Plex Mono", "monospace"] // Force mono everywhere
+                    },
+                    boxShadow: {
+                        'retro': '4px 4px 0px 0px rgba(20, 26, 23, 1)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background-color: #0B0F0C;
+        }::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F0C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #141A17;
+            border: 1px solid #4A5550;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }.retro-checkbox {
+            appearance: none;
+            background-color: #0B0F0C;
+            border: 1px solid #4A5550;
+            width: 1.25rem;
+            height: 1.25rem;
+            display: inline-grid;
+            place-content: center;
+        }
+        .retro-checkbox::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            background-color: #FFC857;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+        }
+        .retro-checkbox:checked::before {
+            transform: scale(1);
+        }
+        .retro-checkbox:checked {
+            border-color: #FFC857;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-terminal-black min-h-screen text-terminal-text antialiased selection:bg-terminal-amber selection:text-terminal-black">
+<div class="relative flex h-full min-h-screen w-full flex-col max-w-md mx-auto overflow-hidden bg-terminal-black border-x border-terminal-slate">
+<div class="flex items-center px-4 py-4 justify-between bg-terminal-black border-b border-terminal-slate sticky top-0 z-20">
+<button class="flex size-10 shrink-0 items-center justify-center border border-terminal-slate hover:bg-terminal-slate transition-colors cursor-pointer text-terminal-text active:translate-y-0.5">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="text-terminal-text text-sm font-bold uppercase tracking-widest flex-1 text-center pr-10">
+                Admin_Panel // Legal_Hold
+            </h2>
+</div>
+<div class="flex-1 overflow-y-auto pb-40">
+<div class="p-4">
+<div class="flex flex-col gap-0 bg-terminal-slate border border-terminal-amber/30 relative">
+<div class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-terminal-amber"></div>
+<div class="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-terminal-amber"></div>
+<div class="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-terminal-amber"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-terminal-amber"></div>
+<div class="flex flex-col p-4 gap-4">
+<div class="flex items-start justify-between gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-terminal-amber">
+<span class="material-symbols-outlined text-lg">shield_lock</span>
+<p class="text-xs font-bold uppercase tracking-widest">Status: RESTRICTED</p>
+</div>
+<h3 class="text-white text-lg font-bold uppercase mt-1">Legal Hold Protocol</h3>
+</div>
+<div class="size-12 flex items-center justify-center border border-terminal-amber/20 bg-terminal-black text-terminal-amber">
+<span class="material-symbols-outlined text-3xl">gavel</span>
+</div>
+</div>
+<div class="space-y-3 border-t border-terminal-dim/30 pt-3">
+<p class="text-terminal-amber text-xs leading-relaxed uppercase tracking-wide font-semibold">
+                                // IMPLICATIONS:
+                            </p>
+<ul class="text-xs text-gray-400 space-y-2 list-none pl-1">
+<li class="flex gap-2">
+<span class="text-terminal-amber">&gt;</span>
+<span>Preserves encrypted blobs (No decryption access).</span>
+</li>
+<li class="flex gap-2">
+<span class="text-terminal-amber">&gt;</span>
+<span>Suspends all data expiration policies.</span>
+</li>
+<li class="flex gap-2">
+<span class="text-terminal-amber">&gt;</span>
+<span>Immutable audit logging enabled.</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="px-4 pb-4">
+<div class="flex items-center gap-4 bg-terminal-slate px-4 py-4 border border-terminal-dim justify-between group hover:border-terminal-text/50 transition-colors cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="text-terminal-text">
+<span class="material-symbols-outlined">globe_asia</span>
+</div>
+<div class="flex flex-col">
+<p class="text-white text-sm font-bold uppercase">Global_Hold</p>
+<p class="text-gray-500 text-[10px] uppercase tracking-wider">Target: ALL_USERS // ALL_DEVICES</p>
+</div>
+</div>
+<div class="shrink-0">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-terminal-black border border-terminal-dim peer-focus:outline-none peer-focus:ring-0 peer-checked:bg-terminal-amber peer-checked:border-terminal-amber transition-all"></div>
+<div class="absolute left-[4px] top-[4px] bg-terminal-dim w-4 h-4 peer-checked:translate-x-full peer-checked:bg-terminal-black transition-all"></div>
+</label>
+</div>
+</div>
+</div>
+<div class="px-4 py-2">
+<div class="flex flex-col gap-1 mb-1">
+<label class="text-[10px] text-gray-500 uppercase tracking-widest">Target Specific Entities</label>
+</div>
+<div class="flex w-full items-stretch h-12 border border-terminal-dim bg-terminal-black focus-within:border-terminal-amber transition-colors">
+<div class="text-terminal-dim flex items-center justify-center pl-3">
+<span class="text-lg">&gt;</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 bg-transparent border-none text-white focus:outline-0 focus:ring-0 h-full placeholder:text-terminal-dim px-3 text-sm font-mono uppercase" placeholder="SEARCH_ID / HASH..." value=""/>
+<div class="flex items-center pr-3">
+<span class="material-symbols-outlined text-terminal-dim text-sm">search</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2 px-4 py-2 flex-wrap mb-4">
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 bg-terminal-slate border border-terminal-amber/50 pl-3 pr-2">
+<div class="size-2 bg-terminal-amber animate-pulse"></div>
+<p class="text-terminal-amber text-xs font-bold uppercase">USR: A.Chen</p>
+<button class="flex items-center justify-center text-terminal-amber hover:bg-terminal-amber hover:text-terminal-black transition-colors ml-1 p-0.5">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center gap-x-2 bg-terminal-slate border border-terminal-dim pl-3 pr-2">
+<span class="material-symbols-outlined text-[14px] text-gray-400">smartphone</span>
+<p class="text-gray-400 text-xs uppercase">DEV: iOS-004</p>
+<button class="flex items-center justify-center text-gray-400 hover:text-white ml-1">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+</div>
+<div class="p-4 border-t border-terminal-slate">
+<h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+<span class="w-2 h-2 bg-gray-500"></span>
+                    Retention Scope
+                </h3>
+<div class="flex flex-col gap-3">
+<label class="flex items-start gap-3 cursor-pointer group">
+<input checked="" class="retro-checkbox mt-0.5" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-white uppercase group-hover:text-terminal-amber transition-colors">Encrypted Messages</span>
+<span class="text-[10px] text-gray-500 font-mono">RETENTION_POLICY: FULL_BLOB_STORAGE</span>
+</div>
+</label>
+<label class="flex items-start gap-3 cursor-pointer group">
+<input checked="" class="retro-checkbox mt-0.5" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-white uppercase group-hover:text-terminal-amber transition-colors">File Attachments</span>
+<span class="text-[10px] text-gray-500 font-mono">TYPE: PDF / IMG / BINARY</span>
+</div>
+</label>
+<label class="flex items-start gap-3 cursor-pointer group">
+<input class="retro-checkbox mt-0.5" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-white uppercase group-hover:text-terminal-amber transition-colors">Connection Metadata</span>
+<span class="text-[10px] text-gray-500 font-mono">LOGS: IP_ADDR / DEVICE_HASH</span>
+</div>
+</label>
+</div>
+</div>
+<div class="px-4 mt-2">
+<div class="flex items-center justify-between mb-3 border-b border-terminal-slate pb-2">
+<h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest">System Log</h3>
+<a class="text-[10px] text-terminal-amber hover:underline uppercase" href="#">[ View_All ]</a>
+</div>
+<div class="font-mono text-[10px] space-y-2 text-gray-400">
+<div class="flex gap-2">
+<span class="text-gray-600">10:42:05</span>
+<span><span class="text-terminal-amber">ADMIN_01</span> :: TARGET_LOCK [USR_892]</span>
+</div>
+<div class="flex gap-2">
+<span class="text-gray-600">16:15:33</span>
+<span><span class="text-terminal-red">SYSTEM</span> :: FLAG_DEL_ATTEMPT</span>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-terminal-black border-t-2 border-terminal-red p-4 z-30 shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3 text-terminal-red justify-center bg-terminal-red/10 py-2 border border-terminal-red/20">
+<span class="material-symbols-outlined text-base animate-pulse">warning</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">2FA Re-authentication Required</span>
+<span class="material-symbols-outlined text-base animate-pulse">warning</span>
+</div>
+<button class="w-full h-14 bg-terminal-red hover:bg-terminal-red-hover text-white text-sm uppercase tracking-widest shadow-lg active:scale-[0.99] transition-all flex items-center justify-between px-1 group border border-transparent hover:border-white">
+<div class="h-full aspect-square bg-black/20 flex items-center justify-center">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<span class="font-bold">INITIATE_LEGAL_HOLD</span>
+<div class="h-full aspect-square bg-black/20 flex items-center justify-center group-hover:bg-black/30 transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+
+</body></html>
