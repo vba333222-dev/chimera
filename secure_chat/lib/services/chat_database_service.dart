@@ -31,6 +31,7 @@
 //   │  timestamp_ms INTEGER                  │
 //   │  is_encrypted INTEGER (0/1)            │
 //   │  is_terminal_command INTEGER (0/1)     │
+//   │  status INTEGER (0:pending, 1:sent, 2:failed) │
 //   └────────────────────────────────────────┘
 
 import 'dart:convert';
@@ -51,7 +52,7 @@ import '../providers/providers.dart';
 
 const _dbName = 'chimera_vault.db';
 const _dbKeyStorageKey = 'chimera_db_encryption_key';
-const _dbVersion = 1;
+const _dbVersion = 2; // Bumped to 2 for MessageStatus
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ChatDatabaseService
@@ -279,6 +280,29 @@ class ChatDatabaseService {
     );
   }
 
+  /// Mengambil semua pesan yang masih berstatus pending.
+  Future<List<Message>> getPendingMessages() async {
+    await _ensureOpen();
+    final maps = await _db!.query(
+      'messages',
+      where: 'status = ?',
+      whereArgs: [MessageStatus.pending.index],
+      orderBy: 'timestamp_ms ASC', // Pastikan dikirim berurutan
+    );
+    return maps.map(Message.fromMap).toList();
+  }
+
+  /// Memperbarui status pengiriman suatu pesan.
+  Future<void> updateMessageStatus(String messageId, MessageStatus status) async {
+    await _ensureOpen();
+    await _db!.update(
+      'messages',
+      {'status': status.index},
+      where: 'id = ?',
+      whereArgs: [messageId],
+    );
+  }
+
   // ───────────────────────────────────────────────────────────────────────────
   // Key Management (Private)
   // ───────────────────────────────────────────────────────────────────────────
@@ -337,13 +361,14 @@ class ChatDatabaseService {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Strategi migrasi: untuk sekarang, recreate tables jika versi berubah.
-    // Di production, gunakan ALTER TABLE untuk migrasi yang tidak merusak data.
-    if (oldVersion < 1) {
-      await _createSchema(db);
+    // Migrasi versi 1 -> 2: Tambahkan kolom 'status' ke tabel messages.
+    // Nilai default 1 (sent) agar pesan lama tidak dikirim ulang.
+    if (oldVersion < 2) {
+      await db.execute('''
+        ALTER TABLE messages
+        ADD COLUMN status INTEGER NOT NULL DEFAULT 1
+      ''');
     }
-    // Tambahkan blok migrasi di sini untuk versi selanjutnya:
-    // if (oldVersion < 2) { await db.execute('ALTER TABLE ...'); }
   }
 
   Future<void> _createSchema(Database db) async {
@@ -370,6 +395,7 @@ class ChatDatabaseService {
         timestamp_ms        INTEGER NOT NULL,
         is_encrypted        INTEGER NOT NULL DEFAULT 1,
         is_terminal_command INTEGER NOT NULL DEFAULT 0,
+        status              INTEGER NOT NULL DEFAULT 1,
         FOREIGN KEY (session_id)
           REFERENCES chat_sessions (id)
           ON DELETE CASCADE

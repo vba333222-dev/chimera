@@ -2,8 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 
+import '../models/proxy_config.dart';
+
+export '../models/proxy_config.dart';
 export '../services/chat_database_service.dart';
 export '../services/encryption_service.dart';
+export '../services/network_proxy_service.dart';
+export '../services/offline_queue_service.dart';
+export '../services/pfs_session_service.dart';
 export '../services/rasp_service.dart';
 export '../services/websocket_service.dart';
 
@@ -90,3 +96,42 @@ class AuthNotifier extends Notifier<AuthState> {
 // ----------------------------------------------------------------------
 final authProvider = NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
 
+// ----------------------------------------------------------------------
+// Proxy Config Provider
+// Manages ProxyConfig state and persists it to encrypted secure storage.
+// ----------------------------------------------------------------------
+class ProxyConfigNotifier extends Notifier<ProxyConfig> {
+  static const _key = 'chimera_proxy_config';
+
+  @override
+  ProxyConfig build() {
+    // Load from storage asynchronously after first build
+    Future.microtask(load);
+    return ProxyConfig.direct;
+  }
+
+  Future<void> load() async {
+    final storage = ref.read(secureStorageProvider);
+    final json = await storage.read(key: _key);
+    if (json != null) {
+      state = ProxyConfig.fromJsonString(json);
+    }
+  }
+
+  Future<void> save(ProxyConfig config) async {
+    state = config;
+    final storage = ref.read(secureStorageProvider);
+    await storage.write(key: _key, value: config.toJsonString());
+  }
+
+  Future<void> clear() async {
+    state = ProxyConfig.direct;
+    final storage = ref.read(secureStorageProvider);
+    await storage.delete(key: _key);
+  }
+}
+
+final proxyConfigProvider =
+    NotifierProvider<ProxyConfigNotifier, ProxyConfig>(
+  ProxyConfigNotifier.new,
+);

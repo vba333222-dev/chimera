@@ -1,9 +1,10 @@
-import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:screen_protector/screen_protector.dart';
+import '../env/env.dart';
 import '../models/message.dart';
 import '../providers/providers.dart';
 import '../theme/app_theme.dart';
@@ -20,35 +21,96 @@ class ChatRoomScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
-  bool _showAlert = false; // Starts false
+  bool _showAlert = false;
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _textController = TextEditingController();
-  
-  // Demo messages — sessionId akan diisi dari widget.chatId saat initState
   final List<Message> _messages = [];
 
-  void _sendMessage() {
+  // ── PFS state ─────────────────────────────────────────────────────────────
+  /// True setelah PFS session berhasil diinisialisasi.
+  bool _pfsReady = false;
+
+  /// Epoch saat ini (hanya untuk ditampilkan di UI debug — bisa dihapus di prod).
+  int _pfsEpoch = 0;
+
+  // ─────────────────────────────────────────────────────────────────────────
+
+  /// Kirim pesan (dimasukkan ke Offline Queue).
+  ///
+  /// Alur:
+  ///   1. Buat message dengan status `pending` (atau `sent` jika fallback demo)
+  ///   2. Jika PFS belum siap, tambah ke UI saja (simulasi).
+  ///   3. Jika PFS siap, enkripsi dengan session key epoch saat ini via Isolate.
+  ///   4. Simpan ke database lokal menggunakan ChatDatabaseService.
+  ///   5. Tambah ke UI (optimistic update).
+  ///   6. OfflineQueueService akan otomatis mendeteksi DB "pending" dan 
+  ///      mengirimkannya ke WebSocket di background.
+  Future<void> _sendMessage() async {
     if (_textController.text.trim().isEmpty) return;
-    
+
     final text = _textController.text;
-    
+    final msgId = DateTime.now().millisecondsSinceEpoch.toString();
+
+    // Optimistic UI update — pesan muncul langsung tanpa menunggu enkripsi
     setState(() {
-      _messages.add(
-        Message(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          sessionId: widget.chatId,
-          text: text,
-          senderId: 'ME',
-          timestamp: DateTime.now(),
-        ),
-      );
+      _messages.add(Message(
+        id: msgId,
+        sessionId: widget.chatId,
+        text: text,
+        senderId: 'ME',
+        timestamp: DateTime.now(),
+      ));
       _textController.clear();
     });
-    
     _scrollToBottom();
-    
-    // Send to WebSocket
-    ref.read(webSocketServiceProvider).sendMessage(text);
+
+    // Enkripsi + simpan ke DB sebagai pending message
+    if (_pfsReady) {
+      try {
+        final pfsService = ref.read(pfsSessionServiceProvider);
+        
+        // Peringatan: Saat ini _sendMessage kita mengenkripsi dan langsung 
+        // memasukkan JSON packet sebagai "text" pesan ke DB untuk dikirim raw
+        // oleh OfflineQueueService. Pada arsitektur ideal, DB menyimpan plaintext, 
+        // dan worker (offline_queue_service) yang mengenkripsi ulang menggunakan
+        // key PFS *terbaru* persis sebelum pengiriman. 
+        // Untuk demo phase ini sesuai PRD, kita simpan text yang akan dikirim.
+        
+        final packet = await pfsService.encryptForSession(widget.chatId, text);
+
+        // Update epoch indicator di UI jika berubah
+        if (pfsService.currentEpoch(widget.chatId) != _pfsEpoch) {
+          setState(() => _pfsEpoch = pfsService.currentEpoch(widget.chatId));
+        }
+
+        // Teks untuk dikirim adalah JSON string dari packet
+        final textToSend = packet.toJson();
+
+        final msgToDb = Message(
+          id: msgId,
+          sessionId: widget.chatId,
+          text: textToSend,
+          senderId: 'ME',
+          timestamp: DateTime.now(),
+          status: MessageStatus.pending, // Tandai pending masuk antrean
+        );
+
+        final db = await ref.read(chatDatabaseProvider.future);
+        await db.insertMessage(msgToDb);
+        
+        // Panggil offline queue processor (meskipun otomatis juga mendengarkan stream)
+        ref.read(offlineQueueServiceProvider).processQueue();
+
+      } catch (e) {
+        // ignore: avoid_print
+        print('[PFS] Encryption error: $e');
+        // Fallback: biarkan UI render saja (plaintext) — tidak simpan DB
+      }
+    } else {
+      // PFS belum siap — abaikan penyimpanan DB (hanya tampil di UI untuk demo)
+      // ignore: avoid_print
+      print('[PFS] Not ready. Message not stored in queue.');
+    }
   }
 
   void _scrollToBottom() {
@@ -68,7 +130,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     super.initState();
     _initDemoMessages();
     _initScreenProtector();
-    _initWebSocket();
+    _initWebSocket(); // juga menginisialisasi PFS
   }
 
   void _initDemoMessages() {
@@ -98,18 +160,71 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     ]);
   }
   
-  void _initWebSocket() {
+  /// Inisialisasi WebSocket + PFS session secara bersamaan.
+  ///
+  /// PFS diinisialisasi dengan demo peer key (32 bytes nol) untuk simulasi.
+  /// Dalam app nyata, peer public key diterima dari server/handshake.
+  Future<void> _initWebSocket() async {
+    // ── Inisialisasi PFS session ─────────────────────────────────────────────
+    // CATATAN: Di aplikasi nyata, peerPublicKeyBytes diperoleh dari:
+    //   1. Server handshake (server menyampaikan public key peer)
+    //   2. QR code scan saat pertukaran kunci pertama kali
+    // Untuk demo, kita gunakan 32 bytes nol sebagai placeholder peer key.
+    final demoPeerKey = Uint8List(32); // placeholder 32-byte zero key
+    final pfsService = ref.read(pfsSessionServiceProvider);
+
+    await pfsService.initSession(
+      sessionId: widget.chatId,
+      peerIdentityPublicKeyBytes: demoPeerKey,
+    );
+
+    if (mounted) {
+      setState(() {
+        _pfsReady = true;
+        _pfsEpoch = pfsService.currentEpoch(widget.chatId);
+      });
+    }
+
+    // ── Koneksi WebSocket ────────────────────────────────────────────────────
     final wsService = ref.read(webSocketServiceProvider);
-    
-    // In a real app, URL comes from env or config
-    wsService.connect('wss://echo.websocket.events');
-    
-    wsService.messageStream.listen((message) {
-      if (mounted) {
-        setState(() {
-          _messages.add(message);
-        });
-        _scrollToBottom();
+    wsService.connect(Env.webSocketUrl);
+
+    wsService.messageStream.listen((rawMessage) async {
+      if (!mounted) return;
+
+      // Coba parse sebagai PfsEncryptedPacket dari WebSocket
+      final rawText = rawMessage.text;
+      final packet = PfsEncryptedPacket.fromJson(rawText);
+
+      if (packet != null && _pfsReady) {
+        // Pesan terenkripsi PFS — decode dengan epoch yang sesuai
+        try {
+          final plaintext = await pfsService.decryptFromPacket(
+            widget.chatId,
+            packet,
+          );
+          if (mounted) {
+            setState(() {
+              _messages.add(Message(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                sessionId: widget.chatId,
+                text: plaintext,
+                senderId: 'SC',
+                timestamp: DateTime.now(),
+              ));
+            });
+            _scrollToBottom();
+          }
+        } catch (e) {
+          // ignore: avoid_print
+          print('[PFS] Decryption error (epoch ${packet.epoch}): $e');
+        }
+      } else {
+        // Pesan biasa (plaintext fallback atau pesan sistem)
+        if (mounted) {
+          setState(() => _messages.add(rawMessage));
+          _scrollToBottom();
+        }
       }
     });
   }
@@ -139,6 +254,9 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
   @override
   void dispose() {
+    // Wipe semua session key PFS dari memory — jaminan forward secrecy
+    ref.read(pfsSessionServiceProvider).expireSession(widget.chatId);
+
     ScreenProtector.removeListener();
     ScreenProtector.preventScreenshotOff();
     ScreenProtector.protectDataLeakageWithColorOff();

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/app_theme.dart';
 import '../providers/providers.dart';
+import '../widgets/scrambled_pin_pad.dart';
 
 class BiometricLoginScreen extends ConsumerStatefulWidget {
   const BiometricLoginScreen({super.key});
@@ -373,72 +374,17 @@ class _BiometricLoginScreenState extends ConsumerState<BiometricLoginScreen> wit
           }),
         ),
         const SizedBox(height: 32),
-        // Keypad
-        SizedBox(
-          width: 260,
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 1.2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: 12,
-            itemBuilder: (context, index) {
-              String key;
-              if (index < 9) {
-                key = (index + 1).toString();
-              } else if (index == 9) {
-                key = 'DEL';
-              } else if (index == 10) {
-                key = '0';
-              } else {
-                key = 'ENT';
-              }
-              return _KeypadButton(
-                label: key,
-                onTap: () => _onPinKeyPress(key),
-              );
-            },
-          ),
+        // Scrambled Keypad
+        ScrambledPinPad(
+          onKeyPress: _onPinKeyPress,
+          scrambleOnTouch: true,
         ),
       ],
     );
   }
 }
 
-class _KeypadButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _KeypadButton({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    bool isAction = label == 'DEL' || label == 'ENT';
-    return InkWell(
-      onTap: onTap,
-      splashColor: AppTheme.accentGreen.withValues(alpha: 0.3),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.terminalCard,
-          border: Border.all(color: isAction ? AppTheme.terminalBorder : AppTheme.accentGreen.withValues(alpha: 0.5)),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isAction ? Colors.white : AppTheme.accentGreen,
-            fontSize: isAction ? 14 : 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-}
+// The _KeypadButton was removed because it is now defined in scrambled_pin_pad.dart 
 
 class _ScannerCorner extends StatelessWidget {
   final bool isTop;

@@ -214,3 +214,175 @@ Future<String> decryptMessageInIsolate(DecryptPayload payload) async {
 
   return String.fromCharCodes(decryptedBytes);
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PFS (Perfect Forward Secrecy) — Payload classes & Isolate tasks
+//
+// Berbeda dari enkripsi reguler di atas yang menggunakan identity keypair,
+// PFS menggunakan EPHEMERAL keypair per-sesi/per-rotasi. Tiap epoch
+// menghasilkan session key yang independen dan tidak bisa diderivasi ulang
+// setelah private key ephemeral dihapus dari memory.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Payload untuk derivasi session key PFS di Isolate.
+///
+/// [ephemeralPrivateKeyBytes] — private key ephemeral milik sender (32 bytes, X25519)
+/// [peerPublicKeyBytes]      — public key identitas peer (32 bytes, X25519)
+/// [epochIndex]              — nomor epoch saat ini (digunakan sebagai HKDF salt)
+class DeriveSessionKeyPayload {
+  final Uint8List ephemeralPrivateKeyBytes;
+  final Uint8List peerPublicKeyBytes;
+  final int epochIndex;
+
+  const DeriveSessionKeyPayload({
+    required this.ephemeralPrivateKeyBytes,
+    required this.peerPublicKeyBytes,
+    required this.epochIndex,
+  });
+}
+
+/// Payload untuk enkripsi PFS di Isolate.
+///
+/// [plaintext]       — plaintext yang akan dienkripsi
+/// [sessionKeyBytes] — session key untuk epoch ini (32 bytes)
+/// [epochIndex]      — disertakan dalam HKDF context untuk domain separation
+class PfsEncryptPayload {
+  final String plaintext;
+  final Uint8List sessionKeyBytes;
+  final int epochIndex;
+
+  const PfsEncryptPayload({
+    required this.plaintext,
+    required this.sessionKeyBytes,
+    required this.epochIndex,
+  });
+}
+
+/// Payload untuk dekripsi PFS di Isolate.
+///
+/// [encryptedBytes]  — output dari [pfsEncryptInIsolate] → [EncryptResult.toBytes()]
+/// [sessionKeyBytes] — session key untuk epoch yang sama saat enkripsi
+/// [epochIndex]      — harus sama dengan epoch saat enkripsi untuk HKDF context
+class PfsDecryptPayload {
+  final Uint8List encryptedBytes;
+  final Uint8List sessionKeyBytes;
+  final int epochIndex;
+
+  const PfsDecryptPayload({
+    required this.encryptedBytes,
+    required this.sessionKeyBytes,
+    required this.epochIndex,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PFS Isolate Functions
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// [ISOLATE TASK] Derivasi session key PFS menggunakan ephemeral ECDH + HKDF.
+///
+/// Proses:
+///   1. Rekonstruksi ephemeral KeyPair dari bytes
+///   2. Rekonstruksi peer public key dari bytes
+///   3. ECDH(ephemeral_local, peer_identity) → raw shared secret
+///   4. HKDF dengan info='chimera-pfs-epoch-{N}' → 32-byte session key
+///
+/// Keunggulan PFS: setelah ephemeralPrivateKeyBytes dihapus dari memory,
+/// session key ini TIDAK BISA diderivasi ulang meskipun peer's identity key bocor.
+Future<Uint8List> deriveSessionKeyInIsolate(
+  DeriveSessionKeyPayload payload,
+) async {
+  final x25519 = X25519();
+
+  // Rekonstruksi ephemeral keypair.
+  // Catatan: public key field di sini tidak dipakai untuk ECDH,
+  // tapi SimpleKeyPairData membutuhkan field publicKey sebagai placeholder.
+  final ephemeralKeyPair = SimpleKeyPairData(
+    payload.ephemeralPrivateKeyBytes,
+    publicKey: SimplePublicKey(
+      payload.peerPublicKeyBytes, // placeholder — X25519 hanya butuh private key
+      type: KeyPairType.x25519,
+    ),
+    type: KeyPairType.x25519,
+  );
+
+  final peerPublicKey = SimplePublicKey(
+    payload.peerPublicKeyBytes,
+    type: KeyPairType.x25519,
+  );
+
+  // ECDH: ephemeral_local × peer_identity → raw shared secret
+  final rawSharedSecret = await x25519.sharedSecretKey(
+    keyPair: ephemeralKeyPair,
+    remotePublicKey: peerPublicKey,
+  );
+  final rawSharedSecretBytes = await rawSharedSecret.extractBytes();
+
+  // HKDF dengan epoch-specific info string untuk domain separation.
+  // Tiap epoch menghasilkan output HKDF yang berbeda secara kriptografis,
+  // bahkan jika rawSharedSecret identik (misal jika keypair sama).
+  final hkdf = Hkdf(hmac: Hmac(Sha256()), outputLength: 32);
+  final sessionKey = await hkdf.deriveKey(
+    secretKey: SecretKeyData(rawSharedSecretBytes),
+    info: 'chimera-pfs-epoch-${payload.epochIndex}'.codeUnits,
+  );
+
+  return Uint8List.fromList(await sessionKey.extractBytes());
+}
+
+/// [ISOLATE TASK] Enkripsi PFS menggunakan session key epoch saat ini.
+///
+/// Menggunakan AES-256-GCM. HKDF dijalankan sekali lagi dari session key
+/// dengan info epoch untuk memastikan key derivation yang konsisten.
+/// Output dalam format [EncryptResult.toBytes()].
+Future<EncryptResult> pfsEncryptInIsolate(PfsEncryptPayload payload) async {
+  final algorithm = AesGcm.with256bits();
+
+  // Derive AES key dari session key menggunakan HKDF dengan epoch context
+  final hkdf = Hkdf(hmac: Hmac(Sha256()), outputLength: 32);
+  final aesKey = await hkdf.deriveKey(
+    secretKey: SecretKeyData(payload.sessionKeyBytes),
+    info: 'chimera-pfs-aes-epoch-${payload.epochIndex}'.codeUnits,
+  );
+
+  // Nonce baru setiap enkripsi (12 bytes untuk AES-GCM)
+  final nonce = algorithm.newNonce();
+
+  final secretBox = await algorithm.encrypt(
+    payload.plaintext.codeUnits.toList(),
+    secretKey: aesKey,
+    nonce: nonce,
+  );
+
+  return EncryptResult(
+    nonce: Uint8List.fromList(secretBox.nonce),
+    ciphertext: Uint8List.fromList(secretBox.cipherText),
+    mac: Uint8List.fromList(secretBox.mac.bytes),
+  );
+}
+
+/// [ISOLATE TASK] Dekripsi PFS menggunakan session key epoch yang sesuai.
+///
+/// Caller WAJIB memberikan session key dari epoch yang sama saat enkripsi.
+/// Jika epochIndex tidak cocok, dekripsi akan gagal karena HKDF info berbeda.
+Future<String> pfsDecryptInIsolate(PfsDecryptPayload payload) async {
+  final algorithm = AesGcm.with256bits();
+
+  final encryptResult = EncryptResult.fromBytes(payload.encryptedBytes);
+
+  // Derive AES key yang sama dari session key + epoch context
+  final hkdf = Hkdf(hmac: Hmac(Sha256()), outputLength: 32);
+  final aesKey = await hkdf.deriveKey(
+    secretKey: SecretKeyData(payload.sessionKeyBytes),
+    info: 'chimera-pfs-aes-epoch-${payload.epochIndex}'.codeUnits,
+  );
+
+  final secretBox = SecretBox(
+    encryptResult.ciphertext,
+    nonce: encryptResult.nonce,
+    mac: Mac(encryptResult.mac),
+  );
+
+  final decryptedBytes = await algorithm.decrypt(secretBox, secretKey: aesKey);
+  return String.fromCharCodes(decryptedBytes);
+}

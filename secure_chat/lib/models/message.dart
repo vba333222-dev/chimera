@@ -1,5 +1,7 @@
 // lib/models/message.dart
 
+enum MessageStatus { pending, sent, failed }
+
 class Message {
   final String id;
   final String sessionId; // FK ke ChatSession.id
@@ -8,6 +10,7 @@ class Message {
   final DateTime timestamp;
   final bool isEncrypted;      // Status E2EE
   final bool isTerminalCommand; // System messages / command output
+  final MessageStatus status;   // Status pengiriman (untuk offline queue)
 
   const Message({
     required this.id,
@@ -17,6 +20,7 @@ class Message {
     required this.timestamp,
     this.isEncrypted = true,
     this.isTerminalCommand = false,
+    this.status = MessageStatus.sent,
   });
 
   Message copyWith({
@@ -27,6 +31,7 @@ class Message {
     DateTime? timestamp,
     bool? isEncrypted,
     bool? isTerminalCommand,
+    MessageStatus? status,
   }) {
     return Message(
       id: id ?? this.id,
@@ -36,6 +41,7 @@ class Message {
       timestamp: timestamp ?? this.timestamp,
       isEncrypted: isEncrypted ?? this.isEncrypted,
       isTerminalCommand: isTerminalCommand ?? this.isTerminalCommand,
+      status: status ?? this.status,
     );
   }
 
@@ -55,6 +61,7 @@ class Message {
       // SQLite tidak punya tipe BOOLEAN; gunakan 0/1.
       'is_encrypted': isEncrypted ? 1 : 0,
       'is_terminal_command': isTerminalCommand ? 1 : 0,
+      'status': status.index,
     };
   }
 
@@ -68,11 +75,15 @@ class Message {
       timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp_ms'] as int),
       isEncrypted: (map['is_encrypted'] as int) == 1,
       isTerminalCommand: (map['is_terminal_command'] as int) == 1,
+      // Default to "sent" (1) if status column is missing (e.g. from old DB versions)
+      status: map.containsKey('status')
+          ? MessageStatus.values[map['status'] as int]
+          : MessageStatus.sent,
     );
   }
 
   @override
   String toString() =>
       'Message(id: $id, sessionId: $sessionId, senderId: $senderId, '
-      'timestamp: $timestamp, isEncrypted: $isEncrypted)';
+      'timestamp: $timestamp, isEncrypted: $isEncrypted, status: ${status.name})';
 }

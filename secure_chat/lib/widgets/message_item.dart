@@ -156,20 +156,39 @@ class _MessageItemState extends State<MessageItem>
                       ),
               ),
 
-              // ── Read receipt ──────────────────────────────────────────────
+              // ── Read receipt / Status ────────────────────────────────────
               if (widget.isSelf) ...[
                 const SizedBox(height: 4),
-                const Icon(
-                  Icons.check,
-                  color: AppTheme.accentGreen,
-                  size: 14,
-                ),
+                _buildStatusIcon(),
               ],
             ],
           ),
         ),
       ],
     );
+  }
+
+  Widget _buildStatusIcon() {
+    switch (widget.message.status) {
+      case MessageStatus.pending:
+        return Icon(
+          Icons.access_time_filled, // Jam pasir/jam
+          color: Colors.grey.withValues(alpha: 0.5),
+          size: 14,
+        );
+      case MessageStatus.sent:
+        return const Icon(
+          Icons.check,
+          color: AppTheme.accentGreen,
+          size: 14,
+        );
+      case MessageStatus.failed:
+        return const Icon(
+          Icons.error_outline,
+          color: AppTheme.warningRed,
+          size: 14,
+        );
+    }
   }
 }
 
