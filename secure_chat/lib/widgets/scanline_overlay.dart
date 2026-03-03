@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ScanlineOverlay extends StatelessWidget {
   final Widget child;
 
-  const ScanlineOverlay({Key? key, required this.child}) : super(key: key);
+  const ScanlineOverlay({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +17,10 @@ class ScanlineOverlay extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.white.withOpacity(0.0),
-                  Colors.white.withOpacity(0.0),
-                  Colors.black.withOpacity(0.2),
-                  Colors.black.withOpacity(0.2),
+                  Colors.white.withValues(alpha: 0.0),
+                  Colors.white.withValues(alpha: 0.0),
+                  Colors.black.withValues(alpha: 0.2),
+                  Colors.black.withValues(alpha: 0.2),
                 ],
                 stops: const [0.0, 0.5, 0.5, 1.0],
               ),
@@ -42,7 +42,7 @@ class _ScanlinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black.withOpacity(0.2)
+      ..color = Colors.black.withValues(alpha: 0.2)
       ..style = PaintingStyle.fill;
 
     const double scanlineHeight = 2.0;

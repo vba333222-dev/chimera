@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../models/message.dart';
@@ -27,16 +28,16 @@ class WebSocketService {
           _messageController.add(msg);
         },
         onError: (error) {
-          print('WebSocket Error: $error');
+          debugPrint('WebSocket Error: $error');
           _reconnect(url);
         },
         onDone: () {
-          print('WebSocket Connection Closed');
+          debugPrint('WebSocket Connection Closed');
           _reconnect(url);
         }
       );
     } catch (e) {
-      print('Connection failed: $e');
+      debugPrint('Connection failed: $e');
     }
   }
 
@@ -45,7 +46,7 @@ class WebSocketService {
       // In a real app, encryption Service would be called here before sending
       _channel!.sink.add(text);
     } else {
-      print('Cannot send message: WebSocket not connected');
+      debugPrint('Cannot send message: WebSocket not connected');
     }
   }
 

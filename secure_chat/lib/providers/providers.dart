@@ -11,9 +11,7 @@ export '../services/websocket_service.dart';
 // ----------------------------------------------------------------------
 final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
   return const FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
+    aOptions: AndroidOptions(),
   );
 });
 
@@ -43,17 +41,18 @@ class AuthState {
   }
 }
 
-class AuthNotifier extends StateNotifier<AuthState> {
-  final FlutterSecureStorage _storage;
-  final LocalAuthentication _auth;
-
-  AuthNotifier(this._storage, this._auth) : super(const AuthState());
+class AuthNotifier extends Notifier<AuthState> {
+  @override
+  AuthState build() {
+    return const AuthState();
+  }
 
   Future<void> checkBiometric() async {
     state = state.copyWith(status: AuthStatus.authenticating);
     try {
-      final bool canAuthenticateWithBiometrics = await _auth.canCheckBiometrics;
-      final bool canAuthenticate = canAuthenticateWithBiometrics || await _auth.isDeviceSupported();
+      final auth = ref.read(localAuthProvider);
+      final bool canAuthenticateWithBiometrics = await auth.canCheckBiometrics;
+      final bool canAuthenticate = canAuthenticateWithBiometrics || await auth.isDeviceSupported();
 
       if (!canAuthenticate) {
         state = state.copyWith(
@@ -63,12 +62,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
         return;
       }
 
-      final bool didAuthenticate = await _auth.authenticate(
+      final bool didAuthenticate = await auth.authenticate(
         localizedReason: 'Please authenticate to access Chimera Secure Terminal',
-        options: const AuthenticationOptions(
-          stickyAuth: true,
-          biometricOnly: true, // Use biometric authentication if available
-        ),
       );
 
       if (didAuthenticate) {
@@ -82,8 +77,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    // We can clear stored session or encryption keys here via _storage
-    // await _storage.deleteAll();
+    final storage = ref.read(secureStorageProvider);
+    await storage.deleteAll();
     state = const AuthState(status: AuthStatus.unauthenticated);
   }
 }
@@ -91,8 +86,5 @@ class AuthNotifier extends StateNotifier<AuthState> {
 // ----------------------------------------------------------------------
 // Auth Provider
 // ----------------------------------------------------------------------
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  final storage = ref.watch(secureStorageProvider);
-  final localAuth = ref.watch(localAuthProvider);
-  return AuthNotifier(storage, localAuth);
-});
+final authProvider = NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
+

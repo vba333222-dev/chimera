@@ -15,7 +15,7 @@ void main() {
 }
 
 class SecureChatApp extends StatefulWidget {
-  const SecureChatApp({Key? key}) : super(key: key);
+  const SecureChatApp({super.key});
 
   @override
   State<SecureChatApp> createState() => _SecureChatAppState();

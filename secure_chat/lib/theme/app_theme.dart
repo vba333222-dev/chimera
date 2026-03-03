@@ -40,7 +40,7 @@ class AppTheme {
         titleSmall: GoogleFonts.jetBrainsMono(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: terminalBg.withOpacity(0.95),
+        backgroundColor: terminalBg.withValues(alpha: 0.95),
         elevation: 0,
         centerTitle: false,
         iconTheme: const IconThemeData(color: terminalText),
@@ -60,7 +60,7 @@ class AppTheme {
   // Common BoxShadows
   static List<BoxShadow> get glowGreen => [
         BoxShadow(
-          color: accentGreen.withOpacity(0.1),
+          color: accentGreen.withValues(alpha: 0.1),
           blurRadius: 10,
           spreadRadius: 0,
         ),
@@ -68,7 +68,7 @@ class AppTheme {
 
   static List<BoxShadow> get glowRed => [
         BoxShadow(
-          color: warningRed.withOpacity(0.3),
+          color: warningRed.withValues(alpha: 0.3),
           blurRadius: 15,
           spreadRadius: 0,
         ),

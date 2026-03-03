@@ -4,7 +4,7 @@ import 'dart:async';
 import '../theme/app_theme.dart';
 
 class DeviceVerificationScreen extends StatefulWidget {
-  const DeviceVerificationScreen({Key? key}) : super(key: key);
+  const DeviceVerificationScreen({super.key});
 
   @override
   State<DeviceVerificationScreen> createState() => _DeviceVerificationScreenState();
@@ -141,7 +141,7 @@ class _DeviceVerificationScreenState extends State<DeviceVerificationScreen> {
                 height: 192,
                 decoration: BoxDecoration(
                   color: AppTheme.terminalCard,
-                  border: Border.all(color: AppTheme.accentGreen.withOpacity(0.4)),
+                  border: Border.all(color: AppTheme.accentGreen.withValues(alpha: 0.4)),
                   boxShadow: AppTheme.glowGreen,
                 ),
                 child: Stack(
@@ -182,7 +182,7 @@ class _DeviceVerificationScreenState extends State<DeviceVerificationScreen> {
                             height: 8,
                             margin: EdgeInsets.only(right: index == 9 ? 0 : 4),
                             decoration: BoxDecoration(
-                              color: isActive ? AppTheme.accentGreen : AppTheme.accentGreen.withOpacity(0.2),
+                              color: isActive ? AppTheme.accentGreen : AppTheme.accentGreen.withValues(alpha: 0.2),
                               boxShadow: isActive ? AppTheme.glowGreen : null,
                             ),
                           ),
@@ -193,8 +193,8 @@ class _DeviceVerificationScreenState extends State<DeviceVerificationScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Handshake', style: TextStyle(color: AppTheme.accentGreen.withOpacity(0.6), fontSize: 10, fontWeight: FontWeight.bold)),
-                        Text('$_progress%', style: TextStyle(color: AppTheme.accentGreen.withOpacity(0.6), fontSize: 10, fontWeight: FontWeight.bold)),
+                        Text('Handshake', style: TextStyle(color: AppTheme.accentGreen.withValues(alpha: 0.6), fontSize: 10, fontWeight: FontWeight.bold)),
+                        Text('$_progress%', style: TextStyle(color: AppTheme.accentGreen.withValues(alpha: 0.6), fontSize: 10, fontWeight: FontWeight.bold)),
                       ],
                     )
                   ],
@@ -238,7 +238,7 @@ class _DeviceVerificationScreenState extends State<DeviceVerificationScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppTheme.terminalCard,
-                  border: Border.all(color: _targetFingerprint == 'UNKNOWN' ? AppTheme.terminalBorder : AppTheme.accentGreen.withOpacity(0.3)),
+                  border: Border.all(color: _targetFingerprint == 'UNKNOWN' ? AppTheme.terminalBorder : AppTheme.accentGreen.withValues(alpha: 0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,14 +246,14 @@ class _DeviceVerificationScreenState extends State<DeviceVerificationScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('TARGET_FINGERPRINT_ID', style: TextStyle(color: AppTheme.accentGreen.withOpacity(0.6), fontSize: 10, fontWeight: FontWeight.bold)),
+                        Text('TARGET_FINGERPRINT_ID', style: TextStyle(color: AppTheme.accentGreen.withValues(alpha: 0.6), fontSize: 10, fontWeight: FontWeight.bold)),
                         Icon(Icons.verified_user, color: _targetFingerprint == 'UNKNOWN' ? Colors.grey : AppTheme.accentGreen, size: 14),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(_targetFingerprint, style: const TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'IBM Plex Mono', letterSpacing: 1)),
                     const SizedBox(height: 8),
-                    Text(_targetFingerprint == 'UNKNOWN' ? 'AWAITING BIND...' : 'CHECKSUM: OK', style: TextStyle(color: AppTheme.accentGreen.withOpacity(0.4), fontSize: 10)),
+                    Text(_targetFingerprint == 'UNKNOWN' ? 'AWAITING BIND...' : 'CHECKSUM: OK', style: TextStyle(color: AppTheme.accentGreen.withValues(alpha: 0.4), fontSize: 10)),
                   ],
                 ),
               )
@@ -298,7 +298,7 @@ class _DeviceVerificationScreenState extends State<DeviceVerificationScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            Text('Zero-Trust Architecture Protocol\nDo not close the app during handshake', textAlign: TextAlign.center, style: TextStyle(color: AppTheme.accentGreen.withOpacity(0.4), fontSize: 10, letterSpacing: 2, height: 1.5)),
+            Text('Zero-Trust Architecture Protocol\nDo not close the app during handshake', textAlign: TextAlign.center, style: TextStyle(color: AppTheme.accentGreen.withValues(alpha: 0.4), fontSize: 10, letterSpacing: 2, height: 1.5)),
           ],
         ),
       ),

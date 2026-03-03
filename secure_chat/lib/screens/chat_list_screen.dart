@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../theme/app_theme.dart';
 
 class ChatListScreen extends StatefulWidget {
-  const ChatListScreen({Key? key}) : super(key: key);
+  const ChatListScreen({super.key});
 
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
@@ -38,7 +38,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         height: 40,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(2),
-                          border: Border.all(color: AppTheme.accentGreen.withOpacity(0.5)),
+                          border: Border.all(color: AppTheme.accentGreen.withValues(alpha: 0.5)),
                           image: const DecorationImage(
                             image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuDBRwVSor3oJs9mzbyK6RUpvQliakEDEBp8zapfukz-jfoaOiPvJ0l1053Dw1IR9jgoEoD69gaLL0HJsxUJaDW3LVJshh0IDqE1UerUAv3OSv4bXYdKm6SRCI9RD4lexdE3LW-p6w2m0zY4ZvYApA6YL1XFIuJ4sSRQsMA5Fb27QTnBRdQJs1jzbSNJer2lhyXGzjD3aaiRH422Xs_iW6jv-fuIEGNukkvlHndaqKyYA7yQn1M2gYFhZkpfTSXz7TyfGpwH7oStUHdm'),
                             fit: BoxFit.cover,
@@ -53,7 +53,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           Text('> SECURE_CHATS', style: AppTheme.darkTheme.textTheme.labelLarge?.copyWith(color: AppTheme.accentGreen, letterSpacing: 2)),
                           Row(
                             children: [
-                              Container(width: 6, height: 6, color: AppTheme.accentGreen.withOpacity(0.5)),
+                              Container(width: 6, height: 6, color: AppTheme.accentGreen.withValues(alpha: 0.5)),
                               const SizedBox(width: 4),
                               Text('Encrypted_Connection::Active', style: AppTheme.darkTheme.textTheme.labelSmall?.copyWith(color: Colors.grey[500])),
                             ],
@@ -238,7 +238,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           border: Border.all(color: borderColor),
           boxShadow: [
             BoxShadow(
-              color: borderColor.withOpacity(0.1),
+              color: borderColor.withValues(alpha: 0.1),
               blurRadius: 10,
             )
           ],
@@ -348,7 +348,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           width: 32,
           height: 32,
           decoration: BoxDecoration(
-            color: isActive ? AppTheme.accentGreen.withOpacity(0.1) : Colors.transparent,
+            color: isActive ? AppTheme.accentGreen.withValues(alpha: 0.1) : Colors.transparent,
             border: Border.all(color: isActive ? AppTheme.accentGreen : Colors.transparent),
             boxShadow: isActive ? AppTheme.glowGreen : null,
           ),

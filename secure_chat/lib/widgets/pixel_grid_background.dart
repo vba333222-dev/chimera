@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PixelGridBackground extends StatelessWidget {
   final Widget child;
 
-  const PixelGridBackground({Key? key, required this.child}) : super(key: key);
+  const PixelGridBackground({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class _PixelGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.03)
+      ..color = Colors.white.withValues(alpha: 0.03)
       ..strokeWidth = 1;
 
     const double gridSize = 30.0;

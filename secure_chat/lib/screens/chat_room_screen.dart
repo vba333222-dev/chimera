@@ -12,7 +12,7 @@ class ChatRoomScreen extends ConsumerStatefulWidget {
   final String chatId;
   final String chatTitle;
 
-  const ChatRoomScreen({Key? key, required this.chatId, required this.chatTitle}) : super(key: key);
+  const ChatRoomScreen({super.key, required this.chatId, required this.chatTitle});
 
   @override
   ConsumerState<ChatRoomScreen> createState() => _ChatRoomScreenState();
@@ -83,7 +83,6 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   void initState() {
     super.initState();
     _initScreenProtector();
-    _startTyping();
     _initWebSocket();
   }
   
@@ -123,7 +122,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           }
         });
       }
-    }, (ScreenshotEvent event) {}); // No iOS specific event handling needed for basic mock
+    }, (dynamic event) {}); // No iOS specific event handling needed for basic mock
   }
 
   @override
@@ -411,10 +410,10 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: AppTheme.warningAmber.withOpacity(0.05),
+            color: AppTheme.warningAmber.withValues(alpha: 0.05),
             border: Border.all(color: AppTheme.warningAmber),
             boxShadow: [
-              BoxShadow(color: AppTheme.warningAmber.withOpacity(0.1), blurRadius: 10)
+              BoxShadow(color: AppTheme.warningAmber.withValues(alpha: 0.1), blurRadius: 10)
             ],
           ),
           width: MediaQuery.of(context).size.width * 0.9,
@@ -426,7 +425,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('SECURITY ALERT', style: TextStyle(color: AppTheme.warningAmber, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                  Text("User 'J.Doe' keys changed. Verify fingerprint.", style: TextStyle(color: AppTheme.warningAmber.withOpacity(0.8), fontSize: 10, fontFamily: 'IBM Plex Mono')),
+                  Text("User 'J.Doe' keys changed. Verify fingerprint.", style: TextStyle(color: AppTheme.warningAmber.withValues(alpha: 0.8), fontSize: 10, fontFamily: 'IBM Plex Mono')),
                 ],
               )
             ],
@@ -485,7 +484,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: AppTheme.terminalCard,
-                  border: Border.all(color: isSelf ? AppTheme.accentGreen.withOpacity(0.5) : AppTheme.terminalBorder),
+                  border: Border.all(color: isSelf ? AppTheme.accentGreen.withValues(alpha: 0.5) : AppTheme.terminalBorder),
                 ),
                 child: animate ? _TypewriterText(text: message.text, isSelf: isSelf) : Text(
                   message.text,
@@ -507,7 +506,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 class _TypewriterText extends StatefulWidget {
   final String text;
   final bool isSelf;
-  const _TypewriterText({Key? key, required this.text, required this.isSelf}) : super(key: key);
+  const _TypewriterText({required this.text, required this.isSelf});
 
   @override
   State<_TypewriterText> createState() => _TypewriterTextState();
@@ -553,7 +552,7 @@ class _TypewriterTextState extends State<_TypewriterText> {
 }
 
 class _AnimatedShield extends StatefulWidget {
-  const _AnimatedShield({Key? key}) : super(key: key);
+  const _AnimatedShield();
 
   @override
   State<_AnimatedShield> createState() => _AnimatedShieldState();
@@ -601,7 +600,7 @@ class _AnimatedShieldState extends State<_AnimatedShield> with SingleTickerProvi
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: _isSecure ? AppTheme.accentGreen.withOpacity(0.1) : Colors.transparent,
+            color: _isSecure ? AppTheme.accentGreen.withValues(alpha: 0.1) : Colors.transparent,
             border: Border.all(color: color ?? AppTheme.terminalBorder),
             boxShadow: _isSecure ? AppTheme.glowGreen : null,
           ),

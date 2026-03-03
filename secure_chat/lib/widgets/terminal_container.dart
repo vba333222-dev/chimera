@@ -9,13 +9,13 @@ class TerminalContainer extends StatelessWidget {
   final EdgeInsetsGeometry margin;
 
   const TerminalContainer({
-    Key? key,
+    super.key,
     required this.child,
     this.isAlert = false,
     this.isInteractive = false,
     this.padding = const EdgeInsets.all(12.0),
     this.margin = EdgeInsets.zero,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

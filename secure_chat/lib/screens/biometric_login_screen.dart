@@ -5,7 +5,7 @@ import '../theme/app_theme.dart';
 import '../providers/providers.dart';
 
 class BiometricLoginScreen extends ConsumerStatefulWidget {
-  const BiometricLoginScreen({Key? key}) : super(key: key);
+  const BiometricLoginScreen({super.key});
 
   @override
   ConsumerState<BiometricLoginScreen> createState() => _BiometricLoginScreenState();
@@ -150,7 +150,7 @@ class _BiometricLoginScreenState extends ConsumerState<BiometricLoginScreen> wit
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white.withValues(alpha: 0.05),
                       border: Border.all(color: AppTheme.terminalBorder),
                     ),
                     child: Row(
@@ -277,7 +277,7 @@ class _BiometricLoginScreenState extends ConsumerState<BiometricLoginScreen> wit
                   Positioned.fill(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.02),
+                        color: Colors.white.withValues(alpha: 0.02),
                         border: Border.all(color: AppTheme.terminalBorder),
                       ),
                     ),
@@ -330,8 +330,8 @@ class _BiometricLoginScreenState extends ConsumerState<BiometricLoginScreen> wit
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
-                  border: Border.all(color: AppTheme.terminalBorder.withOpacity(0.5)),
+                  color: Colors.white.withValues(alpha: 0.05),
+                  border: Border.all(color: AppTheme.terminalBorder.withValues(alpha: 0.5)),
                 ),
                 child: Row(
                   children: [
@@ -413,18 +413,18 @@ class _KeypadButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const _KeypadButton({Key? key, required this.label, required this.onTap}) : super(key: key);
+  const _KeypadButton({required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     bool isAction = label == 'DEL' || label == 'ENT';
     return InkWell(
       onTap: onTap,
-      splashColor: AppTheme.accentGreen.withOpacity(0.3),
+      splashColor: AppTheme.accentGreen.withValues(alpha: 0.3),
       child: Container(
         decoration: BoxDecoration(
           color: AppTheme.terminalCard,
-          border: Border.all(color: isAction ? AppTheme.terminalBorder : AppTheme.accentGreen.withOpacity(0.5)),
+          border: Border.all(color: isAction ? AppTheme.terminalBorder : AppTheme.accentGreen.withValues(alpha: 0.5)),
         ),
         alignment: Alignment.center,
         child: Text(
@@ -444,7 +444,7 @@ class _ScannerCorner extends StatelessWidget {
   final bool isTop;
   final bool isLeft;
 
-  const _ScannerCorner({Key? key, required this.isTop, required this.isLeft}) : super(key: key);
+  const _ScannerCorner({required this.isTop, required this.isLeft});
 
   @override
   Widget build(BuildContext context) {
