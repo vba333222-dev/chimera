@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 
+export '../services/chat_database_service.dart';
 export '../services/encryption_service.dart';
+export '../services/rasp_service.dart';
 export '../services/websocket_service.dart';
 
 

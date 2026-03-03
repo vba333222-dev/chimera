@@ -21,6 +21,7 @@ class WebSocketService {
           // For now, we'll just mock it as a new message
           final msg = Message(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
+            sessionId: 'ws_incoming', // Akan diganti dengan session ID nyata saat integrasi penuh
             text: data.toString(), 
             senderId: 'SC', // Mocking incoming from other user
             timestamp: DateTime.now(),

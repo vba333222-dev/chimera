@@ -1,27 +1,60 @@
+// lib/main.dart
+//
+// Entry point Chimera Secure Terminal.
+//
+// Urutan inisialisasi yang KRITIS (urutan ini tidak boleh diubah):
+//   1. WidgetsFlutterBinding.ensureInitialized() — wajib sebelum Talsec
+//   2. ProviderContainer dibuat lebih awal (sebelum runApp) untuk
+//      mengakses SecurityThreatNotifier dari RaspService
+//   3. RaspService.initialize() — freeRASP mulai memantau ancaman
+//   4. runApp() dengan ProviderScope yang memakai container yang sudah ada
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'theme/app_theme.dart';
+
+import 'providers/providers.dart';
+import 'screens/biometric_login_screen.dart';
 import 'screens/chat_list_screen.dart';
 import 'screens/chat_room_screen.dart';
-import 'screens/biometric_login_screen.dart';
 import 'screens/device_verification_screen.dart';
-import 'widgets/scanline_overlay.dart';
+import 'screens/security_lockdown_screen.dart';
+import 'services/rasp_service.dart';
+import 'theme/app_theme.dart';
 import 'widgets/pixel_grid_background.dart';
+import 'widgets/scanline_overlay.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+void main() async {
+  // WAJIB: Inisialisasi binding Flutter sebelum memanggil Talsec
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
-  runApp(const ProviderScope(child: SecureChatApp()));
+  // Buat ProviderContainer lebih awal agar RaspService bisa mengakses
+  // SecurityThreatNotifier (Riverpod provider) sebelum runApp()
+  final container = ProviderContainer();
+
+  // Inisialisasi RASP sebelum apapun ditampilkan ke user
+  final raspService = RaspService(
+    container.read(securityThreatProvider.notifier),
+  );
+  await raspService.initialize();
+
+  runApp(
+    UncontrolledProviderScope(
+      container: container,
+      child: const SecureChatApp(),
+    ),
+  );
 }
 
-class SecureChatApp extends StatefulWidget {
+class SecureChatApp extends ConsumerStatefulWidget {
   const SecureChatApp({super.key});
 
   @override
-  State<SecureChatApp> createState() => _SecureChatAppState();
+  ConsumerState<SecureChatApp> createState() => _SecureChatAppState();
 }
 
-class _SecureChatAppState extends State<SecureChatApp> with WidgetsBindingObserver {
+class _SecureChatAppState extends ConsumerState<SecureChatApp>
+    with WidgetsBindingObserver {
   DateTime? _pausedTime;
   final int _timeoutSeconds = 30;
 
@@ -39,13 +72,14 @@ class _SecureChatAppState extends State<SecureChatApp> with WidgetsBindingObserv
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
       _pausedTime ??= DateTime.now();
     } else if (state == AppLifecycleState.resumed) {
       if (_pausedTime != null) {
         final backgroundDuration = DateTime.now().difference(_pausedTime!);
         if (backgroundDuration.inSeconds >= _timeoutSeconds) {
-          // Lock the app if backgrounded for more than 30s
+          // Kunci app jika sudah di-background lebih dari 30 detik
           _router.go('/login');
         }
       }
@@ -55,6 +89,25 @@ class _SecureChatAppState extends State<SecureChatApp> with WidgetsBindingObserv
 
   @override
   Widget build(BuildContext context) {
+    // ── RASP Guard ──────────────────────────────────────────────────────────
+    // Pantau SecurityThreatState secara reaktif.
+    // Jika ada ancaman kritikal, SELURUH app tree diganti dengan LockdownScreen.
+    // Tidak ada cara untuk widget lain di-render sampai app di-restart.
+    final threatState = ref.watch(securityThreatProvider);
+
+    if (threatState.hasCriticalThreat) {
+      // Tampilkan lockdown screen langsung, membungkus theme agar tetap
+      // terlihat konsisten (background hitam dengan overlay merah)
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.darkTheme,
+        home: SecurityLockdownScreen(
+          threat: threatState.activeCriticalThreat!,
+        ),
+      );
+    }
+    // ── Normal App Flow ─────────────────────────────────────────────────────
+
     return MaterialApp.router(
       title: 'Secure Terminal Chat',
       theme: AppTheme.darkTheme,
@@ -70,6 +123,10 @@ class _SecureChatAppState extends State<SecureChatApp> with WidgetsBindingObserv
     );
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Router
+// ─────────────────────────────────────────────────────────────────────────────
 
 final GoRouter _router = GoRouter(
   initialLocation: '/login',

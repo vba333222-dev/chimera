@@ -12,10 +12,13 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^3.2.1
   flutter_secure_storage: ^10.0.0
+  freerasp: ^7.5.0
   go_router: ^17.1.0
   google_fonts: ^8.0.2
   local_auth: ^3.0.1
+  path: ^1.9.1
   screen_protector: ^1.5.1
+  sqflite_sqlcipher: ^3.4.0
   web_socket_channel: ^3.0.3
 
 dev_dependencies:
