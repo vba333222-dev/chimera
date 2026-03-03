@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/message.dart';
 import '../providers/providers.dart';
 
 class OfflineQueueService {
@@ -47,6 +46,9 @@ class OfflineQueueService {
     
     // Jangan proses jika tidak terkoneksi
     if (!wsService.isConnected) return;
+    
+    // Hard-Stop: Decoy mode is an isolated zone
+    if (_ref.read(vaultModeProvider) == VaultMode.decoy) return;
 
     _isProcessing = true;
 

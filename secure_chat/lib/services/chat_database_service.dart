@@ -32,6 +32,7 @@
 //   │  is_encrypted INTEGER (0/1)            │
 //   │  is_terminal_command INTEGER (0/1)     │
 //   │  status INTEGER (0:pending, 1:sent, 2:failed) │
+//   │  expires_at_ms INTEGER (nullable)      │
 //   └────────────────────────────────────────┘
 
 import 'dart:convert';
@@ -45,6 +46,7 @@ import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../models/chat_session.dart';
 import '../models/message.dart';
 import '../providers/providers.dart';
+import '../utils/decoy_data_seeder.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -52,7 +54,7 @@ import '../providers/providers.dart';
 
 const _dbName = 'chimera_vault.db';
 const _dbKeyStorageKey = 'chimera_db_encryption_key';
-const _dbVersion = 2; // Bumped to 2 for MessageStatus
+const _dbVersion = 3; // Bumped to 3 for expires_at_ms
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ChatDatabaseService
@@ -60,10 +62,11 @@ const _dbVersion = 2; // Bumped to 2 for MessageStatus
 
 class ChatDatabaseService {
   final FlutterSecureStorage _secureStorage;
+  final VaultMode _vaultMode;
 
   Database? _db;
 
-  ChatDatabaseService(this._secureStorage);
+  ChatDatabaseService(this._secureStorage, this._vaultMode);
 
   // ───────────────────────────────────────────────────────────────────────────
   // Initialization & Lifecycle
@@ -92,6 +95,10 @@ class ChatDatabaseService {
         await db.execute('PRAGMA foreign_keys = ON;');
       },
     );
+
+    if (_vaultMode == VaultMode.decoy) {
+      await DecoyDataSeeder.seedIfNeeded(_db!);
+    }
   }
 
   /// Tutup koneksi database.
@@ -106,7 +113,7 @@ class ChatDatabaseService {
     await close();
     final dbPath = await _getDatabasePath();
     await deleteDatabase(dbPath);
-    await _secureStorage.delete(key: _dbKeyStorageKey);
+    await _secureStorage.delete(key: _getStorageKey());
   }
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -313,13 +320,14 @@ class ChatDatabaseService {
   /// Kunci dibuat menggunakan [Random.secure()] — Cryptographically Secure
   /// Pseudo-Random Number Generator (CSPRNG) bawaan Dart.
   Future<String> _getOrCreateDatabaseKey() async {
-    final existingKey = await _secureStorage.read(key: _dbKeyStorageKey);
+    final storageKey = _getStorageKey();
+    final existingKey = await _secureStorage.read(key: storageKey);
     if (existingKey != null) return existingKey;
 
     // Instalasi pertama: generate 32-byte (256-bit) random key
     final newKey = _generateSecureKey(32);
     await _secureStorage.write(
-      key: _dbKeyStorageKey,
+      key: storageKey,
       value: newKey,
     );
     return newKey;
@@ -342,7 +350,12 @@ class ChatDatabaseService {
 
   Future<String> _getDatabasePath() async {
     final databasesPath = await getDatabasesPath();
-    return p.join(databasesPath, _dbName);
+    final dbName = _vaultMode == VaultMode.decoy ? 'chimera_decoy.db' : _dbName;
+    return p.join(databasesPath, dbName);
+  }
+
+  String _getStorageKey() {
+    return _vaultMode == VaultMode.decoy ? '${_dbKeyStorageKey}_decoy' : _dbKeyStorageKey;
   }
 
   /// Memastikan database sudah diinisialisasi sebelum operasi apapun.
@@ -367,6 +380,13 @@ class ChatDatabaseService {
       await db.execute('''
         ALTER TABLE messages
         ADD COLUMN status INTEGER NOT NULL DEFAULT 1
+      ''');
+    }
+    // Migrasi versi 2 -> 3: Tambahkan kolom 'expires_at_ms'
+    if (oldVersion < 3) {
+      await db.execute('''
+        ALTER TABLE messages
+        ADD COLUMN expires_at_ms INTEGER
       ''');
     }
   }
@@ -396,6 +416,7 @@ class ChatDatabaseService {
         is_encrypted        INTEGER NOT NULL DEFAULT 1,
         is_terminal_command INTEGER NOT NULL DEFAULT 0,
         status              INTEGER NOT NULL DEFAULT 1,
+        expires_at_ms       INTEGER,
         FOREIGN KEY (session_id)
           REFERENCES chat_sessions (id)
           ON DELETE CASCADE
@@ -426,7 +447,8 @@ class _ChatDatabaseNotifier extends AsyncNotifier<ChatDatabaseService> {
   @override
   Future<ChatDatabaseService> build() async {
     final storage = ref.watch(secureStorageProvider);
-    final service = ChatDatabaseService(storage);
+    final vaultMode = ref.watch(vaultModeProvider);
+    final service = ChatDatabaseService(storage, vaultMode);
     await service.initialize();
 
     // Tutup database saat provider di-dispose (misalnya saat app di-restart)

@@ -10,6 +10,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/message.dart';
 import '../theme/app_theme.dart';
+import 'burn_on_read_media.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MessageItem
@@ -127,34 +128,69 @@ class _MessageItemState extends State<MessageItem>
                       ),
                     ),
                   ],
+
+                  // ── TTL Indicator ──────────────────────────────────────────
+                  if (widget.message.expiresAt != null) ...[
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.hourglass_bottom,
+                      size: 12,
+                      color: AppTheme.warningRed,
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      'TTL',
+                      style: const TextStyle(
+                        color: AppTheme.warningRed,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'IBM Plex Mono',
+                      ),
+                    ),
+                  ],
                 ],
               ),
               const SizedBox(height: 4),
 
-              // ── Bubble pesan ──────────────────────────────────────────────
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: AppTheme.terminalCard,
-                  border: Border.all(
-                    color: widget.isSelf
-                        ? AppTheme.accentGreen.withValues(alpha: 0.5)
-                        : AppTheme.terminalBorder,
+              // ── Bubble pesan atau Media ──────────────────────────────────
+              if (widget.message.text.startsWith('SECURE_PAYLOAD:'))
+                // Render Media (Burn On Read)
+                Container(
+                  margin: const EdgeInsets.only(top: 4),
+                  child: BurnOnReadMedia(
+                    filePath: widget.message.text.split('FILE://')[1].trim(),
+                    participantId: widget.message.senderId,
+                    onBurnt: () {
+                      // Callback bisa digunakan untuk update UI segera,
+                      // tapi DB di-handle oleh _handleReleaseOrCancel atau cleanup worker
+                    },
                   ),
+                )
+              else
+                // Render Teks Biasa
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.terminalCard,
+                    border: Border.all(
+                      color: widget.isSelf
+                          ? AppTheme.accentGreen.withValues(alpha: 0.5)
+                          : AppTheme.terminalBorder,
+                    ),
+                  ),
+                  child: widget.animateTypewriter
+                      ? _TypewriterText(
+                          // Key memastikan state typewriter tidak di-share antar pesan
+                          key: ValueKey('tw_${widget.message.id}'),
+                          text: widget.message.text,
+                          isSelf: widget.isSelf,
+                        )
+                      : _StaticText(
+                          text: widget.message.text,
+                          isSelf: widget.isSelf,
+                        ),
                 ),
-                child: widget.animateTypewriter
-                    ? _TypewriterText(
-                        // Key memastikan state typewriter tidak di-share antar pesan
-                        key: ValueKey('tw_${widget.message.id}'),
-                        text: widget.message.text,
-                        isSelf: widget.isSelf,
-                      )
-                    : _StaticText(
-                        text: widget.message.text,
-                        isSelf: widget.isSelf,
-                      ),
-              ),
 
               // ── Read receipt / Status ────────────────────────────────────
               if (widget.isSelf) ...[

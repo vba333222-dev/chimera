@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../providers/providers.dart';
 import '../theme/app_theme.dart';
 
-class ChatListScreen extends StatefulWidget {
+class ChatListScreen extends ConsumerStatefulWidget {
   const ChatListScreen({super.key});
 
   @override
-  State<ChatListScreen> createState() => _ChatListScreenState();
+  ConsumerState<ChatListScreen> createState() => _ChatListScreenState();
 }
 
-class _ChatListScreenState extends State<ChatListScreen> {
+class _ChatListScreenState extends ConsumerState<ChatListScreen> {
   String _selectedFilter = 'all';
 
   @override
@@ -136,56 +138,56 @@ class _ChatListScreenState extends State<ChatListScreen> {
           // Chat List
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              children: [
-                _buildChatListItem(
-                  title: 'Alpha_Team_Net',
-                  time: '1042_hrs',
-                  imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyLuIo7hLkH0zX_fm3mVIQ-GrkLb1Czf-EHWvJeDdzMfJAldqHMojpb_3vnLX2xTY1-qhwLt4d25DkvHJG4E0CcNtKgReqT1LoDqcBhFGpxEEB2bdreu-XVkFrCTeYs00Mj1AXDZiEV6jTCjsSO7X-_Pupl3Br98vaW68yjxDCtnT_913e2UZLts6nK83y2HTuZAgx9aP8f3gdpzzhGKmzjAE_YfFRJlxlTXrzO-hkVNMhASEXgcIX05y0wGebfU-fAcCmV1AZapk6',
-                  isVerified: true,
-                  isConfidential: true,
-                  borderColor: AppTheme.accentGreen,
-                  icon: Icons.terminal,
-                  onTap: () => context.push('/chat/alpha?title=Alpha_Team_Net'),
-                ),
-                const SizedBox(height: 12),
-                _buildChatListItem(
-                  title: 'HR_Unit :: S.Jenkins',
-                  time: '0915_hrs',
-                  imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCxtKnLAYGlZRLfIuRP23X81cx7DILcOLpSd0Ui1oIYn-wId8Xrtbze8zDxda7BRhSaUZK03TtGffMrXJID8OKi7b4RXhUH9r86ljp56S3o4mybOlp_Zro9O0D-7x0aKT4JnwDLWukuvbExW4NsW1OavOznTj5Z5hUO8FZEoRTUtVHNdubX7JMd6OQ8EfnwKNFBweQF-jZsgyeYggttB_VTzHqGmiyz4e3NnrnL1RcAlnWNPRKJgcmBU0RA4jaI_z846NVanOFCM0X-',
-                  isVerified: false,
-                  subStatus: 'Restricted',
-                  subStatusColor: AppTheme.warningRed,
-                  subType: 'TYPE:Internal',
-                  borderColor: AppTheme.warningRed,
-                  icon: Icons.do_not_disturb_on,
-                  onTap: () => context.push('/chat/hr?title=HR_Unit'),
-                ),
-                const SizedBox(height: 12),
-                _buildChatListItem(
-                  title: 'Board_Strategy_Rm',
-                  time: 'T-minus_24h',
-                  imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCpoOYRg30pX7SZ1ftgeRgeTWVD4VPrsG2lE5nHwcQVpZ6hPWtFi6ELX2s2jAMJI0lVEHuhthYaAG3i0hQbT9BIqaTteI99FG7CYZ45MIP7GCGcC897OxYKchS39wQYcUNB06WX_xfNeZP5l-4yb9QeAveRCTiprE1Boy0s-wtZKNNz_172DH5UTd9SoOEG8dJKNSwHGOHxcCdqSWvquFx6Natb3aXmyMHo1yXHaTaf1EiNOr45wKIg8z0cZ5Uf4_ibolL8PqFVBOet',
-                  subStatus: 'LVL:Top_Secret',
-                  subStatusColor: Colors.purple[400],
-                  subType: 'Enc:E2EE',
-                  borderColor: AppTheme.warningRed,
-                  icon: Icons.vpn_key,
-                  onTap: () => context.push('/chat/board?title=Board_Strategy_Rm'),
-                ),
-                const SizedBox(height: 12),
-                _buildChatListItem(
-                  title: 'Legal_Dept_Main',
-                  time: 'Mon',
-                  imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBo6l5KsMiM59f2kgUiFj_qw1b-sppucd_VwFO80AoHkqSuoB-qbza-ig0xbmasNZ7K0xBvWS0-lwOEGwYVW-E2pM54JnBlzDQS5D5tfrLo9QoKmxFgtPGRjOwL7SLK3keKhxuW8C9dGixYShHWA_em2y3UJHjDhrt6gLB5BaUv4Cq-78YmwqLocomXXG-vasjwb6Hj7xYX8bZgS3CJ97omr1jSvPLcnTAHjoUsSkebC22RvniK72rhfpd5h1mImSg9GRc9HY4dt4CI',
-                  isVerified: true,
-                  borderColor: AppTheme.accentGreen,
-                  icon: Icons.chevron_right,
-                  onTap: () => context.push('/chat/legal?title=Legal_Dept_Main'),
-                ),
-                const SizedBox(height: 80), // Padding for bottom nav
-              ],
-            ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    children: [
+                      _buildChatListItem(
+                        title: 'Alpha_Team_Net',
+                        time: '1042_hrs',
+                        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyLuIo7hLkH0zX_fm3mVIQ-GrkLb1Czf-EHWvJeDdzMfJAldqHMojpb_3vnLX2xTY1-qhwLt4d25DkvHJG4E0CcNtKgReqT1LoDqcBhFGpxEEB2bdreu-XVkFrCTeYs00Mj1AXDZiEV6jTCjsSO7X-_Pupl3Br98vaW68yjxDCtnT_913e2UZLts6nK83y2HTuZAgx9aP8f3gdpzzhGKmzjAE_YfFRJlxlTXrzO-hkVNMhASEXgcIX05y0wGebfU-fAcCmV1AZapk6',
+                        isVerified: true,
+                        isConfidential: true,
+                        borderColor: AppTheme.accentGreen,
+                        icon: Icons.terminal,
+                        onTap: () => context.push('/chat/alpha?title=Alpha_Team_Net'),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildChatListItem(
+                        title: 'HR_Unit :: S.Jenkins',
+                        time: '0915_hrs',
+                        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCxtKnLAYGlZRLfIuRP23X81cx7DILcOLpSd0Ui1oIYn-wId8Xrtbze8zDxda7BRhSaUZK03TtGffMrXJID8OKi7b4RXhUH9r86ljp56S3o4mybOlp_Zro9O0D-7x0aKT4JnwDLWukuvbExW4NsW1OavOznTj5Z5hUO8FZEoRTUtVHNdubX7JMd6OQ8EfnwKNFBweQF-jZsgyeYggttB_VTzHqGmiyz4e3NnrnL1RcAlnWNPRKJgcmBU0RA4jaI_z846NVanOFCM0X-',
+                        isVerified: false,
+                        subStatus: 'Restricted',
+                        subStatusColor: AppTheme.warningRed,
+                        subType: 'TYPE:Internal',
+                        borderColor: AppTheme.warningRed,
+                        icon: Icons.do_not_disturb_on,
+                        onTap: () => context.push('/chat/hr?title=HR_Unit'),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildChatListItem(
+                        title: 'Board_Strategy_Rm',
+                        time: 'T-minus_24h',
+                        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCpoOYRg30pX7SZ1ftgeRgeTWVD4VPrsG2lE5nHwcQVpZ6hPWtFi6ELX2s2jAMJI0lVEHuhthYaAG3i0hQbT9BIqaTteI99FG7CYZ45MIP7GCGcC897OxYKchS39wQYcUNB06WX_xfNeZP5l-4yb9QeAveRCTiprE1Boy0s-wtZKNNz_172DH5UTd9SoOEG8dJKNSwHGOHxcCdqSWvquFx6Natb3aXmyMHo1yXHaTaf1EiNOr45wKIg8z0cZ5Uf4_ibolL8PqFVBOet',
+                        subStatus: 'LVL:Top_Secret',
+                        subStatusColor: Colors.purple[400],
+                        subType: 'Enc:E2EE',
+                        borderColor: AppTheme.warningRed,
+                        icon: Icons.vpn_key,
+                        onTap: () => context.push('/chat/board?title=Board_Strategy_Rm'),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildChatListItem(
+                        title: 'Legal_Dept_Main',
+                        time: 'Mon',
+                        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBo6l5KsMiM59f2kgUiFj_qw1b-sppucd_VwFO80AoHkqSuoB-qbza-ig0xbmasNZ7K0xBvWS0-lwOEGwYVW-E2pM54JnBlzDQS5D5tfrLo9QoKmxFgtPGRjOwL7SLK3keKhxuW8C9dGixYShHWA_em2y3UJHjDhrt6gLB5BaUv4Cq-78YmwqLocomXXG-vasjwb6Hj7xYX8bZgS3CJ97omr1jSvPLcnTAHjoUsSkebC22RvniK72rhfpd5h1mImSg9GRc9HY4dt4CI',
+                        isVerified: true,
+                        borderColor: AppTheme.accentGreen,
+                        icon: Icons.chevron_right,
+                        onTap: () => context.push('/chat/legal?title=Legal_Dept_Main'),
+                      ),
+                      const SizedBox(height: 80), // Padding for bottom nav
+                    ],
+                  ),
           )
         ],
       ),
@@ -319,8 +321,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _buildNavItem(Icons.chat, 'CHATS', true),
-          _buildNavItem(Icons.contacts, 'DIR', false),
+          _buildNavItem(Icons.chat, 'CHATS', true, null),
+          _buildNavItem(Icons.contacts, 'DIR', false, null),
           // Center Scan Button
           Container(
             width: 48,
@@ -333,30 +335,34 @@ class _ChatListScreenState extends State<ChatListScreen> {
             ),
             child: const Icon(Icons.qr_code_scanner, color: AppTheme.accentGreen, size: 24),
           ),
-          _buildNavItem(Icons.folder_shared, 'VAULT', false),
-          _buildNavItem(Icons.settings, 'CFG', false),
+          _buildNavItem(Icons.folder_shared, 'VAULT', false, null),
+          _buildNavItem(Icons.settings, 'CFG', false, () => context.push('/audit')),
         ],
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            color: isActive ? AppTheme.accentGreen.withValues(alpha: 0.1) : Colors.transparent,
-            border: Border.all(color: isActive ? AppTheme.accentGreen : Colors.transparent),
-            boxShadow: isActive ? AppTheme.glowGreen : null,
+  Widget _buildNavItem(IconData icon, String label, bool isActive, VoidCallback? onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: isActive ? AppTheme.accentGreen.withValues(alpha: 0.1) : Colors.transparent,
+              border: Border.all(color: isActive ? AppTheme.accentGreen : Colors.transparent),
+              boxShadow: isActive ? AppTheme.glowGreen : null,
+            ),
+            child: Icon(icon, color: isActive ? AppTheme.accentGreen : Colors.grey[600], size: 20),
           ),
-          child: Icon(icon, color: isActive ? AppTheme.accentGreen : Colors.grey[600], size: 20),
-        ),
-        const SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 2, color: isActive ? AppTheme.accentGreen : Colors.grey[600])),
-      ],
+          const SizedBox(height: 4),
+          Text(label, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 2, color: isActive ? AppTheme.accentGreen : Colors.grey[600])),
+        ],
+      ),
     );
   }
 }

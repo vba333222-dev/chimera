@@ -9,6 +9,8 @@
 //   3. RaspService.initialize() — freeRASP mulai memantau ancaman
 //   4. runApp() dengan ProviderScope yang memakai container yang sudah ada
 
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,8 +20,9 @@ import 'screens/biometric_login_screen.dart';
 import 'screens/chat_list_screen.dart';
 import 'screens/chat_room_screen.dart';
 import 'screens/device_verification_screen.dart';
+import 'screens/secure_document_viewer_screen.dart';
 import 'screens/security_lockdown_screen.dart';
-import 'services/rasp_service.dart';
+import 'screens/audit_log_screen.dart';
 import 'theme/app_theme.dart';
 import 'widgets/pixel_grid_background.dart';
 import 'widgets/scanline_overlay.dart';
@@ -35,6 +38,7 @@ void main() async {
   // Inisialisasi RASP sebelum apapun ditampilkan ke user
   final raspService = RaspService(
     container.read(securityThreatProvider.notifier),
+    container.read(auditLogServiceProvider),
   );
   await raspService.initialize();
 
@@ -62,11 +66,18 @@ class _SecureChatAppState extends ConsumerState<SecureChatApp>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    // Jalankan background worker pembersihan pesan otomatis
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(ephemeralCleanupServiceProvider).startSweeping();
+    });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    // Hentikan background worker
+    ref.read(ephemeralCleanupServiceProvider).stopSweeping();
     super.dispose();
   }
 
@@ -140,6 +151,10 @@ final GoRouter _router = GoRouter(
       builder: (context, state) => const DeviceVerificationScreen(),
     ),
     GoRoute(
+      path: '/audit',
+      builder: (context, state) => const AuditLogScreen(),
+    ),
+    GoRoute(
       path: '/chats',
       builder: (context, state) => const ChatListScreen(),
     ),
@@ -149,6 +164,22 @@ final GoRouter _router = GoRouter(
         final id = state.pathParameters['id'] ?? 'Unknown';
         final title = state.uri.queryParameters['title'] ?? 'Sec_Channel';
         return ChatRoomScreen(chatId: id, chatTitle: title);
+      },
+    ),
+    GoRoute(
+      path: '/viewer',
+      builder: (context, state) {
+        final isPdf = state.uri.queryParameters['isPdf'] == 'true';
+        final memoryBytes = state.extra as Uint8List?;
+        
+        if (memoryBytes == null) {
+          return const Scaffold(body: Center(child: Text('NO DATA', style: TextStyle(color: Colors.red))));
+        }
+
+        return SecureDocumentViewerScreen(
+          memoryBytes: memoryBytes,
+          isPdf: isPdf,
+        );
       },
     ),
   ],

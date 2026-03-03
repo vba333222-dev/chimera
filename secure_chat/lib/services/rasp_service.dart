@@ -27,11 +27,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freerasp/freerasp.dart';
 
+import 'audit_log_service.dart';
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Enum dan Data Class untuk ancaman
 // ─────────────────────────────────────────────────────────────────────────────
 
 enum ThreatSeverity { critical, warning }
+
+class ThreatType {
+  static const remoteKillSwitch = 'REMOTE_KILL_SWITCH';
+}
 
 class DetectedThreat {
   final String name;
@@ -98,6 +104,17 @@ class SecurityThreatNotifier extends Notifier<SecurityThreatState> {
     );
   }
 
+  void reportThreat(String threatName) {
+    if (threatName == ThreatType.remoteKillSwitch) {
+       reportCriticalThreat(DetectedThreat(
+         name: ThreatType.remoteKillSwitch,
+         description: 'Admin triggered Remote Kill Switch Protocol. Device wiped.',
+         severity: ThreatSeverity.critical,
+         detectedAt: DateTime.now()
+       ));
+    }
+  }
+
   void markInitialCheckDone() {
     state = state.copyWith(initialCheckDone: true);
   }
@@ -109,8 +126,9 @@ class SecurityThreatNotifier extends Notifier<SecurityThreatState> {
 
 class RaspService {
   final SecurityThreatNotifier _threatNotifier;
+  final AuditLogService _auditLogService;
 
-  RaspService(this._threatNotifier);
+  RaspService(this._threatNotifier, this._auditLogService);
 
   /// Inisialisasi freeRASP SDK dan pasang listener untuk semua jenis ancaman.
   ///
@@ -231,6 +249,7 @@ class RaspService {
   // ── Private helpers ────────────────────────────────────────────────────────
 
   void _critical(String name, String description) {
+    _auditLogService.logEvent('RASP_CRITICAL_THREAT', '$name: $description');
     _threatNotifier.reportCriticalThreat(
       DetectedThreat(
         name: name,
@@ -242,6 +261,7 @@ class RaspService {
   }
 
   void _warning(String name, String description) {
+    _auditLogService.logEvent('RASP_WARNING_THREAT', '$name: $description');
     _threatNotifier.reportWarning(
       DetectedThreat(
         name: name,
@@ -251,13 +271,5 @@ class RaspService {
       ),
     );
   }
+
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Provider
-// ─────────────────────────────────────────────────────────────────────────────
-
-final securityThreatProvider =
-    NotifierProvider<SecurityThreatNotifier, SecurityThreatState>(
-  SecurityThreatNotifier.new,
-);

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -5,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:screen_protector/screen_protector.dart';
 import '../env/env.dart';
-import '../models/message.dart';
 import '../providers/providers.dart';
 import '../theme/app_theme.dart';
 import '../widgets/optimized_message_list.dart';
@@ -35,6 +35,97 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
   // ─────────────────────────────────────────────────────────────────────────
 
+  Future<void> _openDemoDocument() async {
+    // 1. Simulasi menerima & mendekripsi buffer file rahasia
+    final dummyBytes = Uint8List.fromList('SECURE_PAYLOAD_DUMMY_IMAGE'.codeUnits);
+    
+    // 2. Berikan ke SecureDocumentService untuk didekrip (pure Memory)
+    final memoryBytes = await ref.read(secureDocumentServiceProvider).decryptDocumentInMemory(dummyBytes);
+    
+    // 3. Buka Document Viewer (Via Memory Data Object)
+    if (mounted) {
+      context.push('/viewer?isPdf=false', extra: memoryBytes);
+    }
+  }
+
+  Future<void> _sendEphemeralText() async {
+    if (_textController.text.trim().isEmpty) return;
+    
+    final text = _textController.text;
+    final msgId = DateTime.now().millisecondsSinceEpoch.toString();
+    // Set expiry 10 seconds from now
+    final expires = DateTime.now().add(const Duration(seconds: 10));
+
+    final msg = Message(
+      id: msgId,
+      sessionId: widget.chatId,
+      text: text,
+      senderId: 'ME',
+      timestamp: DateTime.now(),
+      status: MessageStatus.sent,
+      expiresAt: expires,
+    );
+
+    setState(() {
+      _messages.add(msg);
+      _textController.clear();
+    });
+    _scrollToBottom();
+    
+    final db = await ref.read(chatDatabaseProvider.future);
+    await db.insertMessage(msg);
+  }
+
+  Future<void> _sendViewOnceMedia() async {
+    // Mock Payload for View-Once Media
+    final msgId = DateTime.now().millisecondsSinceEpoch.toString();
+    final expires = DateTime.now().add(const Duration(hours: 1)); // TTL just in case it is ignored
+
+    final msg = Message(
+      id: msgId,
+      sessionId: widget.chatId,
+      text: 'SECURE_PAYLOAD: IN_MEMORY_ATTACHMENT',
+      senderId: 'ME',
+      timestamp: DateTime.now(),
+      status: MessageStatus.sent,
+      expiresAt: expires,
+    );
+
+    setState(() {
+      _messages.add(msg);
+      _textController.clear();
+    });
+    _scrollToBottom();
+    
+    final db = await ref.read(chatDatabaseProvider.future);
+    await db.insertMessage(msg);
+  }
+
+  Future<void> _simulateRemoteKillSwitch() async {
+    // 1. Dapatkan websocket service
+    final wsService = ref.read(webSocketServiceProvider);
+    
+    // 2. Tembakkan raw payload khusus ke websocket yang diterima server
+    // (Namun karena server dummy ini sekadar mengembalikan echo,
+    // interceptor di WebSocketService akan menangkap echo-nya sendiri).
+    // Lebih gampang kita langsung feed JSON payload ke sink untuk verifikasi:
+    
+    final payload = '{"type":"SYS_COMMAND", "action":"KILL_SWITCH"}';
+    wsService.sendMessage(payload);
+
+    // Karena wsService dummy kita mungkin tidak meng-echo payload JSON
+    // jika kita sedang tidak konek, untuk tujuan simulasi tes Task 22 kita
+    // akan feed payload ini langsung kalau tidak connect.
+    if (!wsService.isConnected) {
+       // Manual injeksi ke interceptor
+       final Map<String, dynamic> jsonMap = jsonDecode(payload);
+       if (jsonMap['type'] == 'SYS_COMMAND' && jsonMap['action'] == 'KILL_SWITCH') {
+          ref.read(selfDestructServiceProvider).executeSelfDestruct();
+          ref.read(securityThreatProvider.notifier).reportThreat(ThreatType.remoteKillSwitch);
+       }
+    }
+  }
+
   /// Kirim pesan (dimasukkan ke Offline Queue).
   ///
   /// Alur:
@@ -47,6 +138,24 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   ///      mengirimkannya ke WebSocket di background.
   Future<void> _sendMessage() async {
     if (_textController.text.trim().isEmpty) return;
+
+    final isDuress = ref.read(duressModeProvider);
+    if (isDuress) {
+      // In duress mode, fake the message sending visually but do zero backend work
+      setState(() {
+        _messages.add(Message(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          sessionId: widget.chatId,
+          text: _textController.text,
+          senderId: 'ME',
+          timestamp: DateTime.now(),
+          status: MessageStatus.sent,
+        ));
+        _textController.clear();
+      });
+      _scrollToBottom();
+      return;
+    }
 
     final text = _textController.text;
     final msgId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -128,9 +237,18 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   @override
   void initState() {
     super.initState();
-    _initDemoMessages();
+    final isDuress = ref.read(duressModeProvider);
+
     _initScreenProtector();
-    _initWebSocket(); // juga menginisialisasi PFS
+    
+    if (isDuress) {
+      // Duress mode: show empty list, do not connect to anything
+      _messages.clear();
+    } else {
+      // Normal mode
+      _initDemoMessages();
+      _initWebSocket(); // juga menginisialisasi PFS
+    }
   }
 
   void _initDemoMessages() {
@@ -387,16 +505,47 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        // Add Button
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.transparent),
+                        // Send Ephemeral Icon
+                        InkWell(
+                          onTap: _sendEphemeralText,
+                          child: Container(
+                            width: 32,
+                            height: 44,
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.timer, color: AppTheme.warningRed),
                           ),
-                          child: const Icon(Icons.add, color: Colors.grey),
                         ),
-                        const SizedBox(width: 8),
+                        // View-Once Media Icon
+                        InkWell(
+                          onTap: _sendViewOnceMedia,
+                          child: Container(
+                            width: 32,
+                            height: 44,
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.photo_camera_front, color: AppTheme.accentGreenBright),
+                          ),
+                        ),
+                        // Kill Switch Mock
+                        InkWell(
+                          onTap: _simulateRemoteKillSwitch,
+                          child: Container(
+                            width: 32,
+                            height: 44,
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.dangerous, color: AppTheme.warningRed),
+                          ),
+                        ),
+                        // Add Button (Launch Secure Document)
+                        InkWell(
+                          onTap: _openDemoDocument,
+                          child: Container(
+                            width: 32,
+                            height: 44,
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.description, color: AppTheme.accentGreen),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
                         // Input Box
                         Expanded(
                           child: Container(

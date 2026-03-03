@@ -11,13 +11,12 @@
 //   HTTP CONNECT: RFC 7231 §4.3.6
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/proxy_config.dart';
+import 'audit_log_service.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ProxyException
@@ -36,7 +35,10 @@ class ProxyException implements Exception {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class NetworkProxyService {
+  final AuditLogService _auditLogService;
   static const Duration _connectTimeout = Duration(seconds: 15);
+
+  NetworkProxyService(this._auditLogService);
 
   /// Membangun koneksi TCP ke [targetHost]:[targetPort], melewati proxy
   /// yang dikonfigurasi di [config].
@@ -76,6 +78,7 @@ class NetworkProxyService {
 
   Future<Socket> _directConnect(String host, int port) async {
     debugPrint('[Proxy] Direct → $host:$port');
+    _auditLogService.logEvent('PROXY_CONNECT', 'Direct connection to $host:$port');
     return Socket.connect(host, port, timeout: _connectTimeout);
   }
 
@@ -183,6 +186,7 @@ class NetworkProxyService {
       // Flush reader's cached bytes back to socket's incoming stream
       reader.cancel();
       debugPrint('[Proxy] SOCKS5 tunnel open → $targetHost:$targetPort');
+      _auditLogService.logEvent('PROXY_CONNECT', 'SOCKS5 tunnel opened to $targetHost:$targetPort via $proxyHost:$proxyPort');
       return socket;
     } catch (e) {
       reader.cancel();
@@ -243,6 +247,7 @@ class NetworkProxyService {
 
       reader.cancel();
       debugPrint('[Proxy] HTTP CONNECT tunnel open → $targetHost:$targetPort');
+      _auditLogService.logEvent('PROXY_CONNECT', 'HTTP CONNECT tunnel opened to $targetHost:$targetPort via $proxyHost:$proxyPort');
       return socket;
     } catch (e) {
       reader.cancel();
@@ -327,9 +332,3 @@ class _SocketReader {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Provider
-// ─────────────────────────────────────────────────────────────────────────────
-
-final networkProxyServiceProvider = Provider<NetworkProxyService>((ref) {
-  return NetworkProxyService();
-});

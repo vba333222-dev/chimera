@@ -11,6 +11,7 @@ class Message {
   final bool isEncrypted;      // Status E2EE
   final bool isTerminalCommand; // System messages / command output
   final MessageStatus status;   // Status pengiriman (untuk offline queue)
+  final DateTime? expiresAt; // TTL Timestamp untuk pesan Ephemeral
 
   const Message({
     required this.id,
@@ -21,6 +22,7 @@ class Message {
     this.isEncrypted = true,
     this.isTerminalCommand = false,
     this.status = MessageStatus.sent,
+    this.expiresAt,
   });
 
   Message copyWith({
@@ -32,6 +34,7 @@ class Message {
     bool? isEncrypted,
     bool? isTerminalCommand,
     MessageStatus? status,
+    DateTime? expiresAt,
   }) {
     return Message(
       id: id ?? this.id,
@@ -42,6 +45,7 @@ class Message {
       isEncrypted: isEncrypted ?? this.isEncrypted,
       isTerminalCommand: isTerminalCommand ?? this.isTerminalCommand,
       status: status ?? this.status,
+      expiresAt: expiresAt ?? this.expiresAt,
     );
   }
 
@@ -62,6 +66,7 @@ class Message {
       'is_encrypted': isEncrypted ? 1 : 0,
       'is_terminal_command': isTerminalCommand ? 1 : 0,
       'status': status.index,
+      'expires_at_ms': expiresAt?.millisecondsSinceEpoch,
     };
   }
 
@@ -79,11 +84,15 @@ class Message {
       status: map.containsKey('status')
           ? MessageStatus.values[map['status'] as int]
           : MessageStatus.sent,
+      expiresAt: map['expires_at_ms'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['expires_at_ms'] as int)
+          : null,
     );
   }
 
   @override
   String toString() =>
       'Message(id: $id, sessionId: $sessionId, senderId: $senderId, '
-      'timestamp: $timestamp, isEncrypted: $isEncrypted, status: ${status.name})';
+      'timestamp: $timestamp, isEncrypted: $isEncrypted, status: ${status.name}, '
+      'expiresAt: $expiresAt)';
 }

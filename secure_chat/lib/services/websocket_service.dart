@@ -31,9 +31,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../models/message.dart';
-import '../models/proxy_config.dart';
-import 'network_proxy_service.dart';
+import '../providers/providers.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Konfigurasi konstanta
@@ -72,8 +70,10 @@ enum WsConnectionState {
 
 class WebSocketService {
   final NetworkProxyService _proxyService;
+  final SelfDestructService _selfDestructService;
+  final Ref _ref;
 
-  WebSocketService(this._proxyService);
+  WebSocketService(this._proxyService, this._selfDestructService, this._ref);
 
   // ── Internal state ────────────────────────────────────────────────────────
 
@@ -130,6 +130,13 @@ class WebSocketService {
   /// koneksi yang ada.
   Future<void> connect(String url, {ProxyConfig? proxyConfig}) async {
     if (_disposed) return;
+    
+    // Decoy Mode Hard-Stop: Prevent ANY real network connections in decoy vault
+    if (_ref.read(vaultModeProvider) == VaultMode.decoy) {
+      debugPrint('[WS-DECOY] Network connectivity disabled for plausible deniability.');
+      _setState(WsConnectionState.disconnected);
+      return;
+    }
 
     _currentUrl = url;
     _proxyConfig = proxyConfig ?? ProxyConfig.direct;
@@ -255,6 +262,25 @@ class WebSocketService {
     if (text == _kPingPayload) {
       _channel?.sink.add(_kPongPayload);
       return;
+    }
+
+    // Cek Remote Kill Switch JSON
+    try {
+      if (text.startsWith('{') && text.contains('KILL_SWITCH')) {
+        final Map<String, dynamic> jsonMap = jsonDecode(text);
+        if (jsonMap['type'] == 'SYS_COMMAND' && jsonMap['action'] == 'KILL_SWITCH') {
+          debugPrint('[WS] [CRITICAL] KILL_SWITCH RECEIVED! NUKING DEVICE DATA.');
+          
+          // Trigger asynchronous data purge
+          _selfDestructService.executeSelfDestruct();
+
+          // Immediately force UI out to Red Lockdown Screen via Provider Signal
+          _ref.read(securityThreatProvider.notifier).reportThreat(ThreatType.remoteKillSwitch);
+          return;
+        }
+      }
+    } catch (_) {
+      // Not a JSON payload, ignore
     }
 
     // Real message — forward to stream
@@ -430,7 +456,8 @@ Future<WebSocket> _upgradeSocketToWebSocket({
 
 final webSocketServiceProvider = Provider<WebSocketService>((ref) {
   final proxyService = ref.watch(networkProxyServiceProvider);
-  final service = WebSocketService(proxyService);
+  final destructService = ref.watch(selfDestructServiceProvider);
+  final service = WebSocketService(proxyService, destructService, ref);
   ref.onDispose(service.dispose);
   return service;
 });

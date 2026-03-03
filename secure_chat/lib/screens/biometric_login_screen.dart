@@ -55,6 +55,10 @@ class _BiometricLoginScreenState extends ConsumerState<BiometricLoginScreen> wit
           backgroundColor: AppTheme.warningRed,
         ),
       );
+      ref.read(auditLogServiceProvider).logEvent(
+        'AUTH_FAILURE_BIOMETRIC', 
+        'Biometric authentication unavailable or failed completely.',
+      );
     }
   }
 
@@ -67,6 +71,25 @@ class _BiometricLoginScreenState extends ConsumerState<BiometricLoginScreen> wit
       }
     } else if (key == 'ENT') {
       if (_pin == _correctPin) {
+        ref.read(vaultModeProvider.notifier).setMode(VaultMode.real);
+        context.go('/device-verify');
+      } else if (_pin == '654321') {
+        ref.read(vaultModeProvider.notifier).setMode(VaultMode.decoy);
+        context.go('/device-verify');
+      } else if (_pin == '9999') {
+        // DURESS PIN ENTERED
+        // 1. Set duress mode so the next screens show dummy data
+        ref.read(duressModeProvider.notifier).enable();
+        
+        // 2. Trigger self destruct protocol asynchronously
+        final destructService = ref.read(selfDestructServiceProvider);
+        
+        // We log it FIRST before the service obliterates the log database
+        ref.read(auditLogServiceProvider).logEvent('DURESS_TRIGGERED', 'Self-destruct mechanism initiated via PIN').then((_) {
+          destructService.executeSelfDestruct();
+        });
+
+        // 3. Navigate away to make it look like a successful login
         context.go('/device-verify');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -75,6 +98,7 @@ class _BiometricLoginScreenState extends ConsumerState<BiometricLoginScreen> wit
             backgroundColor: AppTheme.warningRed,
           ),
         );
+        ref.read(auditLogServiceProvider).logEvent('AUTH_FAILURE_PIN', 'Invalid PIN entry attempt');
         setState(() {
           _pin = '';
         });

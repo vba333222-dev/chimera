@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';
 import '../theme/app_theme.dart';
+import '../providers/providers.dart';
 
-class DeviceVerificationScreen extends StatefulWidget {
+class DeviceVerificationScreen extends ConsumerStatefulWidget {
   const DeviceVerificationScreen({super.key});
 
   @override
-  State<DeviceVerificationScreen> createState() => _DeviceVerificationScreenState();
+  ConsumerState<DeviceVerificationScreen> createState() => _DeviceVerificationScreenState();
 }
 
-class _DeviceVerificationScreenState extends State<DeviceVerificationScreen> {
+class _DeviceVerificationScreenState extends ConsumerState<DeviceVerificationScreen> {
   final List<String> _logs = [];
   int _progress = 0;
   String _targetFingerprint = 'UNKNOWN';
@@ -48,9 +50,28 @@ class _DeviceVerificationScreenState extends State<DeviceVerificationScreen> {
       } else {
         timer.cancel();
         // Give it a brief moment before navigating
-        Future.delayed(const Duration(milliseconds: 800), () {
-          if (mounted) {
-            context.go('/chats');
+        Future.delayed(const Duration(milliseconds: 800), () async {
+          if (!mounted) return;
+          
+          try {
+            // Context-Aware Access Validation (Geofencing & Time)
+            await ref.read(accessControlServiceProvider).verifyAccess();
+            
+            if (mounted) {
+              context.go('/chats');
+            }
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(e.toString()),
+                  backgroundColor: AppTheme.warningRed,
+                  duration: const Duration(seconds: 5),
+                ),
+              );
+              // Forbid access, route back to login
+              context.go('/auth');
+            }
           }
         });
       }
