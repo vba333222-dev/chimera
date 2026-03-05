@@ -214,7 +214,7 @@ class _MessageItemState extends State<MessageItem>
         );
       case MessageStatus.sent:
         return const Icon(
-          Icons.check,
+          Icons.done_all, // Gunakan double check untuk sent/delivered
           color: AppTheme.accentGreen,
           size: 14,
         );

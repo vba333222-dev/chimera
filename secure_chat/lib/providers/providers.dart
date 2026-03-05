@@ -8,10 +8,14 @@ import '../services/audit_log_service.dart';
 import '../services/chat_database_service.dart';
 import '../services/encryption_service.dart';
 import '../services/ephemeral_cleanup_service.dart';
+import '../services/handshake_repository.dart';
 import '../services/network_proxy_service.dart';
+import '../services/pin_service.dart';
 import '../services/rasp_service.dart';
 import '../services/secure_document_service.dart';
 import '../services/self_destruct_service.dart';
+import '../services/ssl_pinning_service.dart';
+import '../services/x3dh_service.dart';
 
 export '../models/chat_session.dart';
 export '../models/message.dart';
@@ -19,13 +23,17 @@ export '../models/proxy_config.dart';
 
 export '../services/chat_database_service.dart';
 export '../services/encryption_service.dart';
+export '../services/handshake_repository.dart';
 export '../services/network_proxy_service.dart';
 export '../services/offline_queue_service.dart';
 export '../services/pfs_session_service.dart';
+export '../services/pin_service.dart';
 export '../services/rasp_service.dart';
 export '../services/self_destruct_service.dart';
+export '../services/ssl_pinning_service.dart';
 export '../services/websocket_service.dart';
 export '../services/access_control_service.dart';
+export '../services/x3dh_service.dart';
 
 // ----------------------------------------------------------------------
 // Secure Storage Provider
@@ -41,6 +49,11 @@ final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
 // ----------------------------------------------------------------------
 final localAuthProvider = Provider<LocalAuthentication>((ref) {
   return LocalAuthentication();
+});
+
+final pinServiceProvider = Provider<PinService>((ref) {
+  final storage = ref.watch(secureStorageProvider);
+  return PinService(storage);
 });
 
 // ----------------------------------------------------------------------
@@ -163,6 +176,16 @@ final networkProxyServiceProvider = Provider<NetworkProxyService>((ref) {
   return NetworkProxyService(auditService);
 });
 
+/// SSL Certificate Pinning service — mencegah serangan MITM pada WSS.
+/// Default: PERMISSIVE (dev). Ganti ke STRICT saat distribusi production.
+final sslPinningServiceProvider = Provider<SslPinningService>((ref) {
+  return SslPinningService(
+    // PRODUCTION: ganti ke SslPinningMode.strict dan isi kPinnedCertFingerprints
+    mode: SslPinningMode.permissive,
+  );
+});
+
+
 final raspServiceProvider = Provider<RaspService>((ref) {
   final notif = ref.watch(securityThreatProvider.notifier);
   final auditService = ref.watch(auditLogServiceProvider);
@@ -174,15 +197,6 @@ final encryptionServiceProvider = Provider<EncryptionService>((ref) {
   return EncryptionService(secureStorage);
 });
 
-// Duress Mode State Provider (true jika user masuk dengan Duress PIN)
-class DuressModeNotifier extends Notifier<bool> {
-  @override
-  bool build() => false;
-
-  void enable() => state = true;
-}
-
-final duressModeProvider = NotifierProvider<DuressModeNotifier, bool>(DuressModeNotifier.new);
 
 // ----------------------------------------------------------------------
 // Vault Mode Provider (Plausible Deniability Architecture)
@@ -253,3 +267,21 @@ final ephemeralCleanupServiceProvider = Provider<EphemeralCleanupService>((ref) 
   
   return EphemeralCleanupService(dbService, auditLogService);
 });
+
+// ----------------------------------------------------------------------
+// Phase 8: X3DH Handshake Providers
+// ----------------------------------------------------------------------
+
+/// Repository untuk operasi prekey (mockable server layer).
+final handshakeRepositoryProvider = Provider<HandshakeRepository>((ref) {
+  final storage = ref.watch(secureStorageProvider);
+  return HandshakeRepository(storage);
+});
+
+/// Service X3DH: generate/publish prekeys, initiate/complete handshake.
+final x3dhServiceProvider = Provider<X3dhService>((ref) {
+  final storage = ref.watch(secureStorageProvider);
+  final repository = ref.watch(handshakeRepositoryProvider);
+  return X3dhService(storage, repository);
+});
+

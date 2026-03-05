@@ -30,8 +30,8 @@ class DecoyDataSeeder {
       id: hrSessionId,
       title: 'Laporan Absensi Bulanan',
       targetFingerprint: 'HR-DEPT-993',
-      createdAtMs: nowMs - (86400000 * 2), // 2 days ago
-      lastMessageAtMs: nowMs - 3600000,    // 1 hour ago
+      createdAt: DateTime.fromMillisecondsSinceEpoch(nowMs - (86400000 * 2)), // 2 days ago
+      lastMessageAt: DateTime.fromMillisecondsSinceEpoch(nowMs - 3600000),    // 1 hour ago
       isActive: true,
     );
 
@@ -43,8 +43,8 @@ class DecoyDataSeeder {
       id: opsSessionId,
       title: 'Jadwal Piket Keamanan',
       targetFingerprint: 'OPS-DEPT-402',
-      createdAtMs: nowMs - (86400000 * 5), // 5 days ago
-      lastMessageAtMs: nowMs - 7200000,    // 2 hours ago
+      createdAt: DateTime.fromMillisecondsSinceEpoch(nowMs - (86400000 * 5)), // 5 days ago
+      lastMessageAt: DateTime.fromMillisecondsSinceEpoch(nowMs - 7200000),    // 2 hours ago
       isActive: true,
     );
 
@@ -61,7 +61,7 @@ class DecoyDataSeeder {
           sessionId: hrSessionId,
           text: 'Mohon rekap absensi minggu ini dikirimkan sebelum jam 5 sore.',
           senderId: 'HR-Admin',
-          timestampMs: nowMs - 86400000,
+          timestamp: DateTime.fromMillisecondsSinceEpoch(nowMs - 86400000),
           status: MessageStatus.sent,
         ),
         Message(
@@ -69,7 +69,7 @@ class DecoyDataSeeder {
           sessionId: hrSessionId,
           text: 'Baik, sedang saya susun format Excel-nya.',
           senderId: 'Me',
-          timestampMs: nowMs - 82800000,
+          timestamp: DateTime.fromMillisecondsSinceEpoch(nowMs - 82800000),
           status: MessageStatus.sent,
         ),
         Message(
@@ -77,7 +77,7 @@ class DecoyDataSeeder {
           sessionId: hrSessionId,
           text: 'Terima kasih, ditunggu updatenya.',
           senderId: 'HR-Admin',
-          timestampMs: nowMs - 3600000,
+          timestamp: DateTime.fromMillisecondsSinceEpoch(nowMs - 3600000),
           status: MessageStatus.sent,
         ),
       ];
@@ -93,7 +93,7 @@ class DecoyDataSeeder {
           sessionId: opsSessionId,
           text: 'Jadwal piket untuk regu 3 sudah dirilis di mading.',
           senderId: 'Danru-Ops',
-          timestampMs: nowMs - 172800000,
+          timestamp: DateTime.fromMillisecondsSinceEpoch(nowMs - 172800000),
           status: MessageStatus.sent,
         ),
         Message(
@@ -101,7 +101,7 @@ class DecoyDataSeeder {
           sessionId: opsSessionId,
           text: 'Siap komandan, jadwal sudah diterima.',
           senderId: 'Me',
-          timestampMs: nowMs - 7200000,
+          timestamp: DateTime.fromMillisecondsSinceEpoch(nowMs - 7200000),
           status: MessageStatus.sent,
         ),
       ];

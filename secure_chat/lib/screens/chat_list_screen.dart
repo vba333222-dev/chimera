@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/providers.dart';
 import '../theme/app_theme.dart';
+import '../widgets/terminal_avatar.dart';
 
 class ChatListScreen extends ConsumerStatefulWidget {
   const ChatListScreen({super.key});
@@ -13,6 +14,69 @@ class ChatListScreen extends ConsumerStatefulWidget {
 
 class _ChatListScreenState extends ConsumerState<ChatListScreen> {
   String _selectedFilter = 'all';
+  String _searchQuery = '';
+
+  final List<Map<String, dynamic>> _dummyChats = [
+    {
+      'title': 'Alpha_Team_Net',
+      'time': '1042_hrs',
+      'isVerified': true,
+      'isConfidential': true,
+      'borderColor': AppTheme.accentGreen,
+      'icon': Icons.terminal,
+      'route': '/chat/alpha?title=Alpha_Team_Net',
+      'type': 'groups',
+    },
+    {
+      'title': 'HR_Unit :: S.Jenkins',
+      'time': '0915_hrs',
+      'isVerified': false,
+      'subStatus': 'Restricted',
+      'subStatusColor': AppTheme.warningRed,
+      'subType': 'TYPE:Internal',
+      'borderColor': AppTheme.warningRed,
+      'icon': Icons.do_not_disturb_on,
+      'route': '/chat/hr?title=HR_Unit',
+      'type': 'direct',
+    },
+    {
+      'title': 'Board_Strategy_Rm',
+      'time': 'T-minus_24h',
+      'subStatus': 'LVL:Top_Secret',
+      'subStatusColor:': Colors.purple[400],
+      'subType': 'Enc:E2EE',
+      'borderColor': AppTheme.warningRed,
+      'icon': Icons.vpn_key,
+      'route': '/chat/board?title=Board_Strategy_Rm',
+      'type': 'groups',
+    },
+    {
+      'title': 'Legal_Dept_Main',
+      'time': 'Mon',
+      'isVerified': true,
+      'borderColor': AppTheme.accentGreen,
+      'icon': Icons.chevron_right,
+      'route': '/chat/legal?title=Legal_Dept_Main',
+      'type': 'direct',
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    // [Phase B] Mulai background worker untuk ephemeral cleanup saat di rootscreen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(ephemeralCleanupServiceProvider).startSweeping();
+    });
+  }
+
+  @override
+  void dispose() {
+    // Matikan timer saat keluar (walaupun ini root screen)
+    // Dalam real implementation, bisa dikaitkan ke AppLifecycleState
+    ref.read(ephemeralCleanupServiceProvider).stopSweeping();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,17 +99,10 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                   Row(
                     children: [
                       // Avatar
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2),
-                          border: Border.all(color: AppTheme.accentGreen.withValues(alpha: 0.5)),
-                          image: const DecorationImage(
-                            image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuDBRwVSor3oJs9mzbyK6RUpvQliakEDEBp8zapfukz-jfoaOiPvJ0l1053Dw1IR9jgoEoD69gaLL0HJsxUJaDW3LVJshh0IDqE1UerUAv3OSv4bXYdKm6SRCI9RD4lexdE3LW-p6w2m0zY4ZvYApA6YL1XFIuJ4sSRQsMA5Fb27QTnBRdQJs1jzbSNJer2lhyXGzjD3aaiRH422Xs_iW6jv-fuIEGNukkvlHndaqKyYA7yQn1M2gYFhZkpfTSXz7TyfGpwH7oStUHdm'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                      TerminalAvatar(
+                        name: 'AGENT',
+                        size: 40,
+                        borderColor: AppTheme.accentGreen.withValues(alpha: 0.5),
                       ),
                       const SizedBox(width: 16),
                       Column(
@@ -74,7 +131,9 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                     child: IconButton(
                       padding: EdgeInsets.zero,
                       icon: const Icon(Icons.edit_square, size: 18, color: AppTheme.accentGreen),
-                      onPressed: () {},
+                      onPressed: () {
+                        _showNewChatDialog();
+                      },
                     ),
                   ),
                 ],
@@ -102,6 +161,11 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                   Expanded(
                     child: TextField(
                       style: AppTheme.darkTheme.textTheme.bodySmall?.copyWith(color: AppTheme.accentGreen),
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value;
+                        });
+                      },
                       decoration: InputDecoration(
                         hintText: 'EXECUTE_SEARCH...',
                         hintStyle: TextStyle(color: Colors.grey[600]),
@@ -137,61 +201,80 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
           ),
           // Chat List
           Expanded(
-            child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    children: [
-                      _buildChatListItem(
-                        title: 'Alpha_Team_Net',
-                        time: '1042_hrs',
-                        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyLuIo7hLkH0zX_fm3mVIQ-GrkLb1Czf-EHWvJeDdzMfJAldqHMojpb_3vnLX2xTY1-qhwLt4d25DkvHJG4E0CcNtKgReqT1LoDqcBhFGpxEEB2bdreu-XVkFrCTeYs00Mj1AXDZiEV6jTCjsSO7X-_Pupl3Br98vaW68yjxDCtnT_913e2UZLts6nK83y2HTuZAgx9aP8f3gdpzzhGKmzjAE_YfFRJlxlTXrzO-hkVNMhASEXgcIX05y0wGebfU-fAcCmV1AZapk6',
-                        isVerified: true,
-                        isConfidential: true,
-                        borderColor: AppTheme.accentGreen,
-                        icon: Icons.terminal,
-                        onTap: () => context.push('/chat/alpha?title=Alpha_Team_Net'),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildChatListItem(
-                        title: 'HR_Unit :: S.Jenkins',
-                        time: '0915_hrs',
-                        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCxtKnLAYGlZRLfIuRP23X81cx7DILcOLpSd0Ui1oIYn-wId8Xrtbze8zDxda7BRhSaUZK03TtGffMrXJID8OKi7b4RXhUH9r86ljp56S3o4mybOlp_Zro9O0D-7x0aKT4JnwDLWukuvbExW4NsW1OavOznTj5Z5hUO8FZEoRTUtVHNdubX7JMd6OQ8EfnwKNFBweQF-jZsgyeYggttB_VTzHqGmiyz4e3NnrnL1RcAlnWNPRKJgcmBU0RA4jaI_z846NVanOFCM0X-',
-                        isVerified: false,
-                        subStatus: 'Restricted',
-                        subStatusColor: AppTheme.warningRed,
-                        subType: 'TYPE:Internal',
-                        borderColor: AppTheme.warningRed,
-                        icon: Icons.do_not_disturb_on,
-                        onTap: () => context.push('/chat/hr?title=HR_Unit'),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildChatListItem(
-                        title: 'Board_Strategy_Rm',
-                        time: 'T-minus_24h',
-                        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCpoOYRg30pX7SZ1ftgeRgeTWVD4VPrsG2lE5nHwcQVpZ6hPWtFi6ELX2s2jAMJI0lVEHuhthYaAG3i0hQbT9BIqaTteI99FG7CYZ45MIP7GCGcC897OxYKchS39wQYcUNB06WX_xfNeZP5l-4yb9QeAveRCTiprE1Boy0s-wtZKNNz_172DH5UTd9SoOEG8dJKNSwHGOHxcCdqSWvquFx6Natb3aXmyMHo1yXHaTaf1EiNOr45wKIg8z0cZ5Uf4_ibolL8PqFVBOet',
-                        subStatus: 'LVL:Top_Secret',
-                        subStatusColor: Colors.purple[400],
-                        subType: 'Enc:E2EE',
-                        borderColor: AppTheme.warningRed,
-                        icon: Icons.vpn_key,
-                        onTap: () => context.push('/chat/board?title=Board_Strategy_Rm'),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildChatListItem(
-                        title: 'Legal_Dept_Main',
-                        time: 'Mon',
-                        imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBo6l5KsMiM59f2kgUiFj_qw1b-sppucd_VwFO80AoHkqSuoB-qbza-ig0xbmasNZ7K0xBvWS0-lwOEGwYVW-E2pM54JnBlzDQS5D5tfrLo9QoKmxFgtPGRjOwL7SLK3keKhxuW8C9dGixYShHWA_em2y3UJHjDhrt6gLB5BaUv4Cq-78YmwqLocomXXG-vasjwb6Hj7xYX8bZgS3CJ97omr1jSvPLcnTAHjoUsSkebC22RvniK72rhfpd5h1mImSg9GRc9HY4dt4CI',
-                        isVerified: true,
-                        borderColor: AppTheme.accentGreen,
-                        icon: Icons.chevron_right,
-                        onTap: () => context.push('/chat/legal?title=Legal_Dept_Main'),
-                      ),
-                      const SizedBox(height: 80), // Padding for bottom nav
-                    ],
-                  ),
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8).copyWith(bottom: 80),
+              itemCount: _filteredChats.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final chat = _filteredChats[index];
+                return _buildChatListItem(
+                  title: chat['title'],
+                  time: chat['time'],
+                  isVerified: chat['isVerified'] ?? false,
+                  isConfidential: chat['isConfidential'] ?? false,
+                  subStatus: chat['subStatus'],
+                  subStatusColor: chat['subStatusColor'],
+                  subType: chat['subType'],
+                  borderColor: chat['borderColor'],
+                  icon: chat['icon'],
+                  onTap: () => context.push(chat['route']),
+                );
+              },
+            ),
           )
         ],
       ),
       bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  List<Map<String, dynamic>> get _filteredChats {
+    return _dummyChats.where((chat) {
+      // Filter by Search Query
+      final matchesSearch = chat['title'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
+      // Filter by Tab
+      bool matchesTab = true;
+      if (_selectedFilter == 'direct') {
+        matchesTab = chat['type'] == 'direct';
+      } else if (_selectedFilter == 'groups') {
+        matchesTab = chat['type'] == 'groups';
+      }
+      return matchesSearch && matchesTab;
+    }).toList();
+  }
+
+  void _showNewChatDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: AppTheme.terminalBg,
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(color: AppTheme.terminalDim),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          title: Text(
+            '> INIT_NEW_CONNECTION',
+            style: const TextStyle(color: AppTheme.accentGreen, fontFamily: 'IBM Plex Mono', fontWeight: FontWeight.bold),
+          ),
+          content: TextField(
+            autofocus: true,
+            style: const TextStyle(color: AppTheme.accentGreen, fontFamily: 'IBM Plex Mono'),
+            decoration: InputDecoration(
+              hintText: 'Enter Contact ID (e.g. CHMR-101)...',
+              hintStyle: TextStyle(color: Colors.grey[600]),
+              enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.terminalDim)),
+              focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.accentGreen)),
+            ),
+            onSubmitted: (value) {
+              context.pop(); // close dialog
+              if (value.isNotEmpty) {
+                context.push('/chat/$value?title=$value');
+              }
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -221,7 +304,6 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
   Widget _buildChatListItem({
     required String title,
     required String time,
-    required String imageUrl,
     required Color borderColor,
     required IconData icon,
     bool isVerified = false,
@@ -250,14 +332,11 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
             // Left colored bar
             Container(width: 4, height: 40, color: borderColor),
             const SizedBox(width: 12),
-            // Avatar
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppTheme.terminalDim),
-                image: DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover),
-              ),
+            // Avatar — local TerminalAvatar, no network request
+            TerminalAvatar(
+              name: title,
+              size: 40,
+              borderColor: AppTheme.terminalDim,
             ),
             const SizedBox(width: 12),
             // Content

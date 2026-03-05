@@ -54,6 +54,7 @@ class OfflineQueueService {
 
     try {
       final db = await _ref.read(chatDatabaseProvider.future);
+      final pfsService = _ref.read(pfsSessionServiceProvider);
       final pendingMessages = await db.getPendingMessages();
 
       if (pendingMessages.isNotEmpty) {
@@ -69,18 +70,26 @@ class OfflineQueueService {
         }
 
         try {
-          // TODO: Pada aplikasi e2ee penuh, jika isEncrypted == true, kita 
-          // perlu mengambil PfsSessionService dan mengenkripsi ulang teks pesan
-          // menggunakan session key yang sedang aktif sebelum mengirim.
-          // Untuk versi saat ini, kita anggap wsService.sendMessage akan
-          // mengirim teks raw atau teks yang sudah di-handle oleh layer lain.
-          // Di arsitektur kita, ChatRoomScreen mengirim command raw ke _sendMessage.
+          // ── E2EE Re-encryption ─────────────────────────────────────────
+          // Sebelum mengirim ulang pesan queue'd saat offline, kita HARUS
+          // re-encrypt dengan session key PFS terbaru (bisa sudah di-rotasi).
+          //
+          // encryptForSession throws StateError jika sesi belum init →
+          // artinya ChatRoomScreen belum re-open, skip dan retry nanti.
+          String encryptedPayload;
+          try {
+            final packet = await pfsService.encryptForSession(msg.sessionId, msg.text);
+            encryptedPayload = packet.toJson();
+          } on StateError catch (e) {
+            debugPrint('[OfflineQueue] Sesi ${msg.sessionId} belum aktif: $e. Skip.');
+            continue;
+          }
+
+          wsService.sendMessage(encryptedPayload);
           
-          wsService.sendMessage(msg.text);
-          
-          // Asumsikan terkirim jika tidak ada error dari sendMessage / sink
+          // Update status menjadi sent
           await db.updateMessageStatus(msg.id, MessageStatus.sent);
-          debugPrint('[OfflineQueue] Sent pending message: ${msg.id}');
+          debugPrint('[OfflineQueue] Sent+encrypted pending: ${msg.id}');
           
           // Jeda sedikit agar tidak membanjiri server
           await Future.delayed(const Duration(milliseconds: 100));

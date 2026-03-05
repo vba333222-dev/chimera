@@ -1,0 +1,6 @@
+Analyzing secure_chat...                                        
+
+  error - The method 'getSession' isn't defined for the type 'PfsSessionService' - lib\services\offline_queue_service.dart:80:38 - undefined_method
+  error - The method 'encrypt' isn't defined for the type 'PfsSessionService' - lib\services\offline_queue_service.dart:87:53 - undefined_method
+
+2 issues found. (ran in 112.0s)

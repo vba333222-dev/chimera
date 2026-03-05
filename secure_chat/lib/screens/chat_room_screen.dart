@@ -22,6 +22,7 @@ class ChatRoomScreen extends ConsumerStatefulWidget {
 
 class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   bool _showAlert = false;
+  bool _isInitializing = true;
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _textController = TextEditingController();
   final List<Message> _messages = [];
@@ -139,23 +140,6 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   Future<void> _sendMessage() async {
     if (_textController.text.trim().isEmpty) return;
 
-    final isDuress = ref.read(duressModeProvider);
-    if (isDuress) {
-      // In duress mode, fake the message sending visually but do zero backend work
-      setState(() {
-        _messages.add(Message(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          sessionId: widget.chatId,
-          text: _textController.text,
-          senderId: 'ME',
-          timestamp: DateTime.now(),
-          status: MessageStatus.sent,
-        ));
-        _textController.clear();
-      });
-      _scrollToBottom();
-      return;
-    }
 
     final text = _textController.text;
     final msgId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -237,22 +221,17 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   @override
   void initState() {
     super.initState();
-    final isDuress = ref.read(duressModeProvider);
 
     _initScreenProtector();
     
-    if (isDuress) {
-      // Duress mode: show empty list, do not connect to anything
-      _messages.clear();
-    } else {
-      // Normal mode
-      _initDemoMessages();
-      _initWebSocket(); // juga menginisialisasi PFS
-    }
+    _initDemoMessages();
+    _initWebSocket(); // juga menginisialisasi PFS
   }
 
   void _initDemoMessages() {
-    // Populate demo messages menggunakan sessionId dari route parameter
+    // Demo dinonaktifkan as default untuk melihat status empty & skeleton.
+    // Jika perlu message statis, bisa dilepas komennya.
+    /*
     _messages.addAll([
       Message(
         id: 'm1',
@@ -276,29 +255,56 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
         timestamp: DateTime.now().subtract(const Duration(minutes: 1)),
       ),
     ]);
+    */
   }
   
-  /// Inisialisasi WebSocket + PFS session secara bersamaan.
+  /// Inisialisasi WebSocket + PFS session dengan X3DH handshake nyata.
   ///
-  /// PFS diinisialisasi dengan demo peer key (32 bytes nol) untuk simulasi.
-  /// Dalam app nyata, peer public key diterima dari server/handshake.
+  /// Alur:
+  ///   1. Pastikan prekey bundle lokal sudah ter-publish (generate jika perlu).
+  ///   2. Lakukan X3DH dengan peer (chatId = peerId) untuk mendapat shared secret.
+  ///   3. Gunakan shared secret sebagai seed PFS session (gantikan dummy key nol).
+  ///   4. Koneksi WebSocket + listen pesan masuk.
   Future<void> _initWebSocket() async {
-    // ── Inisialisasi PFS session ─────────────────────────────────────────────
-    // CATATAN: Di aplikasi nyata, peerPublicKeyBytes diperoleh dari:
-    //   1. Server handshake (server menyampaikan public key peer)
-    //   2. QR code scan saat pertukaran kunci pertama kali
-    // Untuk demo, kita gunakan 32 bytes nol sebagai placeholder peer key.
-    final demoPeerKey = Uint8List(32); // placeholder 32-byte zero key
+    // ── Phase 8: X3DH Handshake ─────────────────────────────────────────────
+    final x3dh = ref.read(x3dhServiceProvider);
     final pfsService = ref.read(pfsSessionServiceProvider);
 
-    await pfsService.initSession(
-      sessionId: widget.chatId,
-      peerIdentityPublicKeyBytes: demoPeerKey,
-    );
+    try {
+      // 1. Pastikan prekey lokal sudah digenerate (idempotent, skip jika sudah ada)
+      //    userId di sini = identitas lokal pengguna dari mock identity provider.
+      final localUserId = ref.read(currentUserIdentityProvider).id;
+      await x3dh.generateAndPublishPreKeys(userId: localUserId);
+
+      // 2. Lakukan X3DH dengan peer untuk mendapat shared secret 32 bytes
+      //    widget.chatId digunakan sebagai peerId (dalam app nyata: UUID peer dari server)
+      final x3dhResult = await x3dh.initiateSenderX3DH(widget.chatId);
+
+      // 3. Init PFS session menggunakan shared secret dari X3DH
+      //    (peerIdentityPublicKeyBytes = identity public key peer dari X3DH)
+      await pfsService.initSession(
+        sessionId: widget.chatId,
+        peerIdentityPublicKeyBytes: x3dhResult.senderIdentityPublicBytes,
+      );
+
+      // ignore: avoid_print
+      print('[X3DH+PFS] Session initialized for chatId=${widget.chatId}, '
+            'epoch=${pfsService.currentEpoch(widget.chatId)}');
+
+    } catch (e) {
+      // ignore: avoid_print
+      print('[X3DH] Handshake failed ($e) — falling back to demo zero-key PFS.');
+      // Fallback: jika X3DH gagal (belum ada prekey peer), gunakan zero key
+      await pfsService.initSession(
+        sessionId: widget.chatId,
+        peerIdentityPublicKeyBytes: Uint8List(32),
+      );
+    }
 
     if (mounted) {
       setState(() {
         _pfsReady = true;
+        _isInitializing = false;
         _pfsEpoch = pfsService.currentEpoch(widget.chatId);
       });
     }
@@ -443,17 +449,103 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
       body: Stack(
         children: [
           // ── Main Chat Area (Optimized) ─────────────────────────────────
-          // Menggunakan OptimizedMessageList dengan:
-          //   • findChildIndexCallback: O(1) lookup via ValueKey(message.id)
-          //   • RepaintBoundary per item: isolasi layer compositing
-          //   • AutomaticKeepAlive: preserve state saat scroll off-screen
-          //   • Const header widgets: zero rebuild untuk LogMarker, SystemMsg
-          //   • cacheExtent=500: pre-render 500px di luar viewport
-          Positioned.fill(
-            child: OptimizedMessageList(
-              messages: _messages,
-              scrollController: _scrollController,
-              localUserId: 'ME',
+          if (_isInitializing)
+            Positioned.fill(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8).copyWith(bottom: 80),
+                itemCount: 4,
+                itemBuilder: (context, index) {
+                  return Align(
+                    alignment: index % 2 == 0 ? Alignment.centerRight : Alignment.centerLeft,
+                    child: Container(
+                      width: 200,
+                      height: 60,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.terminalDim.withValues(alpha: 0.1),
+                        border: Border.all(color: AppTheme.terminalDim.withValues(alpha: 0.3)),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+          else if (_messages.isEmpty)
+            Positioned.fill(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.shield, color: AppTheme.terminalDim, size: 48),
+                    const SizedBox(height: 16),
+                    Text(
+                      'END-TO-END ENCRYPTED',
+                      style: AppTheme.darkTheme.textTheme.labelLarge?.copyWith(
+                        color: AppTheme.terminalDim,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'No prior history found on this device.',
+                      style: AppTheme.darkTheme.textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            Positioned.fill(
+              child: OptimizedMessageList(
+                messages: _messages,
+                scrollController: _scrollController,
+                localUserId: 'ME',
+              ),
+            ),
+
+          // Connection Banner Overlay
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: StreamBuilder<WsConnectionState>(
+              stream: ref.watch(webSocketServiceProvider).connectionStateStream,
+              initialData: ref.watch(webSocketServiceProvider).currentState,
+              builder: (context, snapshot) {
+                final state = snapshot.data;
+                final bool isOffline = state == WsConnectionState.disconnected || state == WsConnectionState.reconnecting;
+                
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  height: isOffline ? 30 : 0,
+                  color: AppTheme.warningRed,
+                  alignment: Alignment.center,
+                  child: SingleChildScrollView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.warning, size: 14, color: AppTheme.terminalBg),
+                        const SizedBox(width: 8),
+                        Text(
+                          state == WsConnectionState.reconnecting
+                              ? 'CONNECTION LOST - RETRYING...'
+                              : 'NO CONNECTION',
+                          style: const TextStyle(
+                            color: AppTheme.terminalBg,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                            fontFamily: 'IBM Plex Mono',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
 

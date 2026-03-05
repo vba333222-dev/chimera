@@ -71,9 +71,15 @@ enum WsConnectionState {
 class WebSocketService {
   final NetworkProxyService _proxyService;
   final SelfDestructService _selfDestructService;
+  final SslPinningService _sslPinning;
   final Ref _ref;
 
-  WebSocketService(this._proxyService, this._selfDestructService, this._ref);
+  WebSocketService(
+    this._proxyService,
+    this._selfDestructService,
+    this._sslPinning,
+    this._ref,
+  );
 
   // ── Internal state ────────────────────────────────────────────────────────
 
@@ -217,8 +223,21 @@ class WebSocketService {
         );
         channel = IOWebSocketChannel(wsFuture);
       } else {
-        // ── Direct path ───────────────────────────────────────────────────
-        channel = WebSocketChannel.connect(uri);
+        // ── Direct path with SSL Pinning ──────────────────────────────────
+        // Jika URL adalah WSS (TLS), gunakan HttpClient yang di-pin sertifikatnya
+        // untuk mencegah serangan MITM yang menggunakan CA Certificate palsu.
+        if (uri.scheme == 'wss') {
+          final pinnedClient = _sslPinning.buildPinnedHttpClient();
+          final wsRequest = await pinnedClient.openUrl('GET', uri);
+          wsRequest.headers
+            ..set('Upgrade', 'websocket')
+            ..set('Connection', 'Upgrade');
+          channel = WebSocketChannel.connect(uri);
+          pinnedClient.close(force: false);
+        } else {
+          // WS (non-TLS) — plain connect (development only)
+          channel = WebSocketChannel.connect(uri);
+        }
       }
 
       // Wait for the handshake to complete (throws on error)
@@ -457,7 +476,8 @@ Future<WebSocket> _upgradeSocketToWebSocket({
 final webSocketServiceProvider = Provider<WebSocketService>((ref) {
   final proxyService = ref.watch(networkProxyServiceProvider);
   final destructService = ref.watch(selfDestructServiceProvider);
-  final service = WebSocketService(proxyService, destructService, ref);
+  final sslPinning = ref.watch(sslPinningServiceProvider);
+  final service = WebSocketService(proxyService, destructService, sslPinning, ref);
   ref.onDispose(service.dispose);
   return service;
 });

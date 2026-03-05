@@ -145,9 +145,9 @@ class RaspService {
       androidConfig: AndroidConfig(
         packageName: 'com.example.secure_chat',
         signingCertHashes: const [
-          // Tambahkan hash sertifikat APK Anda di sini.
+          // TODO: Ganti dengan hash sertifikat APK rilis (SHA-256 base64)
           // Cara mendapat hash: docs.talsec.app/freerasp/wiki/getting-signing-certificate-hash
-          // Contoh: 'mVr/qQLO8DFPj6TlJFch9/bKEDLSCKAMLc4yFmBlFuY=',
+          'DUMMY_CERT_HASH_BASE64_FOR_NOW_REPLACE_ME=',
         ],
         supportedStores: const [],
       ),

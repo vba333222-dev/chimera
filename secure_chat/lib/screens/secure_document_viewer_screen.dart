@@ -66,11 +66,12 @@ class _SecureDocumentViewerScreenState extends ConsumerState<SecureDocumentViewe
     await ScreenProtector.protectDataLeakageWithBlurOff();
   }
 
-  /// Trigger pembersihan memory binding ke SecureDocumentService
+  /// Trigger pembersihan memory binding ke SecureDocumentService.
+  /// Secara eksplisit memanggil wipeBytes() pada buffer plaintext
+  /// sehingga bytes tidak tertinggal di heap (anti-RAM scraping).
   void _releaseMemoryBinding() {
-    if (!mounted) {
-       ref.read(secureDocumentServiceProvider).releaseMemoryBinding();
-    }
+    // releaseBuffer() memanggil wipeBytes() yang menimpa byte dengan 0x00
+    ref.read(secureDocumentServiceProvider).releaseBuffer(widget.memoryBytes);
   }
 
   @override

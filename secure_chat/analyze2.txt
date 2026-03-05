@@ -1,0 +1,6 @@
+Analyzing secure_chat...                                        
+
+warning - Unused import: '../providers/providers.dart' - lib\screens\chat_list_screen.dart:4:8 - unused_import
+   info - The import of '../models/chat_session.dart' is unnecessary because all of the used elements are also provided by the import of '../providers/providers.dart' - lib\services\chat_database_service.dart:46:8 - unnecessary_import
+   info - The import of '../models/message.dart' is unnecessary because all of the used elements are also provided by the import of '../providers/providers.dart' - lib\services\chat_database_service.dart:47:8 - unnecessary_import
+

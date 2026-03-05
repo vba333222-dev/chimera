@@ -1,0 +1,5 @@
+Analyzing secure_chat...                                        
+
+warning - Unused import: 'dart:convert' - lib\services\ssl_pinning_service.dart:31:8 - unused_import
+   info - The import of 'ssl_pinning_service.dart' is unnecessary because all of the used elements are also provided by the import of '../providers/providers.dart' - lib\services\websocket_service.dart:35:8 - unnecessary_import
+

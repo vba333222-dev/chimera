@@ -43,8 +43,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
-import '../models/chat_session.dart';
-import '../models/message.dart';
 import '../providers/providers.dart';
 import '../utils/decoy_data_seeder.dart';
 

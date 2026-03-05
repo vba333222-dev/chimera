@@ -20,6 +20,7 @@ import 'screens/biometric_login_screen.dart';
 import 'screens/chat_list_screen.dart';
 import 'screens/chat_room_screen.dart';
 import 'screens/device_verification_screen.dart';
+import 'screens/pin_setup_screen.dart';
 import 'screens/secure_document_viewer_screen.dart';
 import 'screens/security_lockdown_screen.dart';
 import 'screens/audit_log_screen.dart';
@@ -145,6 +146,10 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/login',
       builder: (context, state) => const BiometricLoginScreen(),
+    ),
+    GoRoute(
+      path: '/pin-setup',
+      builder: (context, state) => const PinSetupScreen(),
     ),
     GoRoute(
       path: '/device-verify',

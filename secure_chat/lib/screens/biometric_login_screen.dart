@@ -17,7 +17,7 @@ class _BiometricLoginScreenState extends ConsumerState<BiometricLoginScreen> wit
   late Animation<double> _scanAnimation;
   bool _usePinFallback = false;
   String _pin = '';
-  final String _correctPin = '1337'; // Dummy PIN for demonstration
+  bool _isVerifying = false;
 
   @override
   void initState() {
@@ -70,45 +70,76 @@ class _BiometricLoginScreenState extends ConsumerState<BiometricLoginScreen> wit
         });
       }
     } else if (key == 'ENT') {
-      if (_pin == _correctPin) {
-        ref.read(vaultModeProvider.notifier).setMode(VaultMode.real);
-        context.go('/device-verify');
-      } else if (_pin == '654321') {
-        ref.read(vaultModeProvider.notifier).setMode(VaultMode.decoy);
-        context.go('/device-verify');
-      } else if (_pin == '9999') {
-        // DURESS PIN ENTERED
-        // 1. Set duress mode so the next screens show dummy data
-        ref.read(duressModeProvider.notifier).enable();
-        
-        // 2. Trigger self destruct protocol asynchronously
-        final destructService = ref.read(selfDestructServiceProvider);
-        
-        // We log it FIRST before the service obliterates the log database
-        ref.read(auditLogServiceProvider).logEvent('DURESS_TRIGGERED', 'Self-destruct mechanism initiated via PIN').then((_) {
-          destructService.executeSelfDestruct();
-        });
-
-        // 3. Navigate away to make it look like a successful login
-        context.go('/device-verify');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('ACCESS DENIED. INVALID PIN.'),
-            backgroundColor: AppTheme.warningRed,
-          ),
-        );
-        ref.read(auditLogServiceProvider).logEvent('AUTH_FAILURE_PIN', 'Invalid PIN entry attempt');
-        setState(() {
-          _pin = '';
-        });
-      }
+      _verifyPin();
     } else {
-      if (_pin.length < 4) {
+      if (_pin.length < 8) {
         setState(() {
           _pin += key;
         });
       }
+    }
+  }
+
+  Future<void> _verifyPin() async {
+    if (_pin.isEmpty || _isVerifying) return;
+    setState(() => _isVerifying = true);
+
+    try {
+      final pinService = ref.read(pinServiceProvider);
+
+      // First-run check: if no PIN is set up yet, redirect to setup
+      final isSetup = await pinService.isPinSetupComplete();
+      if (!isSetup && mounted) {
+        context.go('/pin-setup');
+        return;
+      }
+
+      final pinType = await pinService.verifyPin(_pin);
+
+      if (!mounted) return;
+
+      switch (pinType) {
+        case PinType.main:
+          ref.read(vaultModeProvider.notifier).setMode(VaultMode.real);
+          ref.read(auditLogServiceProvider).logEvent('AUTH_SUCCESS_PIN', 'Main PIN verified');
+          context.go('/device-verify');
+
+        case PinType.decoy:
+          ref.read(vaultModeProvider.notifier).setMode(VaultMode.decoy);
+          ref.read(auditLogServiceProvider).logEvent('AUTH_DECOY_VAULT', 'Decoy PIN verified — plausible deniability active');
+          context.go('/device-verify');
+
+        case PinType.kill:
+          // Kill PIN: wipe real vault data, continue to decoy seamlessly
+          ref.read(vaultModeProvider.notifier).setMode(VaultMode.decoy);
+          final destructService = ref.read(selfDestructServiceProvider);
+          ref.read(auditLogServiceProvider).logEvent('DURESS_TRIGGERED', 'Kill PIN verified — self-destruct initiated').then((_) {
+            destructService.executeSelfDestruct();
+          });
+          context.go('/device-verify');
+
+        case PinType.unknown:
+          ref.read(auditLogServiceProvider).logEvent('AUTH_FAILURE_PIN', 'Invalid PIN entry attempt');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('ACCESS DENIED. INVALID PIN.'),
+              backgroundColor: AppTheme.warningRed,
+            ),
+          );
+          setState(() => _pin = '');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('ERROR: ${e.toString().substring(0, 40)}'),
+            backgroundColor: AppTheme.warningRed,
+          ),
+        );
+        setState(() => _pin = '');
+      }
+    } finally {
+      if (mounted) setState(() => _isVerifying = false);
     }
   }
 

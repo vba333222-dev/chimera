@@ -1,0 +1,6 @@
+Analyzing secure_chat...                                        
+
+  error - The method 'startTimer' isn't defined for the type 'EphemeralCleanupService' - lib\screens\chat_list_screen.dart:23:49 - undefined_method
+  error - The method 'stopTimer' isn't defined for the type 'EphemeralCleanupService' - lib\screens\chat_list_screen.dart:31:47 - undefined_method
+
+2 issues found. (ran in 8.5s)
