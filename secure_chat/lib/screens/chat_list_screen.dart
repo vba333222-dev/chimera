@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../models/chat_session.dart';
 import '../providers/providers.dart';
 import '../theme/app_theme.dart';
 import '../widgets/terminal_avatar.dart';
@@ -15,51 +16,6 @@ class ChatListScreen extends ConsumerStatefulWidget {
 class _ChatListScreenState extends ConsumerState<ChatListScreen> {
   String _selectedFilter = 'all';
   String _searchQuery = '';
-
-  final List<Map<String, dynamic>> _dummyChats = [
-    {
-      'title': 'Alpha_Team_Net',
-      'time': '1042_hrs',
-      'isVerified': true,
-      'isConfidential': true,
-      'borderColor': AppTheme.accentGreen,
-      'icon': Icons.terminal,
-      'route': '/chat/alpha?title=Alpha_Team_Net',
-      'type': 'groups',
-    },
-    {
-      'title': 'HR_Unit :: S.Jenkins',
-      'time': '0915_hrs',
-      'isVerified': false,
-      'subStatus': 'Restricted',
-      'subStatusColor': AppTheme.warningRed,
-      'subType': 'TYPE:Internal',
-      'borderColor': AppTheme.warningRed,
-      'icon': Icons.do_not_disturb_on,
-      'route': '/chat/hr?title=HR_Unit',
-      'type': 'direct',
-    },
-    {
-      'title': 'Board_Strategy_Rm',
-      'time': 'T-minus_24h',
-      'subStatus': 'LVL:Top_Secret',
-      'subStatusColor:': Colors.purple[400],
-      'subType': 'Enc:E2EE',
-      'borderColor': AppTheme.warningRed,
-      'icon': Icons.vpn_key,
-      'route': '/chat/board?title=Board_Strategy_Rm',
-      'type': 'groups',
-    },
-    {
-      'title': 'Legal_Dept_Main',
-      'time': 'Mon',
-      'isVerified': true,
-      'borderColor': AppTheme.accentGreen,
-      'icon': Icons.chevron_right,
-      'route': '/chat/legal?title=Legal_Dept_Main',
-      'type': 'direct',
-    },
-  ];
 
   @override
   void initState() {
@@ -201,26 +157,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
           ),
           // Chat List
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8).copyWith(bottom: 80),
-              itemCount: _filteredChats.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final chat = _filteredChats[index];
-                return _buildChatListItem(
-                  title: chat['title'],
-                  time: chat['time'],
-                  isVerified: chat['isVerified'] ?? false,
-                  isConfidential: chat['isConfidential'] ?? false,
-                  subStatus: chat['subStatus'],
-                  subStatusColor: chat['subStatusColor'],
-                  subType: chat['subType'],
-                  borderColor: chat['borderColor'],
-                  icon: chat['icon'],
-                  onTap: () => context.push(chat['route']),
-                );
-              },
-            ),
+            child: _buildChatList(),
           )
         ],
       ),
@@ -228,16 +165,80 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
     );
   }
 
-  List<Map<String, dynamic>> get _filteredChats {
-    return _dummyChats.where((chat) {
+  Widget _buildChatList() {
+    final chatSessionsAsync = ref.watch(chatSessionsProvider);
+
+    return chatSessionsAsync.when(
+      data: (sessions) {
+        final filtered = _filterSessions(sessions);
+        
+        if (filtered.isEmpty) {
+          return Center(
+            child: Text(
+              '> NO_ACTIVE_CONNECTIONS',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontFamily: 'IBM Plex Mono',
+                letterSpacing: 1,
+              ),
+            ),
+          );
+        }
+
+        return ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8).copyWith(bottom: 80),
+          itemCount: filtered.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final session = filtered[index];
+            // Simple heuristic to distinguish groups (e.g. contains :: or starts with #)
+            final isGroup = session.title.contains('::') || session.title.startsWith('#');
+            
+            return _buildChatListItem(
+              title: session.title,
+              time: _formatTime(session.lastMessageAt ?? session.createdAt),
+              isVerified: session.peerPublicKeyB64 != null, // Verified if we have peer key
+              isConfidential: true,
+              subType: isGroup ? 'TYPE:Group' : 'TYPE:Direct',
+              borderColor: isGroup ? Colors.purple[400]! : AppTheme.accentGreen,
+              icon: isGroup ? Icons.groups : Icons.chevron_right,
+              onTap: () => context.push('/chat/${session.id}?title=${Uri.encodeComponent(session.title)}'),
+            );
+          },
+        );
+      },
+      loading: () => const Center(
+        child: CircularProgressIndicator(color: AppTheme.accentGreen),
+      ),
+      error: (e, st) => Center(
+        child: Text('ERR: $e', style: const TextStyle(color: AppTheme.warningRed)),
+      ),
+    );
+  }
+
+  String _formatTime(DateTime time) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final msgDate = DateTime(time.year, time.month, time.day);
+    
+    if (msgDate == today) {
+      return '${time.hour.toString().padLeft(2, '0')}${time.minute.toString().padLeft(2, '0')}_hrs';
+    }
+    return '${time.day.toString().padLeft(2, '0')}/${time.month.toString().padLeft(2, '0')}';
+  }
+
+  List<ChatSession> _filterSessions(List<ChatSession> sessions) {
+    return sessions.where((session) {
       // Filter by Search Query
-      final matchesSearch = chat['title'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchesSearch = session.title.toLowerCase().contains(_searchQuery.toLowerCase());
       // Filter by Tab
       bool matchesTab = true;
+      final isGroup = session.title.contains('::') || session.title.startsWith('#');
+      
       if (_selectedFilter == 'direct') {
-        matchesTab = chat['type'] == 'direct';
+        matchesTab = !isGroup;
       } else if (_selectedFilter == 'groups') {
-        matchesTab = chat['type'] == 'groups';
+        matchesTab = isGroup;
       }
       return matchesSearch && matchesTab;
     }).toList();

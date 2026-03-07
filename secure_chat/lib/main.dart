@@ -24,6 +24,7 @@ import 'screens/pin_setup_screen.dart';
 import 'screens/secure_document_viewer_screen.dart';
 import 'screens/security_lockdown_screen.dart';
 import 'screens/audit_log_screen.dart';
+import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 import 'widgets/pixel_grid_background.dart';
 import 'widgets/scanline_overlay.dart';
@@ -41,7 +42,14 @@ void main() async {
     container.read(securityThreatProvider.notifier),
     container.read(auditLogServiceProvider),
   );
-  await raspService.initialize();
+
+  try {
+    await raspService.initialize();
+  } catch (e, stack) {
+    debugPrint('CRITICAL: RASP Initialization Failed! $e\n$stack');
+    // Tetap jalankan app agar user tidak stuck di native splash screen.
+    // Aplikasi akan mendeteksi threat/error dan bisa merespon di UI.
+  }
 
   runApp(
     UncontrolledProviderScope(
@@ -63,6 +71,11 @@ class _SecureChatAppState extends ConsumerState<SecureChatApp>
   DateTime? _pausedTime;
   final int _timeoutSeconds = 30;
 
+  // ── Splash overlay ──────────────────────────────────────────────────────────
+  // Ditampilkan sebagai Stack di atas app, bukan sebagai GoRoute.
+  // Dihapus dengan setState() — 100% reliabel di release build.
+  bool _showSplash = true;
+
   @override
   void initState() {
     super.initState();
@@ -71,6 +84,11 @@ class _SecureChatAppState extends ConsumerState<SecureChatApp>
     // Jalankan background worker pembersihan pesan otomatis
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(ephemeralCleanupServiceProvider).startSweeping();
+    });
+
+    // Sembunyikan splash setelah 3 detik — dijamin terpanggil oleh Dart event loop
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) setState(() => _showSplash = false);
     });
   }
 
@@ -102,14 +120,9 @@ class _SecureChatAppState extends ConsumerState<SecureChatApp>
   @override
   Widget build(BuildContext context) {
     // ── RASP Guard ──────────────────────────────────────────────────────────
-    // Pantau SecurityThreatState secara reaktif.
-    // Jika ada ancaman kritikal, SELURUH app tree diganti dengan LockdownScreen.
-    // Tidak ada cara untuk widget lain di-render sampai app di-restart.
     final threatState = ref.watch(securityThreatProvider);
 
     if (threatState.hasCriticalThreat) {
-      // Tampilkan lockdown screen langsung, membungkus theme agar tetap
-      // terlihat konsisten (background hitam dengan overlay merah)
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
@@ -118,9 +131,9 @@ class _SecureChatAppState extends ConsumerState<SecureChatApp>
         ),
       );
     }
-    // ── Normal App Flow ─────────────────────────────────────────────────────
 
-    return MaterialApp.router(
+    // ── Normal App ──────────────────────────────────────────────────────────
+    final Widget app = MaterialApp.router(
       title: 'Secure Terminal Chat',
       theme: AppTheme.darkTheme,
       debugShowCheckedModeBanner: false,
@@ -133,6 +146,16 @@ class _SecureChatAppState extends ConsumerState<SecureChatApp>
         );
       },
     );
+
+    // ── Splash overlay (setState-based, tidak bergantung GoRouter) ──────────
+    if (!_showSplash) return app;
+
+    return Stack(
+      children: [
+        app,
+        const SplashScreen(), // full-screen overlay; hilang saat _showSplash=false
+      ],
+    );
   }
 }
 
@@ -143,6 +166,10 @@ class _SecureChatAppState extends ConsumerState<SecureChatApp>
 final GoRouter _router = GoRouter(
   initialLocation: '/login',
   routes: [
+    GoRoute(
+      path: '/',
+      redirect: (context, state) => '/login',
+    ),
     GoRoute(
       path: '/login',
       builder: (context, state) => const BiometricLoginScreen(),

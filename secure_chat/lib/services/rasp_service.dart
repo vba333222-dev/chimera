@@ -24,6 +24,7 @@
 //      - Secure hardware tidak tersedia
 //   ═══════════════════════════════════════════════════════════════
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freerasp/freerasp.dart';
 
@@ -241,6 +242,12 @@ class RaspService {
         },
       ),
     );
+
+    if (kIsWeb) {
+      // freeRASP tidak mendukung platform Web (hanya Android/iOS).
+      _threatNotifier.markInitialCheckDone();
+      return;
+    }
 
     // ── Start RASP ────────────────────────────────────────────────────────────
     await Talsec.instance.start(config);
