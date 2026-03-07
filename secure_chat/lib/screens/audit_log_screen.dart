@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 import '../models/audit_log.dart';
 import '../providers/providers.dart';
 import '../theme/app_theme.dart';
+import '../widgets/ascii_spinner.dart';
 
 class AuditLogScreen extends ConsumerStatefulWidget {
   const AuditLogScreen({super.key});
@@ -233,7 +234,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
           // Log List
           Expanded(
             child: _isLoading 
-                ? const Center(child: CircularProgressIndicator(color: AppTheme.accentGreen))
+                ? const Center(child: AsciiSpinner(color: AppTheme.accentGreen))
                 : _logs.isEmpty 
                   ? const Center(child: Text("NO LOGS FOUND", style: TextStyle(color: AppTheme.terminalDim, letterSpacing: 2)))
                   : ListView.builder(

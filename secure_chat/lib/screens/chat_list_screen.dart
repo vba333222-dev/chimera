@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../models/chat_session.dart';
 import '../providers/providers.dart';
 import '../theme/app_theme.dart';
 import '../widgets/terminal_avatar.dart';
+import '../widgets/ascii_spinner.dart';
+import '../services/notification_service.dart';
 
 class ChatListScreen extends ConsumerStatefulWidget {
   const ChatListScreen({super.key});
@@ -77,20 +79,47 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
                       ),
                     ],
                   ),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppTheme.terminalDim),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      icon: const Icon(Icons.edit_square, size: 18, color: AppTheme.accentGreen),
-                      onPressed: () {
-                        _showNewChatDialog();
-                      },
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppTheme.terminalDim),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.notifications_active, size: 18, color: AppTheme.accentGreen),
+                          onPressed: () {
+                            ref.read(notificationServiceProvider).showMaskedNotification();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('> SENDING DECOY NOTIFICATION PAYLOAD', style: TextStyle(fontFamily: 'monospace')),
+                                backgroundColor: AppTheme.terminalBg,
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppTheme.terminalDim),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.edit_square, size: 18, color: AppTheme.accentGreen),
+                          onPressed: () {
+                            _showNewChatDialog();
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -143,14 +172,30 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20).copyWith(bottom: 16),
             child: Container(
+              height: 32,
               decoration: BoxDecoration(border: Border.all(color: AppTheme.terminalDim)),
-              child: Row(
+              child: Stack(
                 children: [
-                  _buildFilterTab('ALL', 'all'),
-                  Container(width: 1, height: 20, color: AppTheme.terminalDim),
-                  _buildFilterTab('DIRECT', 'direct'),
-                  Container(width: 1, height: 20, color: AppTheme.terminalDim),
-                  _buildFilterTab('GROUPS', 'groups'),
+                  // Animated Sliding Background
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 150),
+                    curve: Curves.easeOutCubic,
+                    left: _getFilterLeftPosition(context),
+                    top: 0,
+                    bottom: 0,
+                    width: (MediaQuery.of(context).size.width - 40 - 2) / 3, // Subtracts padding and borders
+                    child: Container(color: AppTheme.accentGreen),
+                  ),
+                  // Tab Buttons on top
+                  Row(
+                    children: [
+                      _buildFilterTab('ALL', 'all'),
+                      Container(width: 1, height: 20, color: AppTheme.terminalDim),
+                      _buildFilterTab('DIRECT', 'direct'),
+                      Container(width: 1, height: 20, color: AppTheme.terminalDim),
+                      _buildFilterTab('GROUPS', 'groups'),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -208,7 +253,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
         );
       },
       loading: () => const Center(
-        child: CircularProgressIndicator(color: AppTheme.accentGreen),
+        child: AsciiSpinner(color: AppTheme.accentGreen),
       ),
       error: (e, st) => Center(
         child: Text('ERR: $e', style: const TextStyle(color: AppTheme.warningRed)),
@@ -279,23 +324,37 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
     );
   }
 
+  double _getFilterLeftPosition(BuildContext context) {
+    final double totalWidth = MediaQuery.of(context).size.width - 40 - 2; // - padding, - border
+    final double tabWidth = totalWidth / 3;
+    if (_selectedFilter == 'all') return 0;
+    if (_selectedFilter == 'direct') return tabWidth;
+    return tabWidth * 2;
+  }
+
   Widget _buildFilterTab(String title, String value) {
     bool isSelected = _selectedFilter == value;
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _selectedFilter = value),
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          if (!isSelected) HapticFeedback.selectionClick();
+          setState(() => _selectedFilter = value);
+        },
         child: Container(
-          color: isSelected ? AppTheme.accentGreen : Colors.transparent,
-          padding: const EdgeInsets.symmetric(vertical: 6),
+          color: Colors.transparent, // Color is now handled by AnimatedPositioned background
+          padding: const EdgeInsets.symmetric(vertical: 0),
           alignment: Alignment.center,
-          child: Text(
-            '[$title]',
+          child: AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 150),
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
+              fontFamily: 'IBM Plex Mono',
               color: isSelected ? AppTheme.terminalBg : Colors.grey[500],
             ),
+            child: Text('[$title]'),
           ),
         ),
       ),

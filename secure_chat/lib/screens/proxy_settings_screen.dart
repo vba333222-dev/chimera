@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/providers.dart';
 import '../theme/app_theme.dart';
+import '../widgets/ascii_spinner.dart';
 
 class ProxySettingsScreen extends ConsumerStatefulWidget {
   const ProxySettingsScreen({super.key});
@@ -255,13 +256,10 @@ class _ProxySettingsScreenState extends ConsumerState<ProxySettingsScreen> {
                 ),
                 onPressed: _isTesting ? null : _testConnection,
                 icon: _isTesting
-                    ? SizedBox(
+                    ? const SizedBox(
                         width: 14,
                         height: 14,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1.5,
-                          color: AppTheme.accentGreen,
-                        ),
+                        child: AsciiSpinner(color: AppTheme.accentGreen, fontSize: 10),
                       )
                     : const Icon(Icons.wifi_find, size: 16),
                 label: Text(

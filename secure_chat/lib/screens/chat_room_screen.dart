@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:screen_protector/screen_protector.dart';
@@ -34,6 +34,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   /// Epoch saat ini (hanya untuk ditampilkan di UI debug — bisa dihapus di prod).
   int _pfsEpoch = 0;
 
+  bool _showCommandMenu = false;
+
   // ─────────────────────────────────────────────────────────────────────────
 
   Future<void> _openDemoDocument() async {
@@ -50,6 +52,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   }
 
   Future<void> _sendEphemeralText() async {
+    HapticFeedback.lightImpact();
     if (_textController.text.trim().isEmpty) return;
     
     final text = _textController.text;
@@ -78,6 +81,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   }
 
   Future<void> _sendViewOnceMedia() async {
+    HapticFeedback.lightImpact();
     // Mock Payload for View-Once Media
     final msgId = DateTime.now().millisecondsSinceEpoch.toString();
     final expires = DateTime.now().add(const Duration(hours: 1)); // TTL just in case it is ignored
@@ -100,6 +104,41 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     
     final db = await ref.read(chatDatabaseProvider.future);
     await db.insertMessage(msg);
+  }
+
+  Future<void> _sendStegoPayload() async {
+    HapticFeedback.lightImpact();
+    
+    final msgId = DateTime.now().millisecondsSinceEpoch.toString();
+    
+    // Create the stego message
+    final msg = Message(
+      id: msgId,
+      sessionId: widget.chatId,
+      text: '[STEG-ENC] Payload hidden in LSB of attached image',
+      senderId: 'ME',
+      timestamp: DateTime.now(),
+      status: MessageStatus.pending,
+    );
+
+    setState(() {
+      _messages.add(msg);
+    });
+    _scrollToBottom();
+    
+    // Simulate processing time
+    await Future.delayed(const Duration(milliseconds: 1200));
+    
+    final db = await ref.read(chatDatabaseProvider.future);
+    final sentMsg = msg.copyWith(status: MessageStatus.sent);
+    await db.insertMessage(sentMsg);
+    
+    if (mounted) {
+      setState(() {
+        final idx = _messages.indexWhere((m) => m.id == msgId);
+        if (idx != -1) _messages[idx] = sentMsg;
+      });
+    }
   }
 
   Future<void> _simulateRemoteKillSwitch() async {
@@ -138,6 +177,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   ///   6. OfflineQueueService akan otomatis mendeteksi DB "pending" dan 
   ///      mengirimkannya ke WebSocket di background.
   Future<void> _sendMessage() async {
+    HapticFeedback.lightImpact();
     if (_textController.text.trim().isEmpty) return;
 
 
@@ -286,10 +326,34 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
         sessionId: widget.chatId,
         peerIdentityPublicKeyBytes: x3dhResult.senderIdentityPublicBytes,
       );
+    
+    // -- FAKE ROUTING TRACE SIMULATION --
+    if (mounted) {
+      final traceNodes = [
+        '[SEC_RELAY] Bouncing traffic via node 192.168.84.22...',
+        '[SEC_RELAY] Routing through onion skin layer 1...',
+        '[SYS_AUTH] Verifying peer identity keys (X3DH)...',
+        '[SYS_AUTH] Establishing Forward Secrecy Session (PFS)...'
+      ];
+      
+      for (final trace in traceNodes) {
+        setState(() {
+          _messages.add(Message(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            sessionId: widget.chatId,
+            text: trace,
+            senderId: 'SYSTEM',
+            timestamp: DateTime.now(),
+          ));
+        });
+        _scrollToBottom();
+        await Future.delayed(const Duration(milliseconds: 600));
+      }
+    }
 
-      // ignore: avoid_print
-      print('[X3DH+PFS] Session initialized for chatId=${widget.chatId}, '
-            'epoch=${pfsService.currentEpoch(widget.chatId)}');
+    // ignore: avoid_print
+    print('[X3DH+PFS] Session initialized for chatId=${widget.chatId}, '
+          'epoch=${pfsService.currentEpoch(widget.chatId)}');
 
     } catch (e) {
       // ignore: avoid_print
@@ -361,6 +425,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     // Listen for attempted screenshots
     ScreenProtector.addListener(() {
       if (mounted) {
+        HapticFeedback.heavyImpact();
         setState(() {
           _showAlert = true;
         });
@@ -592,52 +657,92 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Command Menu ──────────────────────────────────────────
+                  if (_showCommandMenu)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: const BoxDecoration(
+                        border: Border(bottom: BorderSide(color: AppTheme.terminalBorder)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildCommandItem(
+                            icon: Icons.timer,
+                            label: 'EPHEMERAL',
+                            color: AppTheme.warningAmber,
+                            onTap: () {
+                              setState(() => _showCommandMenu = false);
+                              _sendEphemeralText();
+                            },
+                          ),
+                          _buildCommandItem(
+                            icon: Icons.photo_camera_front,
+                            label: 'VIEW_ONCE',
+                            color: AppTheme.accentGreenBright,
+                            onTap: () {
+                              setState(() => _showCommandMenu = false);
+                              _sendViewOnceMedia();
+                            },
+                          ),
+                          _buildCommandItem(
+                            icon: Icons.description,
+                            label: 'SEC_DOC',
+                            color: AppTheme.accentGreen,
+                            onTap: () {
+                              setState(() => _showCommandMenu = false);
+                              _openDemoDocument();
+                            },
+                          ),
+                          _buildCommandItem(
+                            icon: Icons.dangerous,
+                            label: 'KILL_SW',
+                            color: AppTheme.warningRed,
+                            onTap: () {
+                              HapticFeedback.heavyImpact();
+                              setState(() => _showCommandMenu = false);
+                              _simulateRemoteKillSwitch();
+                            },
+                          ),
+                          _buildCommandItem(
+                            icon: Icons.layers,
+                            label: 'STEG_ENC',
+                            color: Colors.purpleAccent,
+                            onTap: () {
+                              setState(() => _showCommandMenu = false);
+                              _sendStegoPayload();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   Padding(
-                    padding: const EdgeInsets.all(16).copyWith(top: 16),
+                    padding: const EdgeInsets.all(16).copyWith(top: _showCommandMenu ? 16 : 16),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        // Send Ephemeral Icon
+                        // Toggle Command Menu Button
                         InkWell(
-                          onTap: _sendEphemeralText,
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            setState(() => _showCommandMenu = !_showCommandMenu);
+                          },
                           child: Container(
-                            width: 32,
+                            width: 44,
                             height: 44,
                             alignment: Alignment.center,
-                            child: const Icon(Icons.timer, color: AppTheme.warningRed),
+                            decoration: BoxDecoration(
+                              color: _showCommandMenu ? AppTheme.accentGreen.withValues(alpha: 0.1) : Colors.transparent,
+                              border: Border.all(color: _showCommandMenu ? AppTheme.accentGreen : AppTheme.terminalDim),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Icon(
+                              _showCommandMenu ? Icons.close : Icons.add,
+                              color: _showCommandMenu ? AppTheme.accentGreen : Colors.grey[400],
+                            ),
                           ),
                         ),
-                        // View-Once Media Icon
-                        InkWell(
-                          onTap: _sendViewOnceMedia,
-                          child: Container(
-                            width: 32,
-                            height: 44,
-                            alignment: Alignment.center,
-                            child: const Icon(Icons.photo_camera_front, color: AppTheme.accentGreenBright),
-                          ),
-                        ),
-                        // Kill Switch Mock
-                        InkWell(
-                          onTap: _simulateRemoteKillSwitch,
-                          child: Container(
-                            width: 32,
-                            height: 44,
-                            alignment: Alignment.center,
-                            child: const Icon(Icons.dangerous, color: AppTheme.warningRed),
-                          ),
-                        ),
-                        // Add Button (Launch Secure Document)
-                        InkWell(
-                          onTap: _openDemoDocument,
-                          child: Container(
-                            width: 32,
-                            height: 44,
-                            alignment: Alignment.center,
-                            child: const Icon(Icons.description, color: AppTheme.accentGreen),
-                          ),
-                        ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 8),
                         // Input Box
                         Expanded(
                           child: Container(
@@ -655,6 +760,9 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                                   child: TextField(
                                     controller: _textController,
                                     style: const TextStyle(color: Colors.white, fontSize: 14, fontFamily: 'IBM Plex Mono'),
+                                    cursorColor: AppTheme.accentGreen,
+                                    cursorWidth: 8, // Block cursor effect
+                                    cursorRadius: const Radius.circular(0),
                                     decoration: InputDecoration(
                                       hintText: 'ENTER_MESSAGE...',
                                       hintStyle: TextStyle(color: Colors.grey[700]),
@@ -676,9 +784,10 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                             height: 44,
                             decoration: BoxDecoration(
                               color: AppTheme.terminalCard,
-                              border: Border.all(color: Colors.grey[700]!),
+                              border: Border.all(color: AppTheme.accentGreen.withValues(alpha: 0.5)),
+                              boxShadow: AppTheme.glowGreen,
                             ),
-                            child: const Icon(Icons.send, color: Colors.grey, size: 18),
+                            child: const Icon(Icons.send, color: AppTheme.accentGreen, size: 18),
                           ),
                         )
                       ],
@@ -689,6 +798,33 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Widget _buildCommandItem({required IconData icon, required String label, required Color color, required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(4),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'IBM Plex Mono',
+                letterSpacing: 1,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

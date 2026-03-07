@@ -18,6 +18,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/providers.dart';
+import '../widgets/glitch_effect.dart';
 
 class SecurityLockdownScreen extends ConsumerStatefulWidget {
   final DetectedThreat threat;
@@ -43,7 +44,6 @@ class _SecurityLockdownScreenState
   final List<String> _wipeLog = [];
   Timer? _wipeTimer;
   int _wipeStep = 0;
-  bool _showGlitch = false;
   final Random _rng = Random();
 
   // Urutan log terminal yang ditampilkan saat proses wipe
@@ -87,26 +87,8 @@ class _SecurityLockdownScreenState
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
-    // Mulai animasi glitch acak
-    _startGlitchTimer();
-
     // Mulai wipe sequence
     _startWipeSequence();
-  }
-
-  void _startGlitchTimer() {
-    Timer.periodic(const Duration(milliseconds: 200), (timer) {
-      if (!mounted) {
-        timer.cancel();
-        return;
-      }
-      if (_rng.nextDouble() < 0.3) {
-        setState(() => _showGlitch = true);
-        Future.delayed(const Duration(milliseconds: 60), () {
-          if (mounted) setState(() => _showGlitch = false);
-        });
-      }
-    });
   }
 
   void _startWipeSequence() {
@@ -170,23 +152,13 @@ class _SecurityLockdownScreenState
       canPop: false,
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: Stack(
+        body: GlitchEffect(
+          isActive: true,
+          intensity: 6.0,
+          child: Stack(
           children: [
             // Background: noise pattern merah
             Positioned.fill(child: _buildRedNoiseBackground()),
-
-            // Glitch overlay
-            if (_showGlitch)
-              Positioned.fill(
-                child: Container(
-                  color: Colors.red.withValues(alpha: _rng.nextDouble() * 0.2),
-                  transform: Matrix4.translationValues(
-                    (_rng.nextDouble() - 0.5) * 8,
-                    0,
-                    0,
-                  ),
-                ),
-              ),
 
             // Scanline effect (merah)
             Positioned.fill(child: _buildRedScanlines()),
@@ -214,14 +186,15 @@ class _SecurityLockdownScreenState
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   // ── Widget builders ────────────────────────────────────────────────────────
 
   Widget _buildRedNoiseBackground() {
     return CustomPaint(
-      painter: _RedNoisePainter(seed: _showGlitch ? _rng.nextInt(100) : 0),
+      painter: _RedNoisePainter(seed: _rng.nextInt(100)),
     );
   }
 

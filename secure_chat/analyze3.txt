@@ -1,4 +1,0 @@
-Analyzing secure_chat...                                        
-
-   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart' - lib\services\secure_document_service.dart:18:8 - unnecessary_import
-

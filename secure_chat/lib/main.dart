@@ -28,6 +28,7 @@ import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 import 'widgets/pixel_grid_background.dart';
 import 'widgets/scanline_overlay.dart';
+import 'widgets/cli_overlay.dart';
 
 void main() async {
   // WAJIB: Inisialisasi binding Flutter sebelum memanggil Talsec
@@ -141,7 +142,12 @@ class _SecureChatAppState extends ConsumerState<SecureChatApp>
       builder: (context, child) {
         return PixelGridBackground(
           child: ScanlineOverlay(
-            child: child ?? const SizedBox(),
+            child: Stack(
+              children: [
+                child ?? const SizedBox(),
+                const CliOverlay(), // Add the terminal overlay here
+              ],
+            ),
           ),
         );
       },
